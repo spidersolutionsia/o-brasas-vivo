@@ -1,14 +1,17 @@
-import { Building2 } from 'lucide-react';
 import serraAzulLogo from '@/assets/partners/serra-azul.png';
+import superthalLogo from '@/assets/partners/superthal.png';
+import jacutingaLogo from '@/assets/partners/jacutinga.png';
+import rdBoutiqueLogo from '@/assets/partners/rd-boutique.png';
+import diamanteNegroLogo from '@/assets/partners/diamante-negro.png';
 
 const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
 
 const partners = [
   { name: 'Serra Azul', logo: serraAzulLogo },
-  { name: 'Superthal' },
-  { name: 'Jacutinga' },
-  { name: 'RD Boutique' },
-  { name: 'Diamante Negro' },
+  { name: 'Superthal', logo: superthalLogo },
+  { name: 'Jacutinga', logo: jacutingaLogo },
+  { name: 'RD Boutique', logo: rdBoutiqueLogo },
+  { name: 'Diamante Negro', logo: diamanteNegroLogo },
 ];
 
 const PrivateLabelSection = () => {
@@ -43,15 +46,11 @@ const PrivateLabelSection = () => {
             {partners.map((partner, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="card-dark rounded-lg p-4 flex items-center justify-center aspect-square w-full hover:border-primary/50 transition-colors mb-3">
-                  {partner.logo ? (
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name} 
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <Building2 className="w-12 h-12 text-muted-foreground" />
-                  )}
+                  <img 
+                    src={partner.logo} 
+                    alt={partner.name} 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <span className="font-heading text-sm uppercase tracking-wider text-muted-foreground text-center">
                   {partner.name}
