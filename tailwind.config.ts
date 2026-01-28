@@ -132,6 +132,26 @@ export default {
             transform: "translateY(-100vh) translateX(-10px)" 
           },
         },
+        "flame-dance": {
+          "0%, 100%": { 
+            opacity: "0.5", 
+            transform: "scaleY(1) translateY(0)" 
+          },
+          "50%": { 
+            opacity: "0.8", 
+            transform: "scaleY(1.2) translateY(-5px)" 
+          },
+        },
+        "flame-flicker": {
+          "0%, 100%": { opacity: "0.6", transform: "scaleX(1)" },
+          "25%": { opacity: "0.9", transform: "scaleX(1.1)" },
+          "50%": { opacity: "0.5", transform: "scaleX(0.9)" },
+          "75%": { opacity: "0.8", transform: "scaleX(1.05)" },
+        },
+        "flame-core": {
+          "0%, 100%": { opacity: "0.7", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.15)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -149,6 +169,13 @@ export default {
         "spark-delayed": "spark 2s ease-out 0.7s infinite",
         "spark-slow": "spark 3s ease-out 1s infinite",
         "float-spark": "float-spark linear infinite",
+        "flame-dance": "flame-dance 2s ease-in-out infinite",
+        "flame-dance-slow": "flame-dance 3s ease-in-out infinite",
+        "flame-dance-delayed": "flame-dance 2.5s ease-in-out 0.5s infinite",
+        "flame-flicker": "flame-flicker 1.2s ease-in-out infinite",
+        "flame-flicker-fast": "flame-flicker 0.7s ease-in-out infinite",
+        "flame-flicker-delayed": "flame-flicker 1.2s ease-in-out 0.4s infinite",
+        "flame-core": "flame-core 1s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-fire": "linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 45%))",
