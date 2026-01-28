@@ -1,96 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark Premium Theme - Charcoal Factory */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Fire Orange as Primary */
+    --primary: 16 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Deep Red as Secondary */
+    --secondary: 0 70% 35%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 16 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 16 100% 50%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom Fire Colors */
+    --fire-orange: 16 100% 50%;
+    --fire-red: 0 85% 45%;
+    --fire-yellow: 45 100% 55%;
+    --ember-glow: 15 100% 40%;
+    --coal-black: 0 0% 2%;
+    --ash-gray: 0 0% 25%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Gradients */
+    --gradient-fire: linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 45%));
+    --gradient-ember: linear-gradient(180deg, hsl(0 85% 25%) 0%, hsl(25 100% 35%) 50%, hsl(45 100% 45%) 100%);
+    --gradient-smoke: linear-gradient(180deg, hsla(0,0%,5%,0.9) 0%, transparent 100%);
   }
 }
 
@@ -99,7 +59,246 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  html {
+    scroll-behavior: smooth;
   }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-color: hsl(0 0% 2%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Smoke Animation */
+  .smoke-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .smoke-particle {
+    position: absolute;
+    background: radial-gradient(ellipse at center, hsla(0,0%,40%,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: smoke-rise 8s ease-out infinite;
+  }
+
+  @keyframes smoke-rise {
+    0% {
+      opacity: 0;
+      transform: translateY(100%) scale(0.5);
+    }
+    20% {
+      opacity: 0.3;
+    }
+    60% {
+      opacity: 0.15;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-100%) scale(2.5) translateX(20px);
+    }
+  }
+
+  /* Fire Glow Effect */
+  .fire-glow {
+    position: relative;
+  }
+
+  .fire-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, hsl(16 100% 50%), hsl(0 85% 45%), hsl(45 100% 55%), hsl(16 100% 50%));
+    background-size: 400% 400%;
+    filter: blur(15px);
+    opacity: 0.7;
+    z-index: -1;
+    animation: fire-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes fire-pulse {
+    0%, 100% {
+      background-position: 0% 50%;
+      opacity: 0.5;
+    }
+    50% {
+      background-position: 100% 50%;
+      opacity: 0.8;
+    }
+  }
+
+  /* Ember Background */
+  .ember-bg {
+    background: 
+      radial-gradient(ellipse 80% 50% at 20% 80%, hsla(25, 100%, 40%, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 70%, hsla(0, 85%, 35%, 0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 60% at 50% 90%, hsla(45, 100%, 45%, 0.3) 0%, transparent 50%),
+      linear-gradient(180deg, hsl(0 0% 5%) 0%, hsl(0 0% 2%) 100%);
+    animation: ember-flicker 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes ember-flicker {
+    0% {
+      filter: brightness(1);
+    }
+    25% {
+      filter: brightness(1.1);
+    }
+    50% {
+      filter: brightness(0.95);
+    }
+    75% {
+      filter: brightness(1.15);
+    }
+    100% {
+      filter: brightness(1);
+    }
+  }
+
+  /* Fire Divider */
+  .fire-divider {
+    height: 4px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(0 85% 45%) 20%, 
+      hsl(16 100% 50%) 50%, 
+      hsl(45 100% 55%) 80%, 
+      transparent 100%
+    );
+    animation: fire-flow 2s linear infinite;
+  }
+
+  @keyframes fire-flow {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  /* Glowing Text */
+  .text-fire-glow {
+    text-shadow: 
+      0 0 10px hsla(16, 100%, 50%, 0.5),
+      0 0 20px hsla(16, 100%, 50%, 0.3),
+      0 0 40px hsla(0, 85%, 45%, 0.2);
+  }
+
+  /* Button Variants */
+  .btn-fire {
+    @apply relative overflow-hidden px-8 py-4 font-heading font-semibold uppercase tracking-wider;
+    background: linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 40%));
+    transition: all 0.3s ease;
+  }
+
+  .btn-fire:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px hsla(16, 100%, 50%, 0.5);
+  }
+
+  .btn-fire::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, hsla(45, 100%, 60%, 0.3), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn-fire:hover::after {
+    transform: translateX(100%);
+  }
+
+  .btn-outline-fire {
+    @apply relative px-8 py-4 font-heading font-semibold uppercase tracking-wider border-2;
+    border-color: hsl(16 100% 50%);
+    color: hsl(16 100% 50%);
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-fire:hover {
+    background: hsla(16, 100%, 50%, 0.1);
+    box-shadow: 0 0 20px hsla(16, 100%, 50%, 0.3);
+  }
+
+  /* Section Title */
+  .section-title {
+    @apply font-heading text-4xl md:text-5xl font-bold uppercase tracking-wider;
+    color: hsl(0 0% 100%);
+  }
+
+  .section-title-accent {
+    color: hsl(16 100% 50%);
+  }
+
+  /* Card Styles */
+  .card-dark {
+    @apply rounded-lg p-6;
+    background: linear-gradient(145deg, hsl(0 0% 8%), hsl(0 0% 5%));
+    border: 1px solid hsl(0 0% 12%);
+  }
+
+  .card-dark:hover {
+    border-color: hsla(16, 100%, 50%, 0.3);
+  }
+
+  /* Floating Animation */
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Fade In Animations */
+  .fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 5%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(16 100% 40%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(16 100% 50%);
 }
