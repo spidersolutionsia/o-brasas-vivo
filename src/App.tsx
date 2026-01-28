@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import MeuPedido from "./pages/MeuPedido";
 import NotFound from "./pages/NotFound";
+import SparkParticles from "./components/SparkParticles";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <SparkParticles />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

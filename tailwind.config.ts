@@ -113,6 +113,25 @@ export default {
           "20%": { opacity: "1" },
           "100%": { opacity: "0", transform: "translateY(-20px) scale(0)" },
         },
+        "float-spark": {
+          "0%": { 
+            opacity: "0", 
+            transform: "translateY(0) translateX(0)" 
+          },
+          "10%": { 
+            opacity: "0.7" 
+          },
+          "50%": { 
+            transform: "translateY(-50vh) translateX(20px)" 
+          },
+          "90%": { 
+            opacity: "0.5" 
+          },
+          "100%": { 
+            opacity: "0", 
+            transform: "translateY(-100vh) translateX(-10px)" 
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -129,6 +148,7 @@ export default {
         "spark": "spark 2s ease-out infinite",
         "spark-delayed": "spark 2s ease-out 0.7s infinite",
         "spark-slow": "spark 3s ease-out 1s infinite",
+        "float-spark": "float-spark linear infinite",
       },
       backgroundImage: {
         "gradient-fire": "linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 45%))",
