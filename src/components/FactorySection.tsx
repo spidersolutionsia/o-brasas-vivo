@@ -90,13 +90,13 @@ const FactorySection = () => {
               <div className="aspect-[3/4] rounded-2xl overflow-hidden fire-glow">
                 <img 
                   src={founderImage} 
-                  alt="Matheus Freitas - Fundador do Carvão Mascate"
+                  alt="Matheus Mascate - Fundador do Carvão Mascate"
                   className="w-full h-full object-cover"
                 />
               </div>
               {/* Name Badge */}
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:-right-4 bg-card border border-primary/30 rounded-xl px-6 py-3 shadow-xl">
-                <p className="text-lg font-bold text-foreground">Matheus Freitas</p>
+                <p className="text-lg font-bold text-foreground">Matheus Mascate</p>
                 <p className="text-sm text-primary">Fundador</p>
               </div>
               {/* Decorative Element */}
