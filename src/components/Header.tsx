@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Package } from 'lucide-react';
 import logoHorizontal from '@/assets/logo-horizontal.jpg';
 
 const navLinks = [
@@ -37,6 +38,13 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/meu-pedido"
+              className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <Package className="w-4 h-4" />
+              Meu Pedido
+            </Link>
           </nav>
 
           {/* CTA Button - Desktop */}
@@ -71,6 +79,14 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/meu-pedido"
+                className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Package className="w-4 h-4" />
+                Meu Pedido
+              </Link>
               <a
                 href="#atacado"
                 className="btn-fire text-sm rounded text-center mt-2"
