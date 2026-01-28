@@ -1,17 +1,22 @@
 import SmokeEffect from './SmokeEffect';
-import heroBg from '@/assets/hero-bg.jpg';
+import heroVideo from '@/assets/hero-video.mp4';
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBg})` }}
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
       >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
-      </div>
+        <source src={heroVideo} type="video/mp4" />
+      </video>
+      
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
 
       {/* Smoke Effect */}
       <SmokeEffect />
