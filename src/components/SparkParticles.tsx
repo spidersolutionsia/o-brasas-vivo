@@ -23,7 +23,7 @@ const SparkParticles = () => {
           id: i,
           x: Math.random() * 100,
           y: Math.random() * 100,
-          size: Math.random() * 3 + 1,
+          size: Math.random() * 4 + 2, // 2-6px (increased from 1-4px)
           duration: Math.random() * 8 + 6, // 6-14 seconds
           delay: Math.random() * 10, // Random start delay
         });
@@ -45,8 +45,8 @@ const SparkParticles = () => {
             top: `${spark.y}%`,
             width: `${spark.size}px`,
             height: `${spark.size}px`,
-            background: `radial-gradient(circle, hsl(var(--fire-yellow)) 0%, hsl(var(--fire-orange)) 50%, transparent 100%)`,
-            boxShadow: `0 0 ${spark.size * 2}px hsl(var(--fire-orange) / 0.6)`,
+            background: `radial-gradient(circle, hsl(var(--fire-yellow)) 0%, hsl(var(--fire-orange)) 60%, transparent 100%)`,
+            boxShadow: `0 0 ${spark.size * 3}px hsl(var(--fire-orange) / 0.8), 0 0 ${spark.size * 6}px hsl(var(--fire-yellow) / 0.4)`,
             animationDuration: `${spark.duration}s`,
             animationDelay: `${spark.delay}s`,
             opacity: 0.7,
