@@ -10,7 +10,12 @@ const HeroSection = () => {
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
+        onEnded={(e) => {
+          e.currentTarget.currentTime = 0;
+          e.currentTarget.play();
+        }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
