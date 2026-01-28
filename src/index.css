@@ -109,6 +109,74 @@
     }
   }
 
+  /* Flame Particles */
+  .flame-particle {
+    position: absolute;
+    bottom: 0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: linear-gradient(
+      to top,
+      hsl(var(--fire-red)) 0%,
+      hsl(var(--fire-orange)) 30%,
+      hsl(var(--fire-yellow)) 70%,
+      transparent 100%
+    );
+    filter: blur(2px);
+    animation: flame-dance ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  @keyframes flame-dance {
+    0%, 100% {
+      transform: scaleY(1) scaleX(1) translateX(0);
+      opacity: 0.7;
+    }
+    25% {
+      transform: scaleY(1.2) scaleX(0.9) translateX(-3px);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scaleY(0.9) scaleX(1.1) translateX(2px);
+      opacity: 0.6;
+    }
+    75% {
+      transform: scaleY(1.15) scaleX(0.95) translateX(-2px);
+      opacity: 0.85;
+    }
+  }
+
+  /* Ember Particles Rising */
+  .ember-particle {
+    position: absolute;
+    bottom: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      hsl(var(--fire-yellow)) 0%,
+      hsl(var(--fire-orange)) 50%,
+      hsl(var(--fire-red)) 100%
+    );
+    box-shadow: 
+      0 0 6px hsl(var(--fire-orange) / 0.8),
+      0 0 12px hsl(var(--fire-yellow) / 0.5);
+    animation: ember-rise ease-out infinite;
+  }
+
+  @keyframes ember-rise {
+    0% {
+      opacity: 1;
+      transform: translateY(0) translateX(0) scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: translateY(-80px) translateX(10px) scale(0.8);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-180px) translateX(-5px) scale(0.3);
+    }
+  }
+
   /* Fire Glow Effect */
   .fire-glow {
     position: relative;
