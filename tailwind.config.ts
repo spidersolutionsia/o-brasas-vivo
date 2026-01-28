@@ -98,6 +98,21 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "ember-pulse": {
+          "0%, 100%": { opacity: "0.5", transform: "scale(1)" },
+          "50%": { opacity: "0.9", transform: "scale(1.1)" },
+        },
+        "ember-flicker": {
+          "0%, 100%": { opacity: "0.6" },
+          "25%": { opacity: "0.9" },
+          "50%": { opacity: "0.4" },
+          "75%": { opacity: "0.8" },
+        },
+        "spark": {
+          "0%": { opacity: "0", transform: "translateY(0) scale(1)" },
+          "20%": { opacity: "1" },
+          "100%": { opacity: "0", transform: "translateY(-20px) scale(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -105,6 +120,15 @@ export default {
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "ember-pulse": "ember-pulse 2s ease-in-out infinite",
+        "ember-pulse-slow": "ember-pulse 3s ease-in-out infinite",
+        "ember-pulse-delayed": "ember-pulse 2.5s ease-in-out 0.5s infinite",
+        "ember-flicker": "ember-flicker 1.5s ease-in-out infinite",
+        "ember-flicker-fast": "ember-flicker 0.8s ease-in-out infinite",
+        "ember-flicker-delayed": "ember-flicker 1.5s ease-in-out 0.3s infinite",
+        "spark": "spark 2s ease-out infinite",
+        "spark-delayed": "spark 2s ease-out 0.7s infinite",
+        "spark-slow": "spark 3s ease-out 1s infinite",
       },
       backgroundImage: {
         "gradient-fire": "linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 45%))",
