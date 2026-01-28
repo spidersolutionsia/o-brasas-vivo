@@ -41,19 +41,18 @@ const PrivateLabelSection = () => {
           {/* Partners Grid */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-12">
             {partners.map((partner, index) => (
-              <div
-                key={index}
-                className="card-dark rounded-lg p-6 flex flex-col items-center justify-center aspect-square hover:border-primary/50 transition-colors"
-              >
-                {partner.logo ? (
-                  <img 
-                    src={partner.logo} 
-                    alt={partner.name} 
-                    className="w-16 h-16 object-contain mb-3"
-                  />
-                ) : (
-                  <Building2 className="w-8 h-8 text-muted-foreground mb-3" />
-                )}
+              <div key={index} className="flex flex-col items-center">
+                <div className="card-dark rounded-lg p-4 flex items-center justify-center aspect-square w-full hover:border-primary/50 transition-colors mb-3">
+                  {partner.logo ? (
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name} 
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <Building2 className="w-12 h-12 text-muted-foreground" />
+                  )}
+                </div>
                 <span className="font-heading text-sm uppercase tracking-wider text-muted-foreground text-center">
                   {partner.name}
                 </span>
