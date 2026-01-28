@@ -1,5 +1,4 @@
 import SmokeEffect from './SmokeEffect';
-import LiveFlame from './LiveFlame';
 import heroBg from '@/assets/hero-bg.jpg';
 
 const HeroSection = () => {
@@ -13,9 +12,6 @@ const HeroSection = () => {
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       </div>
-
-      {/* Live Flame Effect at Top */}
-      <LiveFlame />
 
       {/* Smoke Effect */}
       <SmokeEffect />
