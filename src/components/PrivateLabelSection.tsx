@@ -1,9 +1,10 @@
 import { Building2 } from 'lucide-react';
+import serraAzulLogo from '@/assets/partners/serra-azul.png';
 
 const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
 
 const partners = [
-  { name: 'Serra Azul' },
+  { name: 'Serra Azul', logo: serraAzulLogo },
   { name: 'Superthal' },
   { name: 'Jacutinga' },
   { name: 'RD Boutique' },
@@ -44,7 +45,15 @@ const PrivateLabelSection = () => {
                 key={index}
                 className="card-dark rounded-lg p-6 flex flex-col items-center justify-center aspect-square hover:border-primary/50 transition-colors"
               >
-                <Building2 className="w-8 h-8 text-muted-foreground mb-3" />
+                {partner.logo ? (
+                  <img 
+                    src={partner.logo} 
+                    alt={partner.name} 
+                    className="w-16 h-16 object-contain mb-3"
+                  />
+                ) : (
+                  <Building2 className="w-8 h-8 text-muted-foreground mb-3" />
+                )}
                 <span className="font-heading text-sm uppercase tracking-wider text-muted-foreground text-center">
                   {partner.name}
                 </span>
