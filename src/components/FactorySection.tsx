@@ -59,22 +59,20 @@ const FactorySection = () => {
             </button>
           </div>
 
-          {/* Image / Visual */}
+          {/* Google Maps */}
           <div className="relative">
             <div className="aspect-video rounded-xl overflow-hidden card-dark fire-glow">
-              <div className="w-full h-full bg-gradient-to-br from-muted to-card flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
-                    <MapPin className="w-12 h-12 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground text-lg">
-                    Duas Barras, RJ
-                  </p>
-                  <p className="text-sm text-muted-foreground/60 mt-2">
-                    Região serrana do Rio de Janeiro
-                  </p>
-                </div>
-              </div>
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d14767.551161926964!2d-42.5394176!3d-22.282239999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x6aafb888a29409b5%3A0x9cca2c6e40e99f8a!2sCarv%C3%A3o%20Mascate%2C%20WCFH%2BM6C%20-%20Vargem%20Grande%2C%20Duas%20Barras%20-%20RJ%2C%2028650-000!3m2!1d-22.075812499999998!2d-42.5719375!5e0!3m2!1spt-BR!2sbr!4v1769613411555!5m2!1spt-BR!2sbr"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Localização Carvão Mascate"
+                className="w-full h-full"
+              />
             </div>
             
             {/* Decorative Element */}
