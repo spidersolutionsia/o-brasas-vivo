@@ -1,11 +1,12 @@
 import { Instagram, Facebook, Phone, Mail } from 'lucide-react';
 import logoSelo from '@/assets/logo-selo.jpg';
+import LiveEmber from './LiveEmber';
 
 const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
 
 const Footer = () => {
   return (
-    <footer className="ember-bg pt-16 pb-8 relative">
+    <footer className="ember-bg pt-16 pb-0 relative">
       {/* Fire Divider at Top */}
       <div className="fire-divider absolute top-0 left-0 right-0" />
 
@@ -93,7 +94,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-border/50 pt-8">
+        <div className="border-t border-border/50 pt-8 pb-8">
           <p className="text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Carvão Mascate. Todos os direitos reservados.
           </p>
@@ -102,6 +103,9 @@ const Footer = () => {
           </p>
         </div>
       </div>
+      
+      {/* Live Ember Effect */}
+      <LiveEmber />
     </footer>
   );
 };
