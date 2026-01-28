@@ -19,6 +19,11 @@ const products = [
     weight: '5kg',
     featured: true,
   },
+  {
+    name: 'Saco 9kg',
+    description: 'Para grandes eventos e quem quer garantir estoque.',
+    weight: '9kg',
+  },
 ];
 
 const ProductsSection = () => {
@@ -56,7 +61,7 @@ const ProductsSection = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {products.map((product, index) => (
             <div
               key={index}
