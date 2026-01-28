@@ -70,11 +70,11 @@ const ProductsSection = () => {
               }`}
             >
               {/* Product Image */}
-              <div className="aspect-square bg-background flex items-center justify-center p-8">
+              <div className="aspect-[4/5] bg-background flex items-center justify-center p-4">
                 <img
                   src={productBag}
                   alt={product.name}
-                  className="max-h-full w-auto object-contain float-animation"
+                  className="w-full h-full object-cover float-animation"
                 />
               </div>
 
