@@ -12,13 +12,15 @@ interface Product {
 
 const products: Product[] = [
   { id: 'saco-2.5kg', name: 'Saco de Carvão', weight: '2,5kg', minQuantity: 20 },
-  { id: 'saco-5kg', name: 'Saco de Carvão', weight: '5kg', minQuantity: 10 },
+  { id: 'saco-5kg', name: 'Saco de Carvão', weight: '5kg', minQuantity: 20 },
+  { id: 'saco-9kg', name: 'Saco de Carvão', weight: '9kg', minQuantity: 20 },
 ];
 
 const WholesaleSection = () => {
   const [quantities, setQuantities] = useState<Record<string, number>>({
     'saco-2.5kg': 0,
     'saco-5kg': 0,
+    'saco-9kg': 0,
   });
 
   const updateQuantity = (productId: string, delta: number) => {
