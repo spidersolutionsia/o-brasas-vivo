@@ -1,4 +1,5 @@
 import SmokeEffect from './SmokeEffect';
+import FlameEffect from './FlameEffect';
 import heroBg from '@/assets/hero-bg.jpg';
 
 const HeroSection = () => {
@@ -15,6 +16,9 @@ const HeroSection = () => {
 
       {/* Smoke Effect */}
       <SmokeEffect />
+      
+      {/* Flame and Ember Effect at bottom */}
+      <FlameEffect />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center pt-20">
