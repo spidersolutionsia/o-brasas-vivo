@@ -1,10 +1,22 @@
 import { Instagram, Facebook, Phone, Mail } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import logoSelo from '@/assets/logo-selo.jpg';
 import LiveEmber from './LiveEmber';
 
 const WHATSAPP_NUMBER = '5522992525529';
 
 const Footer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (hash: string) => {
+    if (location.pathname !== '/') {
+      navigate('/#' + hash);
+    } else {
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   return (
     <footer className="ember-bg pt-16 pb-0 relative">
       {/* Fire Divider at Top */}
@@ -31,21 +43,21 @@ const Footer = () => {
               Links Rápidos
             </h3>
             <nav className="space-y-2">
-              <a href="#fabrica" className="block text-muted-foreground hover:text-primary transition-colors">
+              <button onClick={() => handleNavClick('fabrica')} className="block text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-left">
                 A Fábrica
-              </a>
-              <a href="#produtos" className="block text-muted-foreground hover:text-primary transition-colors">
+              </button>
+              <button onClick={() => handleNavClick('produtos')} className="block text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-left">
                 Produtos
-              </a>
-              <a href="#parceiros" className="block text-muted-foreground hover:text-primary transition-colors">
+              </button>
+              <button onClick={() => handleNavClick('parceiros')} className="block text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-left">
                 Parceiros
-              </a>
-              <a href="#atacado" className="block text-muted-foreground hover:text-primary transition-colors">
+              </button>
+              <button onClick={() => handleNavClick('atacado')} className="block text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-left">
                 Pedido de Atacado
-              </a>
-              <a href="#encontre" className="block text-muted-foreground hover:text-primary transition-colors">
+              </button>
+              <button onClick={() => handleNavClick('encontre')} className="block text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer text-left">
                 Onde Encontrar
-              </a>
+              </button>
             </nav>
           </div>
 
