@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Minus, Plus, ShoppingCart, MessageCircle } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
+const WHATSAPP_NUMBER = '5522992525529';
 
 interface Product {
   id: string;

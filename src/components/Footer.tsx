@@ -2,7 +2,7 @@ import { Instagram, Facebook, Phone, Mail } from 'lucide-react';
 import logoSelo from '@/assets/logo-selo.jpg';
 import LiveEmber from './LiveEmber';
 
-const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
+const WHATSAPP_NUMBER = '5522992525529';
 
 const Footer = () => {
   return (
