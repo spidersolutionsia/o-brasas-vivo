@@ -8,7 +8,7 @@ const WhatsAppButton = () => {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-1">
       {/* Texto circular ao redor do botão */}
       <div className="relative w-24 h-24 flex items-center justify-center">
-        <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full animate-spin-slow">
+        <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full animate-spin-slow pointer-events-none">
           <defs>
             <path
               id="circlePath"
