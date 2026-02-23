@@ -53,6 +53,13 @@ const GallerySection = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImage, closeLightbox, goToPrevious, goToNext]);
 
+  // Cleanup: reset overflow on unmount to prevent scroll lock
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <section className="py-20 md:py-32 relative overflow-hidden bg-card/30">
       <div className="container mx-auto px-4">

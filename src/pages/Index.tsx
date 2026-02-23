@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FactorySection from '@/components/FactorySection';
@@ -10,6 +12,17 @@ import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 
 const Index = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location.hash]);
   return (
     <div className="min-h-screen bg-background">
       <Header />
