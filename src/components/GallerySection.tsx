@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import gallery1 from '@/assets/gallery/gallery-1.webp';
@@ -21,6 +21,7 @@ const galleryImages = [
 
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
@@ -104,6 +105,16 @@ const GallerySection = () => {
         <div 
           className="fixed inset-0 z-[60] bg-coal-black/95 flex items-center justify-center"
           onClick={closeLightbox}
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={(e) => {
+            if (touchStartX.current === null) return;
+            const diff = e.changedTouches[0].clientX - touchStartX.current;
+            if (Math.abs(diff) > 50) {
+              if (diff > 0) goToPrevious();
+              else goToNext();
+            }
+            touchStartX.current = null;
+          }}
         >
           {/* Close Button */}
           <button
