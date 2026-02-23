@@ -4,7 +4,7 @@ import jacutingaLogo from '@/assets/partners/jacutinga.png';
 import rdBoutiqueLogo from '@/assets/partners/rd-boutique.png';
 import diamanteNegroLogo from '@/assets/partners/diamante-negro.png';
 
-const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
+const WHATSAPP_NUMBER = '5522992525529';
 
 const partners = [
   { name: 'Serra Azul', logo: serraAzulLogo },
