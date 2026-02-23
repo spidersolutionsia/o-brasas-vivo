@@ -1,4 +1,4 @@
-import { MapPin, Phone, Calendar, Quote } from 'lucide-react';
+import { MapPin, Phone, Calendar, Quote, Navigation } from 'lucide-react';
 import founderImage from '@/assets/founder.jpg';
 
 const WHATSAPP_NUMBER = '5522992525529';
@@ -49,14 +49,25 @@ const FactorySection = () => {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={handleScheduleVisit}
-              className="btn-fire rounded-lg inline-flex items-center gap-2"
-            >
-              <Calendar className="w-5 h-5" />
-              Agendar Visita
-            </button>
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={handleScheduleVisit}
+                className="btn-fire rounded-lg inline-flex items-center gap-2"
+              >
+                <Calendar className="w-5 h-5" />
+                Agendar Visita
+              </button>
+              <a
+                href="https://www.google.com/maps/dir//Carv%C3%A3o+Mascate,+WCFH%2BM6C+-+Vargem+Grande,+Duas+Barras+-+RJ,+28650-000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/50 text-primary font-heading uppercase tracking-wider hover:bg-primary/10 transition-colors"
+              >
+                <Navigation className="w-5 h-5" />
+                Como Chegar
+              </a>
+            </div>
           </div>
 
           {/* Google Maps */}
