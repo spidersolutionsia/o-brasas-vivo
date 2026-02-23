@@ -56,7 +56,7 @@ const Footer = () => {
             </h3>
             <div className="space-y-3">
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Olá! Vim pelo site e gostaria de atendimento!')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground hover:text-primary transition-colors"
