@@ -1,12 +1,12 @@
 import { MapPin, Phone, Calendar, Quote } from 'lucide-react';
 import founderImage from '@/assets/founder.jpg';
 
-const WHATSAPP_NUMBER = '5521999999999'; // Replace with actual number
+const WHATSAPP_NUMBER = '5522992525529';
 
 const FactorySection = () => {
   const handleScheduleVisit = () => {
     const message = encodeURIComponent(
-      'Olá! Gostaria de agendar uma visita à fábrica da Carvão Mascate.'
+      'Olá! Vim pelo site e gostaria de agendar um tour pra conhecer a fábrica!'
     );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
   };
