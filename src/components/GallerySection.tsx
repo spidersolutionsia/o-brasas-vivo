@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import gallery1 from '@/assets/gallery/gallery-1.webp';
@@ -100,10 +101,10 @@ const GallerySection = () => {
         </div>
       </div>
 
-      {/* Lightbox */}
-      {selectedImage !== null && (
+      {/* Lightbox via Portal */}
+      {selectedImage !== null && createPortal(
         <div 
-          className="fixed inset-0 z-[60] bg-coal-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
           onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
           onTouchEnd={(e) => {
@@ -159,7 +160,8 @@ const GallerySection = () => {
               {selectedImage + 1} / {galleryImages.length}
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
