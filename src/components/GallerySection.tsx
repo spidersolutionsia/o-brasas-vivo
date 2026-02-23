@@ -119,7 +119,7 @@ const GallerySection = () => {
           {/* Close Button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-50 p-2 text-foreground/80 hover:text-foreground transition-colors"
+            className="absolute top-2 right-2 md:top-4 md:right-4 z-50 p-1.5 md:p-2 text-foreground/80 hover:text-foreground transition-colors"
             aria-label="Fechar"
           >
             <X className="w-8 h-8" />
@@ -128,31 +128,31 @@ const GallerySection = () => {
           {/* Navigation Buttons */}
           <button
             onClick={(e) => { e.stopPropagation(); goToPrevious(); }}
-            className="absolute left-4 z-50 p-2 text-foreground/80 hover:text-foreground transition-colors bg-card/50 rounded-full"
+            className="absolute left-1 md:left-4 z-50 p-1 md:p-2 text-foreground/80 hover:text-foreground transition-colors bg-card/50 rounded-full"
             aria-label="Anterior"
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
           <button
             onClick={(e) => { e.stopPropagation(); goToNext(); }}
-            className="absolute right-4 z-50 p-2 text-foreground/80 hover:text-foreground transition-colors bg-card/50 rounded-full"
+            className="absolute right-1 md:right-4 z-50 p-1 md:p-2 text-foreground/80 hover:text-foreground transition-colors bg-card/50 rounded-full"
             aria-label="Próximo"
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
           {/* Image */}
           <div 
-            className="max-w-5xl max-h-[85vh] mx-4"
+            className="max-w-5xl max-h-[95vh] md:max-h-[85vh] mx-1 md:mx-4 flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={galleryImages[selectedImage].src}
               alt={galleryImages[selectedImage].alt}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              className="max-w-full max-h-[85vh] md:max-h-[80vh] object-contain rounded-lg"
             />
-            <p className="text-center mt-4 text-foreground font-heading text-xl">
+            <p className="text-center mt-2 md:mt-4 text-foreground font-heading text-base md:text-xl">
               {galleryImages[selectedImage].caption}
             </p>
             <p className="text-center text-muted-foreground text-sm mt-1">
