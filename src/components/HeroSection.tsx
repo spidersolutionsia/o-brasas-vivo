@@ -1,17 +1,35 @@
+import { useEffect, useRef, useState } from 'react';
 import SmokeEffect from './SmokeEffect';
 import heroVideo from '@/assets/hero-video.mp4';
 
 const HeroSection = () => {
+  const [scrollY, setScrollY] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        if (rect.bottom > 0) {
+          setScrollY(window.scrollY);
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Video */}
+    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Video with Parallax */}
       <video
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover scale-110"
+        style={{ transform: `scale(1.1) translateY(${scrollY * 0.3}px)` }}
         onEnded={(e) => {
           e.currentTarget.currentTime = 0;
           e.currentTarget.play();
@@ -27,7 +45,7 @@ const HeroSection = () => {
       <SmokeEffect />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center pt-20">
+      <div className="relative z-10 container mx-auto px-4 text-center pt-20" style={{ transform: `translateY(${scrollY * 0.15}px)`, opacity: Math.max(0, 1 - scrollY / 600) }}>
         <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold uppercase mb-6 text-fire-glow">
           Mais brasa,{' '}
           <span className="text-primary">menos fumaça!</span>
