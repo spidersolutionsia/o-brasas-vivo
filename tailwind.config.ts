@@ -149,6 +149,7 @@ export default {
         "spark-delayed": "spark 2s ease-out 0.7s infinite",
         "spark-slow": "spark 3s ease-out 1s infinite",
         "float-spark": "float-spark linear infinite",
+        "spin-slow": "spin 10s linear infinite",
       },
       backgroundImage: {
         "gradient-fire": "linear-gradient(135deg, hsl(16 100% 50%), hsl(0 85% 45%))",
