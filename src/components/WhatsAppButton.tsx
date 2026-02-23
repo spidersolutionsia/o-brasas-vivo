@@ -1,5 +1,5 @@
 const WHATSAPP_NUMBER = '5522992525529';
-const WHATSAPP_MESSAGE = 'Olá! Vim pelo site e gostaria de atendimento!';
+const WHATSAPP_MESSAGE = 'Olá! Vim pelo site e gostaria de produzir meu carvão com a Mascate!';
 
 const WhatsAppButton = () => {
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
