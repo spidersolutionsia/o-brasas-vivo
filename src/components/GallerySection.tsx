@@ -95,7 +95,7 @@ const GallerySection = () => {
       {/* Lightbox */}
       {selectedImage !== null && (
         <div 
-          className="fixed inset-0 z-50 bg-coal-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[60] bg-coal-black/95 flex items-center justify-center"
           onClick={closeLightbox}
         >
           {/* Close Button */}
