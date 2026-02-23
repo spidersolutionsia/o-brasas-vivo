@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import MeuPedido from "./pages/MeuPedido";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <SparkParticles />
+      <WhatsAppButton />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
