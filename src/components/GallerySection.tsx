@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import gallery1 from '@/assets/gallery/gallery-1.png';
-import gallery2 from '@/assets/gallery/gallery-2.png';
-import gallery3 from '@/assets/gallery/gallery-3.png';
-import gallery4 from '@/assets/gallery/gallery-4.png';
-import gallery5 from '@/assets/gallery/gallery-5.png';
-import gallery6 from '@/assets/gallery/gallery-6.png';
-import gallery7 from '@/assets/gallery/gallery-7.png';
+import gallery1 from '@/assets/gallery/gallery-1.webp';
+import gallery2 from '@/assets/gallery/gallery-2.webp';
+import gallery3 from '@/assets/gallery/gallery-3.webp';
+import gallery4 from '@/assets/gallery/gallery-4.webp';
+import gallery5 from '@/assets/gallery/gallery-5.webp';
+import gallery6 from '@/assets/gallery/gallery-6.webp';
+import gallery7 from '@/assets/gallery/gallery-7.webp';
 
 const galleryImages = [
   { src: gallery1, alt: 'Produtos Carvão Mascate com madeira de eucalipto', caption: 'Nossos Produtos' },
