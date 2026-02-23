@@ -7,6 +7,7 @@ import PrivateLabelSection from '@/components/PrivateLabelSection';
 import WholesaleSection from '@/components/WholesaleSection';
 import StoreLocatorSection from '@/components/StoreLocatorSection';
 import Footer from '@/components/Footer';
+import ScrollReveal from '@/components/ScrollReveal';
 
 const Index = () => {
   return (
@@ -14,14 +15,28 @@ const Index = () => {
       <Header />
       <main>
         <HeroSection />
-        <FactorySection />
-        <GallerySection />
-        <ProductsSection />
-        <PrivateLabelSection />
-        <WholesaleSection />
-        <StoreLocatorSection />
+        <ScrollReveal>
+          <FactorySection />
+        </ScrollReveal>
+        <ScrollReveal delay={100}>
+          <GallerySection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <ProductsSection />
+        </ScrollReveal>
+        <ScrollReveal delay={100}>
+          <PrivateLabelSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <WholesaleSection />
+        </ScrollReveal>
+        <ScrollReveal delay={100}>
+          <StoreLocatorSection />
+        </ScrollReveal>
       </main>
-      <Footer />
+      <ScrollReveal>
+        <Footer />
+      </ScrollReveal>
     </div>
   );
 };
