@@ -65,11 +65,11 @@ const Footer = () => {
                 WhatsApp
               </a>
               <a
-                href="mailto:contato@carvaomascate.com.br"
+                href="mailto:carvaomascate@gmail.com"
                 className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <Mail className="w-5 h-5" />
-                contato@carvaomascate.com.br
+                carvaomascate@gmail.com
               </a>
             </div>
 
