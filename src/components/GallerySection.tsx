@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import gallery1 from '@/assets/gallery/gallery-1.webp';
@@ -27,22 +27,29 @@ const GallerySection = () => {
     document.body.style.overflow = 'hidden';
   };
 
-  const closeLightbox = () => {
+  const closeLightbox = useCallback(() => {
     setSelectedImage(null);
     document.body.style.overflow = 'auto';
-  };
+  }, []);
 
-  const goToPrevious = () => {
-    if (selectedImage !== null) {
-      setSelectedImage(selectedImage === 0 ? galleryImages.length - 1 : selectedImage - 1);
-    }
-  };
+  const goToPrevious = useCallback(() => {
+    setSelectedImage(prev => prev !== null ? (prev === 0 ? galleryImages.length - 1 : prev - 1) : null);
+  }, []);
 
-  const goToNext = () => {
-    if (selectedImage !== null) {
-      setSelectedImage(selectedImage === galleryImages.length - 1 ? 0 : selectedImage + 1);
-    }
-  };
+  const goToNext = useCallback(() => {
+    setSelectedImage(prev => prev !== null ? (prev === galleryImages.length - 1 ? 0 : prev + 1) : null);
+  }, []);
+
+  useEffect(() => {
+    if (selectedImage === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') goToPrevious();
+      else if (e.key === 'ArrowRight') goToNext();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImage, closeLightbox, goToPrevious, goToNext]);
 
   return (
     <section className="py-20 md:py-32 relative overflow-hidden bg-card/30">
