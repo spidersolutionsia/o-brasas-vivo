@@ -75,6 +75,7 @@ const ProductsSection = () => {
                   src={productBag}
                   alt={product.name}
                   className="w-full h-full object-cover float-animation"
+                  loading="lazy"
                 />
               </div>
 
