@@ -76,7 +76,9 @@ const Footer = () => {
             {/* Social Links */}
             <div className="flex items-center justify-center md:justify-start gap-4 mt-6">
               <a
-                href="#"
+                href="https://www.instagram.com/carvaomascate/?hl=pt-br"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full border border-border hover:border-primary hover:text-primary transition-colors flex items-center justify-center"
                 aria-label="Instagram"
               >
