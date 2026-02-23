@@ -31,7 +31,7 @@ const GallerySection = () => {
 
   const closeLightbox = useCallback(() => {
     setSelectedImage(null);
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = '';
   }, []);
 
   const goToPrevious = useCallback(() => {
