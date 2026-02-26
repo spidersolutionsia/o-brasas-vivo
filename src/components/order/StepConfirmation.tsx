@@ -98,6 +98,7 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
 
     setLoading(false);
     setDone(true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   if (done) {
