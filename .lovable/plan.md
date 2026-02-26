@@ -1,32 +1,17 @@
 
+# Plano: Scroll ao topo ao confirmar pedido
 
-# Plano: Adicionar rotulos nos cards de pedidos
+## Problema
+Quando o pedido e finalizado e a tela de sucesso aparece, a pagina nao rola para o topo. Isso acontece porque o efeito de scroll esta vinculado a mudanca de `step`, mas a tela de sucesso e controlada pelo estado interno `done` do `StepConfirmation`, que nao dispara o scroll.
 
-## O que muda
+## Solucao
 
-Na pagina "Meus Pedidos" (`src/pages/MeusPedidos.tsx`), adicionar rotulos descritivos antes do numero do pedido e da data:
+### `src/components/order/StepConfirmation.tsx`
+Adicionar `window.scrollTo({ top: 0, behavior: 'instant' })` dentro do `handleConfirm`, logo apos `setDone(true)`, para que ao exibir a tela de sucesso a pagina role automaticamente para o topo.
 
-- **Numero do pedido**: de `1000` para `Pedido: 1000`
-- **Data**: de `26/02/2026` para `Data: 26/02/2026`
-
-## Alteracao tecnica
-
-No arquivo `src/pages/MeusPedidos.tsx`, linhas 121-124:
-
-Antes:
 ```text
-<p className="font-heading font-bold">{order.order_number}</p>
-<p className="text-xs text-muted-foreground">
-  {new Date(order.created_at).toLocaleDateString('pt-BR')}
-</p>
+setDone(true);
+window.scrollTo({ top: 0, behavior: 'instant' });
 ```
 
-Depois:
-```text
-<p className="font-heading font-bold">Pedido: {order.order_number}</p>
-<p className="text-xs text-muted-foreground">
-  Data: {new Date(order.created_at).toLocaleDateString('pt-BR')}
-</p>
-```
-
-Apenas uma alteracao de texto, sem impacto em logica ou layout.
+Alteracao minima de uma linha, sem impacto em outros componentes.
