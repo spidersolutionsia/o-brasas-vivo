@@ -10,11 +10,13 @@ import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
+import { CustomerSessionProvider } from "./contexts/CustomerSessionContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <CustomerSessionProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -32,6 +34,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </CustomerSessionProvider>
   </QueryClientProvider>
 );
 
