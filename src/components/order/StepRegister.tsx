@@ -100,6 +100,15 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       return;
     }
 
+    // Send welcome email (non-blocking)
+    supabase.functions.invoke('send-welcome-email', {
+      body: {
+        customerName: form.name,
+        customerEmail: form.email,
+        customerCode,
+      },
+    }).catch((err) => console.error('Failed to send welcome email:', err));
+
     // Go directly to confirmation
     onRegistered(insertData.id, customerCode, form.name);
   };
