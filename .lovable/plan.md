@@ -1,17 +1,29 @@
 
-# Plano: Scroll ao topo ao confirmar pedido
+
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
 ## Problema
-Quando o pedido e finalizado e a tela de sucesso aparece, a pagina nao rola para o topo. Isso acontece porque o efeito de scroll esta vinculado a mudanca de `step`, mas a tela de sucesso e controlada pelo estado interno `done` do `StepConfirmation`, que nao dispara o scroll.
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
 ## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-### `src/components/order/StepConfirmation.tsx`
-Adicionar `window.scrollTo({ top: 0, behavior: 'instant' })` dentro do `handleConfirm`, logo apos `setDone(true)`, para que ao exibir a tela de sucesso a pagina role automaticamente para o topo.
+## Alteracoes
 
-```text
-setDone(true);
-window.scrollTo({ top: 0, behavior: 'instant' });
-```
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
 
-Alteracao minima de uma linha, sem impacto em outros componentes.
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
+
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+
