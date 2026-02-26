@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import MeuPedido from "./pages/MeuPedido";
+import Pedido from "./pages/Pedido";
+import MeusPedidos from "./pages/MeusPedidos";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -21,7 +22,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/meu-pedido" element={<MeuPedido />} />
+          <Route path="/pedido" element={<Pedido />} />
+          <Route path="/meus-pedidos" element={<MeusPedidos />} />
+          <Route path="/meu-pedido" element={<MeusPedidos />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
