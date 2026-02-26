@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 const CODE_KEY = 'customer_code';
 const NAME_KEY = 'customer_name';
@@ -12,6 +13,20 @@ export function useCustomerSession() {
     const storedName = localStorage.getItem(NAME_KEY);
     if (storedCode) setCustomerCode(storedCode);
     if (storedName) setCustomerName(storedName);
+
+    if (storedCode && !storedName) {
+      supabase
+        .from('customers')
+        .select('name')
+        .eq('code', storedCode)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.name) {
+            localStorage.setItem(NAME_KEY, data.name);
+            setCustomerName(data.name);
+          }
+        });
+    }
   }, []);
 
   const login = useCallback((code: string, name?: string) => {
