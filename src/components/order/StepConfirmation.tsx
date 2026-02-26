@@ -68,6 +68,7 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          event: 'order_completed',
           order_number: orderNumber,
           customer_code: customerCode,
           customer_name: customer?.name || customerName,
