@@ -116,11 +116,17 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
 
   return (
     <div className="space-y-6">
+      {/* Customer Code Highlight */}
+      <div className="bg-primary/10 border border-primary/30 rounded-xl p-5 text-center">
+        <p className="text-sm text-muted-foreground mb-1">Seu código de cliente</p>
+        <p className="font-heading text-3xl font-bold text-primary tracking-widest">{customerCode}</p>
+        <p className="text-xs text-muted-foreground mt-2">Guarde este código para seus próximos pedidos!</p>
+      </div>
+
       {/* Customer Info */}
       <div className="card-dark rounded-xl p-5">
         <p className="text-sm text-muted-foreground mb-1">Cliente</p>
         <p className="font-heading text-lg font-bold">{customerName}</p>
-        <p className="text-primary font-mono">{customerCode}</p>
       </div>
 
       {/* Items */}
