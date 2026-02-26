@@ -1,29 +1,40 @@
 
+# Plano: Webhook de novo cadastro de cliente
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+## Resumo
+Adicionar um webhook separado que dispara quando um novo cliente se cadastra, enviando os dados do cadastro para o mesmo endpoint do n8n, porem com o evento `customer_created`.
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+## Alteracao
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+### Arquivo: `src/components/order/StepRegister.tsx`
 
-## Alteracoes
+Apos o insert do cliente no banco (e antes/junto do envio do email), adicionar uma chamada POST para o webhook do n8n com os dados do cadastro:
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+- **URL**: `https://n8n.spidersolutions.com.br/webhook/carvaomascatesite` (mesmo endpoint usado nos pedidos)
+- **Evento**: `customer_created`
+- **Dados enviados**:
+  - `event`: "customer_created"
+  - `customer_code`: codigo gerado
+  - `customer_name`: nome
+  - `customer_email`: email
+  - `customer_phone`: telefone completo (DDD + numero)
+  - `customer_address`: endereco formatado (rua, numero, complemento, bairro, cidade, CEP)
+  - `created_at`: data/hora atual
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+- A chamada sera "fire and forget" (nao bloqueia o fluxo de cadastro se falhar)
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
-
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
-
+## Fluxo atualizado
+```text
+Cliente preenche formulario
+        |
+        v
+Gera codigo + Salva no banco
+        |
+        v
+  (em paralelo, sem bloquear)
+  - Envia email com codigo
+  - Envia webhook customer_created para n8n
+        |
+        v
+Cliente segue para confirmacao
+```
