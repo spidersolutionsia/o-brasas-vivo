@@ -1,29 +1,58 @@
 
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+# Plano: Enviar email com codigo de cadastro via Gmail SMTP
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+## Resumo
+Quando um novo cliente se cadastrar, o sistema enviara automaticamente um email para o endereco informado pelo cliente contendo o codigo de acesso gerado. O email sera enviado usando o Gmail do Mascate (mascatecarvao@gmail.com) via SMTP com a Senha de App do Google.
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+## Segredos necessarios
+Antes de implementar, dois segredos precisam ser configurados no backend:
+- **GMAIL_USER**: `mascatecarvao@gmail.com`
+- **GMAIL_APP_PASSWORD**: a senha de app de 16 digitos gerada no Google
 
 ## Alteracoes
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+### 1. Criar Edge Function `send-welcome-email`
+Arquivo: `supabase/functions/send-welcome-email/index.ts`
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+- Recebe via POST: `customerName`, `customerEmail`, `customerCode`
+- Usa os segredos `GMAIL_USER` e `GMAIL_APP_PASSWORD` para autenticar no SMTP do Gmail
+- Envia um email formatado para o cliente com:
+  - Assunto: "Seu codigo de acesso - Mascate Carvao"
+  - Corpo: boas-vindas + codigo de acesso em destaque
+- Utiliza a biblioteca `nodemailer` via npm specifier do Deno para conexao SMTP
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+### 2. Configurar `supabase/config.toml`
+- Adicionar configuracao da funcao com `verify_jwt = false` para permitir chamadas internas
 
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+### 3. Atualizar `StepRegister.tsx`
+- Apos o cadastro bem-sucedido (insert no banco), chamar a edge function `send-welcome-email` passando nome, email e codigo do cliente
+- O envio do email nao bloqueia o fluxo — se falhar, o cadastro continua normalmente (o codigo ja foi salvo no banco)
+
+## Fluxo final
+```text
+Cliente preenche formulario
+        |
+        v
+Gera codigo (ex: ABC123)
+        |
+        v
+Salva no banco de dados
+        |
+        v
+Chama edge function send-welcome-email
+        |
+        v
+Gmail do Mascate envia email ao cliente
+com o codigo ABC123
+        |
+        v
+Cliente segue para tela de confirmacao
+```
+
+## Email enviado ao cliente
+- **De**: mascatecarvao@gmail.com
+- **Para**: email informado pelo cliente no cadastro
+- **Assunto**: Seu codigo de acesso - Mascate Carvao
+- **Corpo**: mensagem de boas-vindas com o codigo em destaque
 
