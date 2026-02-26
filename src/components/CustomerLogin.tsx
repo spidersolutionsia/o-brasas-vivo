@@ -10,7 +10,8 @@ const CustomerLogin = () => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { customerCode, isLoggedIn, login, logout } = useCustomerSession();
+  const { customerCode, customerName, isLoggedIn, login, logout } = useCustomerSession();
+  const firstName = customerName?.split(' ')[0];
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -23,7 +24,7 @@ const CustomerLogin = () => {
 
     const { data } = await supabase
       .from('customers')
-      .select('code')
+      .select('code, name')
       .eq('code', trimmed)
       .maybeSingle();
 
@@ -34,7 +35,7 @@ const CustomerLogin = () => {
       return;
     }
 
-    login(data.code);
+    login(data.code, data.name);
     setOpen(false);
     setCode('');
     navigate('/meus-pedidos');
@@ -54,7 +55,7 @@ const CustomerLogin = () => {
       >
         <User className="w-4 h-4" />
         {isLoggedIn ? (
-          <span className="font-heading text-xs font-bold text-primary">{customerCode}</span>
+          <span className="font-heading text-xs font-bold text-primary">Olá, {firstName || customerCode}</span>
         ) : (
           <span className="hidden sm:inline font-heading text-xs uppercase tracking-wider">Entrar</span>
         )}
@@ -73,7 +74,7 @@ const CustomerLogin = () => {
 
           {isLoggedIn ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Logado como <strong className="text-primary">{customerCode}</strong></p>
+              <p className="text-sm text-muted-foreground">Olá, seja bem-vindo <strong className="text-primary">{firstName || customerCode}</strong>!</p>
               <button
                 onClick={() => { setOpen(false); navigate('/meus-pedidos'); }}
                 className="w-full text-left text-sm text-foreground hover:text-primary transition-colors py-1"
