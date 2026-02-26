@@ -1,30 +1,32 @@
 
 
-# Plano: Mostrar primeiro nome do cliente no header
+# Plano: Adicionar rotulos nos cards de pedidos
 
-## Problema
-O cliente fez login antes da funcionalidade de salvar o nome ser adicionada, entao o `customer_name` nao existe no localStorage. O codigo mostra "Ola, ZTV681" em vez de "Ola, FELIPE".
+## O que muda
 
-## Solucao
+Na pagina "Meus Pedidos" (`src/pages/MeusPedidos.tsx`), adicionar rotulos descritivos antes do numero do pedido e da data:
 
-### `src/hooks/useCustomerSession.ts`
-- No `useEffect` de inicializacao, se existir `customer_code` no localStorage mas NAO existir `customer_name`, buscar o nome do cliente no banco de dados automaticamente e salvar no localStorage.
-- Importar o client do Supabase no hook para fazer essa busca.
+- **Numero do pedido**: de `1000` para `Pedido: 1000`
+- **Data**: de `26/02/2026` para `Data: 26/02/2026`
 
-### Logica atualizada do useEffect:
+## Alteracao tecnica
+
+No arquivo `src/pages/MeusPedidos.tsx`, linhas 121-124:
+
+Antes:
 ```text
-useEffect:
-  storedCode = localStorage.get('customer_code')
-  storedName = localStorage.get('customer_name')
-  
-  if (storedCode) setCustomerCode(storedCode)
-  if (storedName) setCustomerName(storedName)
-  
-  // Se tem codigo mas nao tem nome, buscar no banco
-  if (storedCode && !storedName) {
-    supabase.from('customers').select('name').eq('code', storedCode).maybeSingle()
-    -> se encontrar, salvar no localStorage e no state
-  }
+<p className="font-heading font-bold">{order.order_number}</p>
+<p className="text-xs text-muted-foreground">
+  {new Date(order.created_at).toLocaleDateString('pt-BR')}
+</p>
 ```
 
-Isso resolve tanto para usuarios que ja estavam logados antes da feature, quanto para qualquer caso futuro onde o nome nao tenha sido salvo.
+Depois:
+```text
+<p className="font-heading font-bold">Pedido: {order.order_number}</p>
+<p className="text-xs text-muted-foreground">
+  Data: {new Date(order.created_at).toLocaleDateString('pt-BR')}
+</p>
+```
+
+Apenas uma alteracao de texto, sem impacto em logica ou layout.
