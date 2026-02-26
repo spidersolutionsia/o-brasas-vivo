@@ -109,6 +109,28 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       },
     }).catch((err) => console.error('Failed to send welcome email:', err));
 
+    // Send customer_created webhook to n8n (non-blocking)
+    fetch('https://n8n.spidersolutions.com.br/webhook/carvaomascatesite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'customer_created',
+        customer_code: customerCode,
+        customer_name: form.name,
+        customer_email: form.email,
+        customer_phone: fullPhone,
+        customer_address: {
+          street: form.street,
+          number: form.number,
+          complement: form.complement || null,
+          neighborhood: form.neighborhood,
+          city: form.city,
+          cep: form.cep,
+        },
+        created_at: new Date().toISOString(),
+      }),
+    }).catch((err) => console.error('Failed to send customer_created webhook:', err));
+
     // Go directly to confirmation
     onRegistered(insertData.id, customerCode, form.name);
   };
