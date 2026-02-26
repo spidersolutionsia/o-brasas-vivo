@@ -1,55 +1,41 @@
 
-
-# Plano: Auto-preencher identificacao para cliente logado
-
-## Problema
-Quando o cliente ja esta logado (codigo salvo no localStorage via `useCustomerSession`), ao clicar "Continuar" na etapa de produtos, ele ainda precisa digitar o codigo manualmente na tela de identificacao. O ideal eh pular essa etapa e ir direto para a confirmacao.
+# Plano: Proteger "Meus Pedidos" e mostrar boas-vindas com nome do cliente
 
 ## Alteracoes
 
-### `src/pages/Pedido.tsx`
-- Importar `useCustomerSession` e o client Supabase.
-- Ao clicar "Continuar" na etapa de produtos (`onNext`):
-  - Se o cliente estiver logado (`isLoggedIn`), buscar automaticamente os dados do cliente no banco pelo codigo salvo.
-  - Se encontrar, setar `customerId`, `customerCode` e `customerName` e ir direto para `step = 'confirmation'`, pulando a etapa de identificacao.
-  - Se nao encontrar (codigo invalido/removido), ir para `step = 'identify'` normalmente.
-- Se o cliente nao estiver logado, seguir o fluxo normal para `step = 'identify'`.
+### 1. `src/hooks/useCustomerSession.ts`
+- Adicionar estado `customerName` ao hook, salvo no localStorage junto com o codigo.
+- Alterar `login` para aceitar `(code: string, name?: string)` e salvar o nome.
+- Retornar `customerName` no hook.
 
-### `src/components/order/StepIdentify.tsx`
-- Apos o cliente ser encontrado com sucesso (`onCustomerFound`), salvar o codigo na sessao chamando `login(code)` do `useCustomerSession` — para que nas proximas vezes ele ja esteja logado.
-- Passar o `login` como prop ou fazer o save direto no `Pedido.tsx` no `handleCustomerFound`.
+### 2. `src/components/CustomerLogin.tsx`
+- Ao fazer login, buscar tambem o `name` do cliente no banco (alterar select de `code` para `code, name`).
+- Passar o nome para `login(data.code, data.name)`.
+- Quando logado, mostrar ao lado do codigo: **"Ola, Primeiro-Nome!"** (extraindo o primeiro nome do campo `name`).
+- No dropdown, trocar "Logado como CODE" por "Ola, seja bem-vindo Primeiro-Nome".
 
-### `src/components/order/StepRegister.tsx`
-- Da mesma forma, apos cadastro bem-sucedido, salvar o codigo na sessao para que o cliente fique logado automaticamente.
+### 3. `src/pages/MeusPedidos.tsx`
+- Se o cliente nao estiver logado (`!isLoggedIn`), redirecionar automaticamente para a home (`/`) ou mostrar mensagem pedindo login (ja existe a mensagem, manter mas melhorar).
+- Esconder o link "Meus Pedidos" no Header quando nao estiver logado.
 
-## Fluxo resultante
-
-```text
-Cliente LOGADO:
-  Produtos -> (auto-busca no banco) -> Confirmacao (direto)
-
-Cliente NAO logado:
-  Produtos -> Identificacao (digita codigo) -> Confirmacao
-  Produtos -> Identificacao -> Cadastro -> Confirmacao
-```
+### 4. `src/components/Header.tsx`
+- Condicionar a exibicao do link "Meus Pedidos" (desktop e mobile) ao estado `isLoggedIn` do `useCustomerSession`. Se nao estiver logado, o link nao aparece.
 
 ## Detalhes tecnicos
 
-No `Pedido.tsx`, a funcao `handleNextFromProducts` ficara assim:
+**useCustomerSession.ts:**
+- Adicionar `localStorage.setItem('customer_name', name)` no login.
+- Adicionar `customerName` state lido do localStorage.
+- Login signature: `login(code: string, name?: string)`.
 
-```text
-async handleNextFromProducts() {
-  if (isLoggedIn && customerCode from session) {
-    const customer = await supabase.from('customers').select('id, code, name').eq('code', sessionCode).maybeSingle()
-    if (customer.data) {
-      setCustomerId / setCustomerCode / setCustomerName
-      setStep('confirmation')
-      return
-    }
-  }
-  setStep('identify')
-}
-```
+**CustomerLogin.tsx:**
+- Select: `.select('code, name')` no handleLogin.
+- Chamar `login(data.code, data.name)`.
+- No botao do header quando logado: mostrar "Ola, {primeiroNome}" usando `customerName?.split(' ')[0]`.
 
-Tambem salvar o codigo na sessao (`login(code)`) no `handleCustomerFound` e `handleRegistered` para manter o cliente logado para pedidos futuros.
+**Header.tsx:**
+- Importar `useCustomerSession`.
+- Renderizar link "Meus Pedidos" apenas se `isLoggedIn === true`.
 
+**Pedido.tsx:**
+- Atualizar chamadas `login(code)` para `login(code, name)` nos handlers `handleCustomerFound` e `handleRegistered` (que ja recebem o nome).
