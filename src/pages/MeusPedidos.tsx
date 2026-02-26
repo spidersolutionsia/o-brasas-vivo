@@ -118,9 +118,9 @@ const MeusPedidos = () => {
                         <div className="flex items-center gap-3">
                           {getStatusIcon(order.status)}
                           <div>
-                            <p className="font-heading font-bold">{order.order_number}</p>
+                            <p className="font-heading font-bold">Pedido: {order.order_number}</p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(order.created_at).toLocaleDateString('pt-BR')}
+                              Data: {new Date(order.created_at).toLocaleDateString('pt-BR')}
                             </p>
                           </div>
                         </div>
