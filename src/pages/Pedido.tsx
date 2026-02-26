@@ -47,7 +47,7 @@ const Pedido = () => {
 
   // Scroll to top when step changes
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [step]);
 
   const stepsOrder: Step[] = ['products', 'identify', 'confirmation'];

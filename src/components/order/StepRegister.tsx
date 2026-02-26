@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useViaCep } from '@/hooks/useViaCep';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,17 +23,13 @@ interface Props {
   onRegistered: (id: string, code: string, name: string) => void;
 }
 
-const WHATSAPP_NUMBER = '5522992525529';
-
 const StepRegister = ({ onBack, onRegistered }: Props) => {
   const [form, setForm] = useState({
     name: '', email: '', ddd: '', phone: '',
     cep: '', city: '', neighborhood: '', street: '', number: '', complement: '',
   });
-  const [sendWhatsapp, setSendWhatsapp] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
   const { fetchAddress, loading: cepLoading, error: cepError } = useViaCep();
 
@@ -104,36 +100,9 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       return;
     }
 
-    setGeneratedCode(customerCode);
-    // Store customer data for direct transition to confirmation
-    (window as any).__registeredCustomer = { id: insertData.id, code: customerCode, name: form.name };
+    // Go directly to confirmation
+    onRegistered(insertData.id, customerCode, form.name);
   };
-
-  if (generatedCode) {
-    return (
-      <div className="text-center space-y-6 py-8">
-        <CheckCircle className="w-16 h-16 text-primary mx-auto" />
-        <h3 className="font-heading text-2xl font-bold uppercase">Cadastro Realizado!</h3>
-        <div className="card-dark rounded-xl p-6 inline-block">
-          <p className="text-muted-foreground text-sm mb-2">Seu código de cliente:</p>
-          <p className="font-heading text-4xl font-bold text-primary tracking-widest">{generatedCode}</p>
-        </div>
-        <p className="text-muted-foreground text-sm max-w-md mx-auto">
-          Guarde este código! Ele foi enviado por email e {sendWhatsapp ? 'WhatsApp' : ''}.
-          Use-o para fazer pedidos e acompanhar seu histórico.
-        </p>
-        <button
-          onClick={() => {
-            const data = (window as any).__registeredCustomer;
-            if (data) onRegistered(data.id, data.code, data.name);
-          }}
-          className="btn-fire rounded-lg text-lg px-12 mx-auto"
-        >
-          Continuar para o Pedido
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -173,15 +142,6 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           </div>
           {(errors.ddd || errors.phone) && <p className="text-destructive text-xs mt-1">{errors.ddd || errors.phone}</p>}
 
-          <label className="flex items-center gap-2 mt-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={sendWhatsapp}
-              onChange={(e) => setSendWhatsapp(e.target.checked)}
-              className="w-5 h-5 rounded border-border accent-primary"
-            />
-            <span className="text-sm text-muted-foreground">Enviar código também via WhatsApp</span>
-          </label>
         </div>
 
         {/* CEP */}
