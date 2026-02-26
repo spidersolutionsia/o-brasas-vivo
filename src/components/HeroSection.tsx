@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import SmokeEffect from './SmokeEffect';
 import heroVideo from '@/assets/hero-video.mp4';
 
@@ -56,12 +57,12 @@ const HeroSection = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <a
-            href="#atacado"
+          <Link
+            to="/pedido"
             className="btn-fire text-lg rounded-lg w-full sm:w-auto"
           >
-            Comprar no Atacado
-          </a>
+            Começar Pedido
+          </Link>
           <a
             href="#encontre"
             className="btn-outline-fire text-lg rounded-lg w-full sm:w-auto"

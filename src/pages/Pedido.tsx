@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -38,10 +38,17 @@ const Pedido = () => {
     setStep('confirmation');
   };
 
-  const handleRegistered = (code: string) => {
+  const handleRegistered = (id: string, code: string, name: string) => {
+    setCustomerId(id);
     setCustomerCode(code);
-    setStep('identify');
+    setCustomerName(name);
+    setStep('confirmation');
   };
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [step]);
 
   const stepsOrder: Step[] = ['products', 'identify', 'confirmation'];
   const activeStepIndex = stepsOrder.indexOf(step === 'register' ? 'identify' : step);
@@ -112,7 +119,7 @@ const Pedido = () => {
                 customerId={customerId}
                 customerCode={customerCode}
                 customerName={customerName}
-                onBack={() => setStep('identify')}
+                onBack={() => setStep('products')}
                 onComplete={() => navigate('/')}
               />
             )}
