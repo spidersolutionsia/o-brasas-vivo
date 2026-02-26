@@ -53,7 +53,7 @@ const Pedido = () => {
   };
 
   const handleCustomerFound = (id: string, code: string, name: string) => {
-    login(code);
+    login(code, name);
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
@@ -61,7 +61,7 @@ const Pedido = () => {
   };
 
   const handleRegistered = (id: string, code: string, name: string) => {
-    login(code);
+    login(code, name);
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);

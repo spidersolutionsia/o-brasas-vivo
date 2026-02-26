@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Package } from 'lucide-react';
 import logoHorizontal from '@/assets/logo-horizontal.jpg';
 import CustomerLogin from '@/components/CustomerLogin';
+import { useCustomerSession } from '@/hooks/useCustomerSession';
 
 const navLinks = [
   { href: 'fabrica', label: 'A Fábrica' },
@@ -16,6 +17,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isLoggedIn } = useCustomerSession();
 
   const handleNavClick = (hash: string) => {
     if (location.pathname !== '/') {
@@ -64,13 +66,15 @@ const Header = () => {
                   </button>
                 )
               ))}
-              <Link
-                to="/meus-pedidos"
-                className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <Package className="w-4 h-4" />
-                Meus Pedidos
-              </Link>
+              {isLoggedIn && (
+                <Link
+                  to="/meus-pedidos"
+                  className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  <Package className="w-4 h-4" />
+                  Meus Pedidos
+                </Link>
+              )}
             </nav>
 
             {/* Right Side: Login + CTA */}
@@ -128,17 +132,19 @@ const Header = () => {
                     </button>
                   )
                 ))}
-                <Link
-                  to="/meus-pedidos"
-                  className={`font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-all py-2 flex items-center gap-1 ${
-                    mobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
-                  }`}
-                  style={{ transitionDelay: mobileMenuOpen ? `${navLinks.length * 50}ms` : '0ms', transitionDuration: '300ms' }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Package className="w-4 h-4" />
-                  Meus Pedidos
-                </Link>
+                {isLoggedIn && (
+                  <Link
+                    to="/meus-pedidos"
+                    className={`font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-all py-2 flex items-center gap-1 ${
+                      mobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                    }`}
+                    style={{ transitionDelay: mobileMenuOpen ? `${navLinks.length * 50}ms` : '0ms', transitionDuration: '300ms' }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Package className="w-4 h-4" />
+                    Meus Pedidos
+                  </Link>
+                )}
                 <Link
                   to="/pedido"
                   className={`btn-fire text-sm rounded text-center mt-2 cursor-pointer transition-all ${
