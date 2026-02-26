@@ -143,7 +143,7 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
         className="btn-fire rounded-lg w-full text-lg flex items-center justify-center gap-3 disabled:opacity-50"
       >
         <MessageCircle className="w-6 h-6" />
-        {loading ? 'Enviando...' : 'Finalizar Pedido via WhatsApp'}
+        {loading ? 'Enviando...' : 'Finalizar e Enviar Pedido'}
       </button>
 
       <p className="text-center text-sm text-muted-foreground">
@@ -152,10 +152,10 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
 
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mx-auto"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mx-auto text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
-        Voltar
+        Voltar ao Pedido
       </button>
     </div>
   );

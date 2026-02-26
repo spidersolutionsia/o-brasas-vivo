@@ -9,6 +9,7 @@ const navLinks = [
   { href: 'produtos', label: 'Produtos' },
   { href: 'parceiros', label: 'Parceiros' },
   { href: 'encontre', label: 'Onde Encontrar' },
+  { href: '/pedido', label: 'Fazer Pedido', isRoute: true },
 ];
 
 const Header = () => {
@@ -45,13 +46,23 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <button
-                  key={link.href}
-                  onClick={() => handleNavClick(link.href)}
-                  className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
-                >
-                  {link.label}
-                </button>
+                'isRoute' in link && link.isRoute ? (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={link.href}
+                    onClick={() => handleNavClick(link.href)}
+                    className="font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
+                  >
+                    {link.label}
+                  </button>
+                )
               ))}
               <Link
                 to="/meus-pedidos"
@@ -92,16 +103,30 @@ const Header = () => {
             <nav className="py-4 border-t border-border">
               <div className="flex flex-col gap-4">
                 {navLinks.map((link, index) => (
-                  <button
-                    key={link.href}
-                    onClick={() => { handleNavClick(link.href); setMobileMenuOpen(false); }}
-                    className={`font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-all py-2 bg-transparent border-none cursor-pointer text-left ${
-                      mobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
-                    }`}
-                    style={{ transitionDelay: mobileMenuOpen ? `${index * 50}ms` : '0ms', transitionDuration: '300ms' }}
-                  >
-                    {link.label}
-                  </button>
+                  'isRoute' in link && link.isRoute ? (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className={`font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-all py-2 ${
+                        mobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                      }`}
+                      style={{ transitionDelay: mobileMenuOpen ? `${index * 50}ms` : '0ms', transitionDuration: '300ms' }}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={link.href}
+                      onClick={() => { handleNavClick(link.href); setMobileMenuOpen(false); }}
+                      className={`font-heading text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-all py-2 bg-transparent border-none cursor-pointer text-left ${
+                        mobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                      }`}
+                      style={{ transitionDelay: mobileMenuOpen ? `${index * 50}ms` : '0ms', transitionDuration: '300ms' }}
+                    >
+                      {link.label}
+                    </button>
+                  )
                 ))}
                 <Link
                   to="/meus-pedidos"

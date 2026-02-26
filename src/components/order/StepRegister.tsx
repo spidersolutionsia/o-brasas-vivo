@@ -20,7 +20,7 @@ const registerSchema = z.object({
 
 interface Props {
   onBack: () => void;
-  onRegistered: (code: string) => void;
+  onRegistered: (id: string, code: string, name: string) => void;
 }
 
 const WHATSAPP_NUMBER = '5522992525529';
@@ -84,7 +84,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
     const customerCode = codeData as string;
     const fullPhone = form.ddd + form.phone;
 
-    const { error: insertErr } = await supabase.from('customers').insert({
+    const { data: insertData, error: insertErr } = await supabase.from('customers').insert({
       code: customerCode,
       name: form.name,
       email: form.email,
@@ -95,24 +95,18 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       street: form.street,
       number: form.number,
       complement: form.complement || null,
-    });
+    }).select('id').single();
 
     setLoading(false);
 
-    if (insertErr) {
+    if (insertErr || !insertData) {
       setErrors({ name: 'Erro ao salvar cadastro. Tente novamente.' });
       return;
     }
 
-    // Send code via WhatsApp if checked
-    if (sendWhatsapp) {
-      const msg = encodeURIComponent(
-        `*Carvão Mascate - Código do Cliente*\n\nOlá ${form.name}! Seu código de cliente é: *${customerCode}*\n\nGuarde este código para fazer seus pedidos.`
-      );
-      window.open(`https://wa.me/55${fullPhone}?text=${msg}`, '_blank');
-    }
-
     setGeneratedCode(customerCode);
+    // Store customer data for direct transition to confirmation
+    (window as any).__registeredCustomer = { id: insertData.id, code: customerCode, name: form.name };
   };
 
   if (generatedCode) {
@@ -129,10 +123,13 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           Use-o para fazer pedidos e acompanhar seu histórico.
         </p>
         <button
-          onClick={() => onRegistered(generatedCode)}
+          onClick={() => {
+            const data = (window as any).__registeredCustomer;
+            if (data) onRegistered(data.id, data.code, data.name);
+          }}
           className="btn-fire rounded-lg text-lg px-12 mx-auto"
         >
-          Voltar ao Pedido
+          Continuar para o Pedido
         </button>
       </div>
     );
