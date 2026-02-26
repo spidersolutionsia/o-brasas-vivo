@@ -6,6 +6,8 @@ import StepProducts from '@/components/order/StepProducts';
 import StepIdentify from '@/components/order/StepIdentify';
 import StepRegister from '@/components/order/StepRegister';
 import StepConfirmation from '@/components/order/StepConfirmation';
+import { useCustomerSession } from '@/hooks/useCustomerSession';
+import { supabase } from '@/integrations/supabase/client';
 
 type Step = 'products' | 'identify' | 'register' | 'confirmation';
 
@@ -18,6 +20,7 @@ const stepLabels: Record<Step, string> = {
 
 const Pedido = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, customerCode: sessionCode, login } = useCustomerSession();
   const [step, setStep] = useState<Step>('products');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customerId, setCustomerId] = useState('');
@@ -31,7 +34,26 @@ const Pedido = () => {
     }));
   };
 
+  const handleNextFromProducts = async () => {
+    if (isLoggedIn && sessionCode) {
+      const { data } = await supabase
+        .from('customers')
+        .select('id, code, name')
+        .eq('code', sessionCode)
+        .maybeSingle();
+      if (data) {
+        setCustomerId(data.id);
+        setCustomerCode(data.code);
+        setCustomerName(data.name);
+        setStep('confirmation');
+        return;
+      }
+    }
+    setStep('identify');
+  };
+
   const handleCustomerFound = (id: string, code: string, name: string) => {
+    login(code);
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
@@ -39,6 +61,7 @@ const Pedido = () => {
   };
 
   const handleRegistered = (id: string, code: string, name: string) => {
+    login(code);
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
@@ -97,7 +120,7 @@ const Pedido = () => {
               <StepProducts
                 quantities={quantities}
                 onUpdateQuantity={updateQuantity}
-                onNext={() => setStep('identify')}
+                onNext={handleNextFromProducts}
               />
             )}
             {step === 'identify' && (
