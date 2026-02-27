@@ -69,7 +69,7 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
 
     const { data, error: dbError } = await supabase
       .from('customers')
-      .select('name, email, code')
+      .select('name, email, phone, code')
       .eq(column, value)
       .maybeSingle();
 
