@@ -91,6 +91,21 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
       // silently fail to not expose info
     }
 
+    // Send webhook for WhatsApp recovery (non-blocking)
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'code_recovery',
+        customer: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          code: data.code,
+        },
+      }),
+    }).catch((err) => console.error('Failed to send code_recovery webhook:', err));
+
     setRecoverLoading(false);
     setRecoverMsg('Se houver um cadastro com esse dado, enviaremos o código por email.');
   };
