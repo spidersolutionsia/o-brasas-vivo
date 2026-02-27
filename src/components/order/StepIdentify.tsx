@@ -3,6 +3,8 @@ import { ArrowLeft, UserPlus, LogIn, Mail, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 
+const WEBHOOK_URL = 'https://n8n.spidersolutions.com.br/webhook/carvaomascatesite';
+
 interface Props {
   onBack: () => void;
   onCustomerFound: (customerId: string, customerCode: string, customerName: string) => void;
