@@ -96,7 +96,13 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
     setLoading(false);
 
     if (insertErr || !insertData) {
-      setErrors({ name: 'Erro ao salvar cadastro. Tente novamente.' });
+      if (insertErr?.message?.includes('customers_email_unique')) {
+        setErrors({ email: 'Já existe um cadastro com esse email.' });
+      } else if (insertErr?.message?.includes('customers_phone_unique')) {
+        setErrors({ phone: 'Já existe um cadastro com esse telefone.' });
+      } else {
+        setErrors({ name: 'Erro ao salvar cadastro. Tente novamente.' });
+      }
       return;
     }
 

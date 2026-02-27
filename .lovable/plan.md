@@ -1,32 +1,29 @@
 
 
-# Plano: Restrição de email e telefone únicos no cadastro
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
-## Resumo
-Adicionar restrições de unicidade (UNIQUE) nos campos `email` e `phone` da tabela `customers` no banco de dados, e tratar os erros no frontend para exibir mensagens claras quando alguém tentar cadastrar com um email ou telefone já existente.
+## Problema
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-## Alterações
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-### 1. Migração no banco de dados
-Adicionar constraints UNIQUE nos campos `email` e `phone` da tabela `customers`:
+## Alteracoes
 
-```sql
-ALTER TABLE public.customers ADD CONSTRAINT customers_email_unique UNIQUE (email);
-ALTER TABLE public.customers ADD CONSTRAINT customers_phone_unique UNIQUE (phone);
-```
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
 
-### 2. Arquivo: `src/components/order/StepRegister.tsx`
-Atualizar o tratamento de erro do insert para detectar violações de unicidade e exibir mensagens específicas:
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
 
-- Se o erro contiver `customers_email_unique`, exibir: **"Já existe um cadastro com esse email."**
-- Se o erro contiver `customers_phone_unique`, exibir: **"Já existe um cadastro com esse telefone."**
-- Caso contrário, manter a mensagem genérica atual.
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
 
-O erro será mostrado no campo correspondente (email ou telefone) para facilitar a identificação pelo usuário.
-
-## Detalhes técnicos
-
-- As constraints UNIQUE no Postgres retornam um erro com o nome da constraint violada no campo `message` do erro do Supabase
-- O código no `handleSubmit` verificara `insertErr.message` para identificar qual constraint foi violada e posicionar o erro no campo correto
-- Nenhuma consulta extra ao banco antes do insert -- a validação acontece naturalmente pela constraint, mantendo a simplicidade
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 
