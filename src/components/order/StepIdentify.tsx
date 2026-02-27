@@ -118,7 +118,7 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
           </div>
 
           {recoverError && <p className="text-destructive text-sm text-center">{recoverError}</p>}
-          {recoverMsg && <p className="text-green-500 text-sm text-center">{recoverMsg}</p>}
+          {recoverMsg && <p className="text-primary text-sm text-center">{recoverMsg}</p>}
 
           <button
             type="submit"
