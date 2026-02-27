@@ -3,6 +3,8 @@ import { ArrowLeft, UserPlus, LogIn, Mail, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 
+const WEBHOOK_URL = 'https://n8n.spidersolutions.com.br/webhook/carvaomascatesite';
+
 interface Props {
   onBack: () => void;
   onCustomerFound: (customerId: string, customerCode: string, customerName: string) => void;
@@ -67,7 +69,7 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
 
     const { data, error: dbError } = await supabase
       .from('customers')
-      .select('name, email, code')
+      .select('name, email, phone, code')
       .eq(column, value)
       .maybeSingle();
 
@@ -88,6 +90,21 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
     } catch {
       // silently fail to not expose info
     }
+
+    // Send webhook for WhatsApp recovery (non-blocking)
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'code_recovery',
+        customer: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          code: data.code,
+        },
+      }),
+    }).catch((err) => console.error('Failed to send code_recovery webhook:', err));
 
     setRecoverLoading(false);
     setRecoverMsg('Se houver um cadastro com esse dado, enviaremos o código por email.');
