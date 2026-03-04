@@ -115,7 +115,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
     const fullPhone = form.ddd + form.phone;
 
     const insertPayload: Record<string, unknown> = {
-      code: customerCode,
+      code: internalCode,
       name: form.name,
       email: form.email,
       phone: fullPhone,
