@@ -1,23 +1,29 @@
 
 
-# Plano: Logout com reload da página
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
 ## Problema
-Ao clicar em "Sair", o logout limpa o estado do contexto mas a página não recarrega, deixando dados antigos visíveis.
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-## Solução
-No `handleLogout` do `CustomerLogin.tsx`, adicionar `window.location.reload()` após chamar `logout()` para forçar o recarregamento da página.
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-## Alteração
+## Alteracoes
 
-### Arquivo: `src/components/CustomerLogin.tsx`
-Atualizar o `handleLogout`:
-```typescript
-const handleLogout = () => {
-  logout();
-  setOpen(false);
-  window.location.href = '/';
-};
-```
-Usar `window.location.href = '/'` em vez de `reload()` para garantir que o usuário volte à home e a página recarregue completamente.
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
+
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 
