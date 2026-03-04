@@ -42,6 +42,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
   const [personType, setPersonType] = useState<PersonType>('pf');
   const [form, setForm] = useState({
     name: '', email: '', ddd: '', phone: '',
+    confirmDdd: '', confirmPhone: '',
     password: '', confirmPassword: '',
     cep: '', city: '', neighborhood: '', street: '', number: '', complement: '',
     cnpj: '',
