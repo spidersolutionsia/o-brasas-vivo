@@ -44,6 +44,7 @@ const CustomerLogin = () => {
   const handleLogout = () => {
     logout();
     setOpen(false);
+    window.location.href = '/';
   };
 
   return (
