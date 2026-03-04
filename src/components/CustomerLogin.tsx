@@ -128,6 +128,16 @@ const CustomerLogin = () => {
               >
                 {loading ? 'Verificando...' : 'Entrar'}
               </button>
+              <p className="text-center text-xs text-muted-foreground mt-1">
+                Não tem conta?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setOpen(false); navigate('/pedido'); }}
+                  className="text-primary hover:underline font-semibold"
+                >
+                  Cadastre-se
+                </button>
+              </p>
             </form>
           )}
         </div>

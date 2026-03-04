@@ -80,6 +80,20 @@ const StepConfirmation = ({ quantities, customerId, customerName, onBack, onComp
       // webhook failure shouldn't block the order
     }
 
+    // Send order summary email
+    try {
+      await supabase.functions.invoke('send-order-email', {
+        body: {
+          customerName: customer?.name || customerName,
+          customerEmail: customer?.email || '',
+          orderNumber,
+          items: itemsPayload,
+        },
+      });
+    } catch {
+      // email failure shouldn't block the order
+    }
+
     // Open WhatsApp
     const itemsText = cartItems
       .map((i) => `• ${i.quantity}x ${i.brand} ${i.weight}`)

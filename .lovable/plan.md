@@ -1,24 +1,29 @@
 
 
-# Plano: Email de resumo do pedido + botão "Cadastrar" no header
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
-## 1. Nova Edge Function: `send-order-email`
+## Problema
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-Criar `supabase/functions/send-order-email/index.ts` baseado no padrão do `send-welcome-email`, recebendo:
-- `customerName`, `customerEmail`, `orderNumber`, `items` (array com brand, weight, quantity)
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-O template HTML incluirá:
-- Resumo dos itens do pedido
-- Número do pedido
-- Botão/link "Confirmar Pedido via WhatsApp" que abre `https://wa.me/5522992525529?text=...` com a mesma mensagem formatada usada no `StepConfirmation`
+## Alteracoes
 
-Configurar `verify_jwt = false` no `config.toml`.
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
 
-## 2. Chamar a Edge Function no `StepConfirmation.tsx`
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
 
-Após salvar o pedido com sucesso (depois do insert no banco), invocar `supabase.functions.invoke('send-order-email', ...)` passando os dados do pedido. Buscar o email do cliente a partir dos dados já carregados (`customer`). Falha no envio não bloqueia o fluxo.
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
 
-## 3. Adicionar opção "Cadastrar" no `CustomerLogin.tsx`
-
-Quando o usuário **não está logado**, abaixo do botão "Entrar" no dropdown, adicionar um link "Não tem conta? Cadastre-se" que navega para `/pedido` (onde o fluxo de cadastro já existe na etapa de registro). Alternativamente, pode linkar direto para `/pedido` com um state indicando pular para o cadastro — mas o mais simples é redirecionar para `/pedido` e o cliente segue o fluxo normal.
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 
