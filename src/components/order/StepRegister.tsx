@@ -189,6 +189,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           complement: form.complement || null,
           neighborhood: form.neighborhood,
           city: form.city,
+          state: form.state,
           cep: form.cep,
         },
         created_at: new Date().toISOString(),
