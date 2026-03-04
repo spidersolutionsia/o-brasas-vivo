@@ -21,6 +21,7 @@ const baseSchema = z.object({
   confirmPassword: z.string().min(1, 'Confirme sua senha'),
   cep: z.string().regex(/^\d{8}$/, 'CEP inválido'),
   city: z.string().min(1, 'Cidade obrigatória'),
+  state: z.string().min(1, 'Estado obrigatório'),
   neighborhood: z.string().min(1, 'Bairro obrigatório'),
   street: z.string().min(1, 'Rua obrigatória'),
   number: z.string().min(1, 'Número obrigatório'),
