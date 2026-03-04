@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Pedido from "./pages/Pedido";
 import MeusPedidos from "./pages/MeusPedidos";
+import Cadastro from "./pages/Cadastro";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -27,6 +28,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/pedido" element={<Pedido />} />
+          <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/meus-pedidos" element={<MeusPedidos />} />
           <Route path="/meu-pedido" element={<MeusPedidos />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

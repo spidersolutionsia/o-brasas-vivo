@@ -132,7 +132,7 @@ const CustomerLogin = () => {
                 Não tem conta?{' '}
                 <button
                   type="button"
-                  onClick={() => { setOpen(false); navigate('/pedido'); }}
+                  onClick={() => { setOpen(false); navigate('/cadastro'); }}
                   className="text-primary hover:underline font-semibold"
                 >
                   Cadastre-se
