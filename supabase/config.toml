@@ -2,3 +2,9 @@ project_id = "cvvrmgqmqamakvwzxets"
 
 [functions.send-order-email]
 verify_jwt = false
+
+[functions.admin-login]
+verify_jwt = false
+
+[functions.admin-update-order]
+verify_jwt = false
