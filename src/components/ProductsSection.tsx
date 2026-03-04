@@ -115,7 +115,7 @@ const ProductsSection = () => {
             {/* Products Grid */}
             <div className={`grid gap-8 max-w-5xl mx-auto ${
               group.products.length === 2
-                ? 'md:grid-cols-2 max-w-3xl'
+                ? 'md:grid-cols-2'
                 : 'md:grid-cols-3'
             }`}>
               {group.products.map((product, index) => (
@@ -125,13 +125,18 @@ const ProductsSection = () => {
                     product.featured ? 'fire-glow' : ''
                   }`}
                 >
-                  <div className="aspect-[4/5] bg-background flex items-center justify-center p-4">
+                  <div className="aspect-[4/5] bg-black relative flex items-center justify-center p-4">
                     <img
                       src={product.image}
                       alt={`${group.brand} ${product.name}`}
                       className="w-full h-full object-cover float-animation"
                       loading="lazy"
                     />
+                    {product.weight !== '5kg' && group.brand === 'Carvão Mascate' && (
+                      <span className="absolute bottom-4 right-4 bg-primary text-primary-foreground font-heading font-bold text-lg px-3 py-1 rounded-md shadow-lg">
+                        {product.weight}
+                      </span>
+                    )}
                   </div>
                   <div className="p-6 border-t border-border">
                     <div className="flex items-center justify-between mb-2">
