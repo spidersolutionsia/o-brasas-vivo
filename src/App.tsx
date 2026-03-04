@@ -33,6 +33,8 @@ const App = () => (
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/meus-pedidos" element={<MeusPedidos />} />
           <Route path="/meu-pedido" element={<MeusPedidos />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/pedidos" element={<AdminPedidos />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
