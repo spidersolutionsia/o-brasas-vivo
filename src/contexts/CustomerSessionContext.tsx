@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+
 const EMAIL_KEY = 'customer_email';
 const NAME_KEY = 'customer_name';
 
