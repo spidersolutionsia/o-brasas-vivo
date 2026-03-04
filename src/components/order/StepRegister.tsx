@@ -33,7 +33,7 @@ function formatCnpj(value: string): string {
 
 interface Props {
   onBack: () => void;
-  onRegistered: (id: string, code: string, name: string) => void;
+  onRegistered: (id: string, name: string, email: string) => void;
 }
 
 type PersonType = 'pf' | 'pj';
