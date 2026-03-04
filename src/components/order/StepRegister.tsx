@@ -52,7 +52,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
     name: '', email: '', ddd: '', phone: '',
     confirmDdd: '', confirmPhone: '',
     password: '', confirmPassword: '',
-    cep: '', city: '', neighborhood: '', street: '', number: '', complement: '',
+    cep: '', city: '', state: '', neighborhood: '', street: '', number: '', complement: '',
     cnpj: '',
   });
   const [cnpjDisplay, setCnpjDisplay] = useState('');
