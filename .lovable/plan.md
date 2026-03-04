@@ -1,29 +1,25 @@
 
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+# Plano: Modal de detalhes do pedido
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+Adicionar um Dialog que abre ao clicar em uma linha da tabela, mostrando todos os detalhes do pedido e do cliente.
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+## Implementação
 
-## Alteracoes
+**Arquivo:** `src/pages/AdminPedidos.tsx`
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+1. Adicionar estado `selectedOrder` para controlar qual pedido está aberto
+2. Tornar as linhas da tabela clicáveis (cursor pointer, onClick)
+3. Adicionar um `Dialog` com os detalhes completos:
+   - Número do pedido e data
+   - Status atual com badge
+   - Dados do cliente: nome, email, telefone
+   - Endereço completo (buscar dados extras do customer: rua, número, bairro, cidade, CEP, complemento)
+   - CNPJ (se houver)
+   - Lista detalhada dos itens (marca, peso, quantidade)
+   - Seletor de status para alterar diretamente do modal
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+4. Atualizar o `fetchOrders` para incluir mais campos do customer no select: `customers(name, email, phone, cnpj, street, number, neighborhood, city, cep, complement)`
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
-
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+**Componentes usados:** `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle` (já disponíveis no projeto).
 
