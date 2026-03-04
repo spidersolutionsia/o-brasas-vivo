@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Pedido from "./pages/Pedido";
 import MeusPedidos from "./pages/MeusPedidos";
+import Cadastro from "./pages/Cadastro";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
