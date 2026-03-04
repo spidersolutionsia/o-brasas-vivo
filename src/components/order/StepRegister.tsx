@@ -111,14 +111,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
 
     setLoading(true);
 
-    const { data: codeData, error: codeErr } = await supabase.rpc('generate_customer_code');
-    if (codeErr || !codeData) {
-      setErrors({ name: 'Erro ao gerar código. Tente novamente.' });
-      setLoading(false);
-      return;
-    }
-
-    const customerCode = codeData as string;
+    const internalCode = crypto.randomUUID().slice(0, 6).toUpperCase();
     const fullPhone = form.ddd + form.phone;
 
     const insertPayload: Record<string, unknown> = {
