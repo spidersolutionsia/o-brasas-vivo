@@ -98,6 +98,10 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       fieldErrors.confirmPassword = 'As senhas não coincidem.';
     }
 
+    if (`${form.ddd}${form.phone}` !== `${form.confirmDdd}${form.confirmPhone}`) {
+      fieldErrors.confirmPhone = 'Os telefones não coincidem.';
+    }
+
     if (personType === 'pj') {
       const cnpjResult = cnpjSchema.safeParse(form.cnpj);
       if (!cnpjResult.success) {
