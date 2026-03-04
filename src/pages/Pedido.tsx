@@ -24,7 +24,6 @@ const Pedido = () => {
   const [step, setStep] = useState<Step>('products');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customerId, setCustomerId] = useState('');
-  const [customerCode, setCustomerCode] = useState('');
   const [customerName, setCustomerName] = useState('');
 
   const updateQuantity = (id: string, delta: number) => {
@@ -38,12 +37,11 @@ const Pedido = () => {
     if (isLoggedIn && sessionEmail) {
       const { data } = await supabase
         .from('customers')
-        .select('id, code, name')
+        .select('id, name')
         .eq('email', sessionEmail)
         .maybeSingle();
       if (data) {
         setCustomerId(data.id);
-        setCustomerCode(data.code);
         setCustomerName(data.name);
         setStep('confirmation');
         return;
@@ -52,28 +50,20 @@ const Pedido = () => {
     setStep('identify');
   };
 
-  const handleCustomerFound = (id: string, code: string, name: string) => {
-    // After authentication, fetch email for session
-    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
-      login(data?.email || '', name, code);
-    });
+  const handleCustomerFound = (id: string, name: string, email: string) => {
+    login(email, name);
     setCustomerId(id);
-    setCustomerCode(code);
     setCustomerName(name);
     setStep('confirmation');
   };
 
-  const handleRegistered = (id: string, code: string, name: string) => {
-    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
-      login(data?.email || '', name, code);
-    });
+  const handleRegistered = (id: string, name: string, email: string) => {
+    login(email, name);
     setCustomerId(id);
-    setCustomerCode(code);
     setCustomerName(name);
     setStep('confirmation');
   };
 
-  // Scroll to top when step changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [step]);
@@ -87,7 +77,6 @@ const Pedido = () => {
       <main className="flex-1 py-20 md:py-32">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            {/* Title */}
             <div className="text-center mb-8">
               <h1 className="section-title mb-3">
                 Faça seu <span className="section-title-accent">Pedido</span>
@@ -97,7 +86,6 @@ const Pedido = () => {
               </p>
             </div>
 
-            {/* Step Indicator */}
             <div className="flex items-center justify-center gap-2 mb-10">
               {stepsOrder.map((s, i) => (
                 <div key={s} className="flex items-center gap-2">
@@ -120,7 +108,6 @@ const Pedido = () => {
               ))}
             </div>
 
-            {/* Steps */}
             {step === 'products' && (
               <StepProducts
                 quantities={quantities}
@@ -145,7 +132,6 @@ const Pedido = () => {
               <StepConfirmation
                 quantities={quantities}
                 customerId={customerId}
-                customerCode={customerCode}
                 customerName={customerName}
                 onBack={() => setStep('products')}
                 onComplete={() => navigate('/')}

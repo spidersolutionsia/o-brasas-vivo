@@ -40,7 +40,7 @@ const CustomerLogin = () => {
     }
 
     const customer = (data as any[])[0];
-    login(customer.email, customer.name, customer.code);
+    login(customer.email, customer.name);
     setOpen(false);
     setLoginInput('');
     setPassword('');

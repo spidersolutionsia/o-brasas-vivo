@@ -181,7 +181,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       }),
     }).catch((err) => console.error('Failed to send customer_created webhook:', err));
 
-    onRegistered(insertData.id, customerCode, form.name);
+    onRegistered(insertData.id, form.name, form.email);
   };
 
   return (
