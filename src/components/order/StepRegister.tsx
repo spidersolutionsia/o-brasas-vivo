@@ -155,7 +155,6 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       body: {
         customerName: form.name,
         customerEmail: form.email,
-        customerCode,
       },
     }).catch((err) => console.error('Failed to send welcome email:', err));
 
@@ -165,7 +164,6 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         event: 'customer_created',
-        customer_code: customerCode,
         customer_name: form.name,
         customer_email: form.email,
         customer_phone: fullPhone,
