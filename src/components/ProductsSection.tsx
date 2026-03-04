@@ -2,6 +2,7 @@ import { Check, Flame, TreePine, Sparkles } from 'lucide-react';
 import productBag from '@/assets/product-bag-5kg.jpg';
 import productDiamante2kg from '@/assets/product-diamante-2kg.png';
 import productDiamante4kg from '@/assets/product-diamante-4kg.png';
+import productMascate9kg from '@/assets/product-mascate-9kg.png';
 
 const benefits = [
   { icon: Flame, text: 'Alta durabilidade' },
