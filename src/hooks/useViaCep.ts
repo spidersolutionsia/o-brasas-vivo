@@ -13,6 +13,7 @@ interface AddressData {
   street: string;
   neighborhood: string;
   city: string;
+  state: string;
 }
 
 export function useViaCep() {
