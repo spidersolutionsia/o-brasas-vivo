@@ -9,13 +9,12 @@ const WEBHOOK_URL = 'https://n8n.spidersolutions.com.br/webhook/carvaomascatesit
 interface Props {
   quantities: Record<string, number>;
   customerId: string;
-  customerCode: string;
   customerName: string;
   onBack: () => void;
   onComplete: () => void;
 }
 
-const StepConfirmation = ({ quantities, customerId, customerCode, customerName, onBack, onComplete }: Props) => {
+const StepConfirmation = ({ quantities, customerId, customerName, onBack, onComplete }: Props) => {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -26,7 +25,6 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
   const handleConfirm = async () => {
     setLoading(true);
 
-    // Generate order number
     const { data: orderNum, error: numErr } = await supabase.rpc('generate_order_number');
     if (numErr || !orderNum) {
       alert('Erro ao gerar número do pedido.');
@@ -41,7 +39,6 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
       quantity: i.quantity,
     }));
 
-    // Save to DB
     const { error: insertErr } = await supabase.from('orders').insert({
       order_number: orderNumber,
       customer_id: customerId,
@@ -55,14 +52,13 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
       return;
     }
 
-    // Fetch customer details for webhook
     const { data: customer } = await supabase
       .from('customers')
       .select('*')
       .eq('id', customerId)
       .single();
 
-    // Send webhook (fire and forget)
+    // Send webhook
     try {
       await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -70,7 +66,6 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
         body: JSON.stringify({
           event: 'order_completed',
           order_number: orderNumber,
-          customer_code: customerCode,
           customer_name: customer?.name || customerName,
           customer_phone: customer?.phone || '',
           customer_email: customer?.email || '',
@@ -91,7 +86,7 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
       .join('\n');
 
     const msg = encodeURIComponent(
-      `*Pedido ${orderNumber} - Carvão Mascate*\n\nCliente: ${customerName} (${customerCode})\n\n${itemsText}\n\nOlá! Gostaria de confirmar este pedido.`
+      `*Pedido ${orderNumber} - Carvão Mascate*\n\nCliente: ${customerName}\n\n${itemsText}\n\nOlá! Gostaria de confirmar este pedido.`
     );
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
@@ -118,13 +113,6 @@ const StepConfirmation = ({ quantities, customerId, customerCode, customerName, 
 
   return (
     <div className="space-y-6">
-      {/* Customer Code Highlight */}
-      <div className="bg-primary/10 border border-primary/30 rounded-xl p-5 text-center">
-        <p className="text-sm text-muted-foreground mb-1">Seu código de cliente</p>
-        <p className="font-heading text-3xl font-bold text-primary tracking-widest">{customerCode}</p>
-        <p className="text-xs text-muted-foreground mt-2">Guarde este código para seus próximos pedidos!</p>
-      </div>
-
       {/* Customer Info */}
       <div className="card-dark rounded-xl p-5">
         <p className="text-sm text-muted-foreground mb-1">Cliente</p>

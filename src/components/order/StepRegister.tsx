@@ -33,7 +33,7 @@ function formatCnpj(value: string): string {
 
 interface Props {
   onBack: () => void;
-  onRegistered: (id: string, code: string, name: string) => void;
+  onRegistered: (id: string, name: string, email: string) => void;
 }
 
 type PersonType = 'pf' | 'pj';
@@ -111,18 +111,11 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
 
     setLoading(true);
 
-    const { data: codeData, error: codeErr } = await supabase.rpc('generate_customer_code');
-    if (codeErr || !codeData) {
-      setErrors({ name: 'Erro ao gerar código. Tente novamente.' });
-      setLoading(false);
-      return;
-    }
-
-    const customerCode = codeData as string;
+    const internalCode = crypto.randomUUID().slice(0, 6).toUpperCase();
     const fullPhone = form.ddd + form.phone;
 
     const insertPayload: Record<string, unknown> = {
-      code: customerCode,
+      code: internalCode,
       name: form.name,
       email: form.email,
       phone: fullPhone,
@@ -162,7 +155,6 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       body: {
         customerName: form.name,
         customerEmail: form.email,
-        customerCode,
       },
     }).catch((err) => console.error('Failed to send welcome email:', err));
 
@@ -172,7 +164,6 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         event: 'customer_created',
-        customer_code: customerCode,
         customer_name: form.name,
         customer_email: form.email,
         customer_phone: fullPhone,
@@ -190,7 +181,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       }),
     }).catch((err) => console.error('Failed to send customer_created webhook:', err));
 
-    onRegistered(insertData.id, customerCode, form.name);
+    onRegistered(insertData.id, form.name, form.email);
   };
 
   return (

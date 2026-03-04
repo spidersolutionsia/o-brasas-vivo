@@ -13,9 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { customerName, customerEmail, customerCode } = await req.json();
+    const { customerName, customerEmail } = await req.json();
 
-    if (!customerName || !customerEmail || !customerCode) {
+    if (!customerName || !customerEmail) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -58,8 +58,6 @@ serve(async (req) => {
     .subtitle { color: #a3a3a3; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
     .greeting { color: #ffffff; font-size: 18px; margin-bottom: 20px; }
     .message { color: #d4d4d4; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
-    .code-label { color: #a3a3a3; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-    .code-box { background: linear-gradient(135deg, #f97316, #ea580c); color: #ffffff; font-size: 36px; font-weight: bold; letter-spacing: 8px; padding: 20px 30px; border-radius: 8px; display: inline-block; margin-bottom: 30px; }
     .info { color: #a3a3a3; font-size: 12px; line-height: 1.5; }
     .footer { color: #737373; font-size: 11px; text-align: center; margin-top: 30px; }
   </style>
@@ -72,13 +70,10 @@ serve(async (req) => {
       <div class="greeting">Olá, ${customerName}! 👋</div>
       <div class="message">
         Seu cadastro foi realizado com sucesso!<br>
-        Use o código abaixo para acessar seus pedidos a qualquer momento.
+        Agora você pode acessar sua conta usando seu email e senha para acompanhar e fazer novos pedidos.
       </div>
-      <div class="code-label">Seu código de acesso</div>
-      <div class="code-box">${customerCode}</div>
       <div class="info">
-        Guarde este código com segurança.<br>
-        Você precisará dele para acompanhar e fazer novos pedidos.
+        Acesse nosso site a qualquer momento para fazer pedidos e acompanhar o status.
       </div>
     </div>
     <div class="footer">
@@ -92,7 +87,7 @@ serve(async (req) => {
     await client.send({
       from: gmailUser,
       to: customerEmail,
-      subject: "Seu código de acesso - Mascate Carvão",
+      subject: "Bem-vindo à Mascate Carvão!",
       content: "auto",
       html: htmlBody,
     });
