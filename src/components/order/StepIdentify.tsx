@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
   onBack: () => void;
-  onCustomerFound: (customerId: string, customerCode: string, customerName: string) => void;
+  onCustomerFound: (customerId: string, customerName: string, customerEmail: string) => void;
   onRegister: () => void;
 }
 
