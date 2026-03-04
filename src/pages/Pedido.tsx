@@ -20,7 +20,7 @@ const stepLabels: Record<Step, string> = {
 
 const Pedido = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, customerCode: sessionCode, login } = useCustomerSession();
+  const { isLoggedIn, customerEmail: sessionEmail, login } = useCustomerSession();
   const [step, setStep] = useState<Step>('products');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customerId, setCustomerId] = useState('');
