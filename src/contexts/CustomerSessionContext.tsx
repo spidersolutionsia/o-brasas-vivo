@@ -1,62 +1,77 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-const CODE_KEY = 'customer_code';
+const EMAIL_KEY = 'customer_email';
 const NAME_KEY = 'customer_name';
+const CODE_KEY = 'customer_code';
 
 interface CustomerSessionContextType {
-  customerCode: string | null;
+  customerEmail: string | null;
   customerName: string | null;
+  customerCode: string | null;
   isLoggedIn: boolean;
-  login: (code: string, name?: string) => void;
+  login: (email: string, name?: string, code?: string) => void;
   logout: () => void;
 }
 
 const CustomerSessionContext = createContext<CustomerSessionContextType | null>(null);
 
 export function CustomerSessionProvider({ children }: { children: ReactNode }) {
-  const [customerCode, setCustomerCode] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState<string | null>(null);
+  const [customerCode, setCustomerCode] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedCode = localStorage.getItem(CODE_KEY);
+    const storedEmail = localStorage.getItem(EMAIL_KEY);
     const storedName = localStorage.getItem(NAME_KEY);
-    if (storedCode) setCustomerCode(storedCode);
+    const storedCode = localStorage.getItem(CODE_KEY);
+    if (storedEmail) setCustomerEmail(storedEmail);
     if (storedName) setCustomerName(storedName);
+    if (storedCode) setCustomerCode(storedCode);
 
-    if (storedCode && !storedName) {
+    if (storedEmail && !storedName) {
       supabase
         .from('customers')
-        .select('name')
-        .eq('code', storedCode)
+        .select('name, code')
+        .eq('email', storedEmail)
         .maybeSingle()
         .then(({ data }) => {
           if (data?.name) {
             localStorage.setItem(NAME_KEY, data.name);
             setCustomerName(data.name);
           }
+          if (data?.code) {
+            localStorage.setItem(CODE_KEY, data.code);
+            setCustomerCode(data.code);
+          }
         });
     }
   }, []);
 
-  const login = useCallback((code: string, name?: string) => {
-    localStorage.setItem(CODE_KEY, code);
-    setCustomerCode(code);
+  const login = useCallback((email: string, name?: string, code?: string) => {
+    localStorage.setItem(EMAIL_KEY, email);
+    setCustomerEmail(email);
     if (name) {
       localStorage.setItem(NAME_KEY, name);
       setCustomerName(name);
     }
+    if (code) {
+      localStorage.setItem(CODE_KEY, code);
+      setCustomerCode(code);
+    }
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(CODE_KEY);
+    localStorage.removeItem(EMAIL_KEY);
     localStorage.removeItem(NAME_KEY);
-    setCustomerCode(null);
+    localStorage.removeItem(CODE_KEY);
+    setCustomerEmail(null);
     setCustomerName(null);
+    setCustomerCode(null);
   }, []);
 
   return (
-    <CustomerSessionContext.Provider value={{ customerCode, customerName, isLoggedIn: !!customerCode, login, logout }}>
+    <CustomerSessionContext.Provider value={{ customerEmail, customerName, customerCode, isLoggedIn: !!customerEmail, login, logout }}>
       {children}
     </CustomerSessionContext.Provider>
   );

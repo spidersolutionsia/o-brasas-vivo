@@ -1,43 +1,49 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, X, LogOut } from 'lucide-react';
+import { User, X, LogOut, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 
 const CustomerLogin = () => {
   const [open, setOpen] = useState(false);
-  const [code, setCode] = useState('');
+  const [loginInput, setLoginInput] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { customerCode, customerName, isLoggedIn, login, logout } = useCustomerSession();
+  const { customerEmail, customerName, isLoggedIn, login, logout } = useCustomerSession();
   const firstName = customerName?.split(' ')[0];
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = code.trim().toUpperCase();
-    if (!trimmed) return;
+    const trimmedLogin = loginInput.trim();
+    if (!trimmedLogin || !password) {
+      setError('Preencha todos os campos.');
+      return;
+    }
 
     setLoading(true);
     setError('');
 
-    const { data } = await supabase
-      .from('customers')
-      .select('code, name')
-      .eq('code', trimmed)
-      .maybeSingle();
+    const { data, error: rpcError } = await supabase.rpc('authenticate_customer', {
+      p_login: trimmedLogin,
+      p_password: password,
+    });
 
     setLoading(false);
 
-    if (!data) {
-      setError('Código não encontrado.');
+    if (rpcError || !data || (data as any[]).length === 0) {
+      setError('Email/telefone ou senha incorretos.');
       return;
     }
 
-    login(data.code, data.name);
+    const customer = (data as any[])[0];
+    login(customer.email, customer.name, customer.code);
     setOpen(false);
-    setCode('');
+    setLoginInput('');
+    setPassword('');
     navigate('/meus-pedidos');
   };
 
@@ -56,7 +62,7 @@ const CustomerLogin = () => {
       >
         <User className="w-4 h-4" />
         {isLoggedIn ? (
-          <span className="font-heading text-xs font-bold text-primary">Olá, {firstName || customerCode}</span>
+          <span className="font-heading text-xs font-bold text-primary">Olá, {firstName || customerEmail}</span>
         ) : (
           <span className="hidden sm:inline font-heading text-xs uppercase tracking-wider">Entrar</span>
         )}
@@ -75,7 +81,7 @@ const CustomerLogin = () => {
 
           {isLoggedIn ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Olá, seja bem-vindo <strong className="text-primary">{firstName || customerCode}</strong>!</p>
+              <p className="text-sm text-muted-foreground">Olá, seja bem-vindo <strong className="text-primary">{firstName || customerEmail}</strong>!</p>
               <button
                 onClick={() => { setOpen(false); navigate('/meus-pedidos'); }}
                 className="w-full text-left text-sm text-foreground hover:text-primary transition-colors py-1"
@@ -93,12 +99,27 @@ const CustomerLogin = () => {
           ) : (
             <form onSubmit={handleLogin} className="space-y-3">
               <Input
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="Código (ex: ABC123)"
-                maxLength={6}
-                className="h-10 bg-background border-border text-center font-heading tracking-widest uppercase"
+                value={loginInput}
+                onChange={(e) => setLoginInput(e.target.value)}
+                placeholder="Email ou telefone"
+                className="h-10 bg-background border-border text-sm"
               />
+              <div className="relative">
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Senha"
+                  className="h-10 bg-background border-border text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               {error && <p className="text-destructive text-xs">{error}</p>}
               <button
                 type="submit"

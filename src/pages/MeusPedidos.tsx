@@ -22,7 +22,7 @@ const statusMap: Record<string, string> = {
 };
 
 const MeusPedidos = () => {
-  const { customerCode, isLoggedIn } = useCustomerSession();
+  const { customerEmail, isLoggedIn } = useCustomerSession();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -34,11 +34,10 @@ const MeusPedidos = () => {
     }
 
     const fetchOrders = async () => {
-      // Get customer ID from code
       const { data: customer } = await supabase
         .from('customers')
         .select('id')
-        .eq('code', customerCode!)
+        .eq('email', customerEmail!)
         .single();
 
       if (!customer) {
@@ -62,7 +61,7 @@ const MeusPedidos = () => {
     };
 
     fetchOrders();
-  }, [customerCode, isLoggedIn]);
+  }, [customerEmail, isLoggedIn]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -93,7 +92,7 @@ const MeusPedidos = () => {
 
             {!isLoggedIn ? (
               <div className="text-center card-dark rounded-xl p-8 space-y-4">
-                <p className="text-muted-foreground">Faça login com seu código de cliente para ver seus pedidos.</p>
+                <p className="text-muted-foreground">Faça login para ver seus pedidos.</p>
                 <p className="text-sm text-muted-foreground">Use o botão "Entrar" no topo do site.</p>
               </div>
             ) : loading ? (
@@ -129,7 +128,6 @@ const MeusPedidos = () => {
                         </span>
                       </div>
 
-                      {/* Items */}
                       <div className="space-y-1">
                         {order.items.map((item, i) => (
                           <p key={i} className="text-sm text-muted-foreground">
@@ -138,7 +136,6 @@ const MeusPedidos = () => {
                         ))}
                       </div>
 
-                      {/* Timeline */}
                       <div className="flex items-center gap-1">
                         {['pending', 'processing', 'shipped', 'delivered'].map((s, i) => (
                           <div key={s} className="flex items-center flex-1">

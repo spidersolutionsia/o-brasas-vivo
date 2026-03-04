@@ -27,6 +27,7 @@ export type Database = {
           name: string
           neighborhood: string | null
           number: string | null
+          password_hash: string | null
           phone: string
           street: string | null
         }
@@ -42,6 +43,7 @@ export type Database = {
           name: string
           neighborhood?: string | null
           number?: string | null
+          password_hash?: string | null
           phone: string
           street?: string | null
         }
@@ -57,6 +59,7 @@ export type Database = {
           name?: string
           neighborhood?: string | null
           number?: string | null
+          password_hash?: string | null
           phone?: string
           street?: string | null
         }
@@ -102,6 +105,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      authenticate_customer: {
+        Args: { p_login: string; p_password: string }
+        Returns: {
+          code: string
+          email: string
+          id: string
+          name: string
+        }[]
+      }
       generate_customer_code: { Args: never; Returns: string }
       generate_order_number: { Args: never; Returns: string }
     }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useViaCep } from '@/hooks/useViaCep';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +10,8 @@ const baseSchema = z.object({
   email: z.string().trim().email('Email inválido').max(255),
   ddd: z.string().regex(/^\d{2}$/, 'DDD inválido'),
   phone: z.string().regex(/^\d{8,9}$/, 'Telefone inválido'),
+  password: z.string().min(6, 'Mínimo de 6 caracteres'),
+  confirmPassword: z.string().min(1, 'Confirme sua senha'),
   cep: z.string().regex(/^\d{8}$/, 'CEP inválido'),
   city: z.string().min(1, 'Cidade obrigatória'),
   neighborhood: z.string().min(1, 'Bairro obrigatório'),
@@ -40,10 +42,13 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
   const [personType, setPersonType] = useState<PersonType>('pf');
   const [form, setForm] = useState({
     name: '', email: '', ddd: '', phone: '',
+    password: '', confirmPassword: '',
     cep: '', city: '', neighborhood: '', street: '', number: '', complement: '',
     cnpj: '',
   });
   const [cnpjDisplay, setCnpjDisplay] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -88,6 +93,10 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       });
     }
 
+    if (form.password !== form.confirmPassword) {
+      fieldErrors.confirmPassword = 'As senhas não coincidem.';
+    }
+
     if (personType === 'pj') {
       const cnpjResult = cnpjSchema.safeParse(form.cnpj);
       if (!cnpjResult.success) {
@@ -117,6 +126,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
       name: form.name,
       email: form.email,
       phone: fullPhone,
+      password_hash: form.password, // trigger will hash this
       cep: form.cep,
       city: form.city,
       neighborhood: form.neighborhood,
@@ -271,6 +281,50 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
             />
           </div>
           {(errors.ddd || errors.phone) && <p className="text-destructive text-xs mt-1">{errors.ddd || errors.phone}</p>}
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Senha *</label>
+          <div className="relative">
+            <Input
+              value={form.password}
+              onChange={(e) => updateField('password', e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Mínimo 6 caracteres"
+              className="h-11 bg-background border-border pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.password && <p className="text-destructive text-xs mt-1">{errors.password}</p>}
+        </div>
+
+        {/* Confirm Password */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Confirmar Senha *</label>
+          <div className="relative">
+            <Input
+              value={form.confirmPassword}
+              onChange={(e) => updateField('confirmPassword', e.target.value)}
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Repita a senha"
+              className="h-11 bg-background border-border pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.confirmPassword && <p className="text-destructive text-xs mt-1">{errors.confirmPassword}</p>}
         </div>
 
         {/* CEP */}

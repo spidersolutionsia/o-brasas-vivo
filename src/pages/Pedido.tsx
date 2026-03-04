@@ -20,7 +20,7 @@ const stepLabels: Record<Step, string> = {
 
 const Pedido = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, customerCode: sessionCode, login } = useCustomerSession();
+  const { isLoggedIn, customerEmail: sessionEmail, login } = useCustomerSession();
   const [step, setStep] = useState<Step>('products');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customerId, setCustomerId] = useState('');
@@ -35,11 +35,11 @@ const Pedido = () => {
   };
 
   const handleNextFromProducts = async () => {
-    if (isLoggedIn && sessionCode) {
+    if (isLoggedIn && sessionEmail) {
       const { data } = await supabase
         .from('customers')
         .select('id, code, name')
-        .eq('code', sessionCode)
+        .eq('email', sessionEmail)
         .maybeSingle();
       if (data) {
         setCustomerId(data.id);
@@ -53,7 +53,10 @@ const Pedido = () => {
   };
 
   const handleCustomerFound = (id: string, code: string, name: string) => {
-    login(code, name);
+    // After authentication, fetch email for session
+    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
+      login(data?.email || '', name, code);
+    });
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
@@ -61,7 +64,9 @@ const Pedido = () => {
   };
 
   const handleRegistered = (id: string, code: string, name: string) => {
-    login(code, name);
+    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
+      login(data?.email || '', name, code);
+    });
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
