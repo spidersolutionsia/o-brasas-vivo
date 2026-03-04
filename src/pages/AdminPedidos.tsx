@@ -113,7 +113,7 @@ const AdminPedidos = () => {
   const formatItems = (items: any) => {
     if (!Array.isArray(items)) return "-";
     return items
-      .map((item: any) => `${item.name || item.product} (${item.quantity || 1}x)`)
+      .map((item: any) => `${item.brand || item.name || item.product} ${item.weight || ""} (${item.quantity || 1}x)`.trim())
       .join(", ");
   };
 
