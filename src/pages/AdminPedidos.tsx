@@ -11,7 +11,23 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { LogOut, Search, Package, RefreshCw } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText } from "lucide-react";
+
+type CustomerDetails = {
+  name: string;
+  email: string;
+  phone: string;
+  cnpj: string | null;
+  street: string | null;
+  number: string | null;
+  neighborhood: string | null;
+  city: string | null;
+  cep: string | null;
+  complement: string | null;
+};
 
 type OrderWithCustomer = {
   id: string;
@@ -20,7 +36,7 @@ type OrderWithCustomer = {
   items: any;
   created_at: string;
   customer_id: string;
-  customers: { name: string; email: string; phone: string } | null;
+  customers: CustomerDetails | null;
 };
 
 const statusLabels: Record<string, string> = {
@@ -45,6 +61,7 @@ const AdminPedidos = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderWithCustomer | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,7 +79,7 @@ const AdminPedidos = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("orders")
-      .select("*, customers(name, email, phone)")
+      .select("*, customers(name, email, phone, cnpj, street, number, neighborhood, city, cep, complement)")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -86,6 +103,9 @@ const AdminPedidos = () => {
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
       );
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder((prev) => prev ? { ...prev, status: newStatus } : null);
+      }
       toast({ title: "Status atualizado!" });
     } catch {
       toast({ title: "Erro", description: "Erro ao atualizar status", variant: "destructive" });
@@ -115,6 +135,18 @@ const AdminPedidos = () => {
     return items
       .map((item: any) => `${item.brand || item.name || item.product} ${item.weight || ""} (${item.quantity || 1}x)`.trim())
       .join(", ");
+  };
+
+  const formatAddress = (c: CustomerDetails) => {
+    const parts = [
+      c.street,
+      c.number ? `nº ${c.number}` : null,
+      c.complement,
+      c.neighborhood,
+      c.city,
+      c.cep ? `CEP ${c.cep}` : null,
+    ].filter(Boolean);
+    return parts.length > 0 ? parts.join(", ") : "Não informado";
   };
 
   return (
@@ -204,7 +236,11 @@ const AdminPedidos = () => {
               </TableHeader>
               <TableBody>
                 {filtered.map((order) => (
-                  <TableRow key={order.id}>
+                  <TableRow
+                    key={order.id}
+                    className="cursor-pointer hover:bg-muted/40"
+                    onClick={() => setSelectedOrder(order)}
+                  >
                     <TableCell className="font-mono font-bold text-primary">
                       #{order.order_number}
                     </TableCell>
@@ -232,7 +268,7 @@ const AdminPedidos = () => {
                         {statusLabels[order.status] || order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <Select
                         value={order.status}
                         onValueChange={(v) => updateStatus(order.id, v)}
@@ -261,6 +297,104 @@ const AdminPedidos = () => {
           {filtered.length} pedido(s) encontrado(s) — Total: {orders.length}
         </p>
       </main>
+
+      {/* Order Detail Modal */}
+      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-oswald">
+              <Package className="w-5 h-5 text-primary" />
+              Pedido #{selectedOrder?.order_number}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedOrder && (
+            <div className="space-y-5">
+              {/* Status & Date */}
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className={statusColors[selectedOrder.status] || ""}>
+                  {statusLabels[selectedOrder.status] || selectedOrder.status}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {new Date(selectedOrder.created_at).toLocaleDateString("pt-BR", {
+                    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+                  })}
+                </span>
+              </div>
+
+              {/* Customer Info */}
+              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <User className="w-4 h-4" /> Cliente
+                </h3>
+                <p className="text-sm text-foreground font-medium">{selectedOrder.customers?.name || "-"}</p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Mail className="w-3.5 h-3.5" />
+                  {selectedOrder.customers?.email || "-"}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Phone className="w-3.5 h-3.5" />
+                  {selectedOrder.customers?.phone || "-"}
+                </div>
+                {selectedOrder.customers?.cnpj && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="w-3.5 h-3.5" />
+                    CNPJ: {selectedOrder.customers.cnpj}
+                  </div>
+                )}
+              </div>
+
+              {/* Address */}
+              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <MapPin className="w-4 h-4" /> Endereço
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedOrder.customers ? formatAddress(selectedOrder.customers) : "Não informado"}
+                </p>
+              </div>
+
+              {/* Items */}
+              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Package className="w-4 h-4" /> Itens
+                </h3>
+                {Array.isArray(selectedOrder.items) && selectedOrder.items.length > 0 ? (
+                  <ul className="space-y-1">
+                    {selectedOrder.items.map((item: any, i: number) => (
+                      <li key={i} className="text-sm text-muted-foreground flex justify-between">
+                        <span>{item.brand || item.name || item.product} {item.weight || ""}</span>
+                        <span className="font-medium text-foreground">{item.quantity || 1}x</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Sem itens</p>
+                )}
+              </div>
+
+              {/* Status Update */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">Alterar Status</h3>
+                <Select
+                  value={selectedOrder.status}
+                  onValueChange={(v) => updateStatus(selectedOrder.id, v)}
+                  disabled={updatingId === selectedOrder.id}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(statusLabels).map(([k, v]) => (
+                      <SelectItem key={k} value={k}>{v}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
