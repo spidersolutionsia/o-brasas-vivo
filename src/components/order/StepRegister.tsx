@@ -279,6 +279,28 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           {(errors.ddd || errors.phone) && <p className="text-destructive text-xs mt-1">{errors.ddd || errors.phone}</p>}
         </div>
 
+        {/* Confirm Phone */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Confirmar Telefone *</label>
+          <div className="flex gap-2">
+            <Input
+              value={form.confirmDdd}
+              onChange={(e) => updateField('confirmDdd', e.target.value.replace(/\D/g, '').slice(0, 2))}
+              placeholder="DDD"
+              className="h-11 bg-background border-border w-20 text-center"
+              maxLength={2}
+            />
+            <Input
+              value={form.confirmPhone}
+              onChange={(e) => updateField('confirmPhone', e.target.value.replace(/\D/g, '').slice(0, 9))}
+              placeholder="999999999"
+              className="h-11 bg-background border-border flex-1"
+              maxLength={9}
+            />
+          </div>
+          {errors.confirmPhone && <p className="text-destructive text-xs mt-1">{errors.confirmPhone}</p>}
+        </div>
+
         {/* Password */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-1">Senha *</label>
