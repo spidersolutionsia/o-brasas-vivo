@@ -113,11 +113,7 @@ const ProductsSection = () => {
             </div>
 
             {/* Products Grid */}
-            <div className={`grid gap-8 max-w-5xl mx-auto ${
-              group.products.length === 2
-                ? 'md:grid-cols-2'
-                : 'md:grid-cols-3'
-            }`}>
+            <div className="grid gap-8 max-w-5xl mx-auto md:grid-cols-3">
               {group.products.map((product, index) => (
                 <div
                   key={index}
