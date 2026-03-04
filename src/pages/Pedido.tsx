@@ -35,11 +35,11 @@ const Pedido = () => {
   };
 
   const handleNextFromProducts = async () => {
-    if (isLoggedIn && sessionCode) {
+    if (isLoggedIn && sessionEmail) {
       const { data } = await supabase
         .from('customers')
         .select('id, code, name')
-        .eq('code', sessionCode)
+        .eq('email', sessionEmail)
         .maybeSingle();
       if (data) {
         setCustomerId(data.id);
@@ -53,7 +53,10 @@ const Pedido = () => {
   };
 
   const handleCustomerFound = (id: string, code: string, name: string) => {
-    login(code, name);
+    // After authentication, fetch email for session
+    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
+      login(data?.email || '', name, code);
+    });
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
@@ -61,7 +64,9 @@ const Pedido = () => {
   };
 
   const handleRegistered = (id: string, code: string, name: string) => {
-    login(code, name);
+    supabase.from('customers').select('email').eq('id', id).single().then(({ data }) => {
+      login(data?.email || '', name, code);
+    });
     setCustomerId(id);
     setCustomerCode(code);
     setCustomerName(name);
