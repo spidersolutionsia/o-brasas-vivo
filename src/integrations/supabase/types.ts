@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           cep: string | null
           city: string | null
+          cnpj: string | null
           code: string
           complement: string | null
           created_at: string
@@ -32,6 +33,7 @@ export type Database = {
         Insert: {
           cep?: string | null
           city?: string | null
+          cnpj?: string | null
           code: string
           complement?: string | null
           created_at?: string
@@ -46,6 +48,7 @@ export type Database = {
         Update: {
           cep?: string | null
           city?: string | null
+          cnpj?: string | null
           code?: string
           complement?: string | null
           created_at?: string

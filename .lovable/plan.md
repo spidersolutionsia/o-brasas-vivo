@@ -1,26 +1,29 @@
 
 
-# Plano: Adicionar CNPJ e tipo de pessoa ao cadastro
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
-## Resumo
-Adicionar toggle "Pessoa Física / Pessoa Jurídica" no formulário. Quando PJ, exibir campo CNPJ e trocar label do nome para **"Razão Social ou Nome Fantasia"**.
+## Problema
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-## Alterações
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-### 1. Migração no banco de dados
-```sql
-ALTER TABLE public.customers ADD COLUMN cnpj text;
-ALTER TABLE public.customers ADD CONSTRAINT customers_cnpj_unique UNIQUE (cnpj);
-```
+## Alteracoes
 
-### 2. Arquivo: `src/components/order/StepRegister.tsx`
-- Adicionar estado `personType` (`'pf'` | `'pj'`), default `'pf'`
-- Adicionar campo `cnpj` ao form state
-- Renderizar dois botões estilizados "Pessoa Física" / "Pessoa Jurídica" no topo
-- Quando `pj`:
-  - Label do nome muda para **"Razão Social ou Nome Fantasia *"**
-  - Mostrar campo CNPJ com máscara (`XX.XXX.XXX/XXXX-XX`)
-  - Validar CNPJ (14 dígitos) via Zod
-- Incluir `cnpj` no insert do banco e no webhook
-- Tratar erro `customers_cnpj_unique`: "Já existe um cadastro com esse CNPJ."
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
+
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 
