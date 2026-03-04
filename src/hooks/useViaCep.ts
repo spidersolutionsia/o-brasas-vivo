@@ -13,6 +13,7 @@ interface AddressData {
   street: string;
   neighborhood: string;
   city: string;
+  state: string;
 }
 
 export function useViaCep() {
@@ -38,7 +39,8 @@ export function useViaCep() {
       return {
         street: data.logradouro || '',
         neighborhood: data.bairro || '',
-        city: `${data.localidade}/${data.uf}`,
+        city: data.localidade || '',
+        state: data.uf || '',
       };
     } catch {
       setError('Erro ao buscar CEP.');

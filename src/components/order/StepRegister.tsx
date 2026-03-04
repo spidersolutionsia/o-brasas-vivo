@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useViaCep } from '@/hooks/useViaCep';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
+
+const BRAZILIAN_STATES = [
+  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
+  'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
+  'RO','RR','RS','SC','SE','SP','TO',
+];
 
 const baseSchema = z.object({
   name: z.string().trim().min(2, 'Campo obrigatório').max(100),
@@ -14,6 +21,7 @@ const baseSchema = z.object({
   confirmPassword: z.string().min(1, 'Confirme sua senha'),
   cep: z.string().regex(/^\d{8}$/, 'CEP inválido'),
   city: z.string().min(1, 'Cidade obrigatória'),
+  state: z.string().min(1, 'Estado obrigatório'),
   neighborhood: z.string().min(1, 'Bairro obrigatório'),
   street: z.string().min(1, 'Rua obrigatória'),
   number: z.string().min(1, 'Número obrigatório'),
@@ -44,7 +52,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
     name: '', email: '', ddd: '', phone: '',
     confirmDdd: '', confirmPhone: '',
     password: '', confirmPassword: '',
-    cep: '', city: '', neighborhood: '', street: '', number: '', complement: '',
+    cep: '', city: '', state: '', neighborhood: '', street: '', number: '', complement: '',
     cnpj: '',
   });
   const [cnpjDisplay, setCnpjDisplay] = useState('');
@@ -76,6 +84,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           ...prev,
           cep: clean,
           city: addr.city,
+          state: addr.state,
           neighborhood: addr.neighborhood,
           street: addr.street,
         }));
@@ -180,6 +189,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           complement: form.complement || null,
           neighborhood: form.neighborhood,
           city: form.city,
+          state: form.state,
           cep: form.cep,
         },
         created_at: new Date().toISOString(),
@@ -359,12 +369,26 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           {(cepError || errors.cep) && <p className="text-destructive text-xs mt-1">{cepError || errors.cep}</p>}
         </div>
 
-        {/* City + Neighborhood */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* City + State + Neighborhood */}
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Cidade *</label>
             <Input value={form.city} onChange={(e) => updateField('city', e.target.value)} className="h-11 bg-background border-border" />
             {errors.city && <p className="text-destructive text-xs mt-1">{errors.city}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Estado *</label>
+            <Select value={form.state} onValueChange={(val) => updateField('state', val)}>
+              <SelectTrigger className="h-11 w-20 bg-background border-border">
+                <SelectValue placeholder="UF" />
+              </SelectTrigger>
+              <SelectContent>
+                {BRAZILIAN_STATES.map((uf) => (
+                  <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.state && <p className="text-destructive text-xs mt-1">{errors.state}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Bairro *</label>

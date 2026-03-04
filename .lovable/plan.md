@@ -1,23 +1,29 @@
 
-# Plano: Separar campo Cidade e Estado (UF)
+
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
 ## Problema
-O ViaCEP retorna `localidade/UF` no campo `city`. Precisamos separar em dois campos: **Cidade** (texto) e **Estado** (select com as 27 UFs do Brasil).
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-## Alterações
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-### 1. `src/hooks/useViaCep.ts`
-- Retornar `state` (UF) separado de `city` no resultado, em vez de concatenar `localidade/uf`.
+## Alteracoes
 
-### 2. `src/components/order/StepRegister.tsx`
-- Adicionar `state` ao form state (inicialmente `''`).
-- Adicionar validação Zod: `state: z.string().min(1, 'Estado obrigatório')`.
-- No `handleCepChange`, preencher `state` com a UF retornada pelo ViaCEP.
-- Na UI, trocar o grid de "Cidade + Bairro" para "Cidade + Estado + Bairro" (3 colunas), onde Estado é um `<Select>` com as 27 UFs brasileiras (AC, AL, AM, ..., TO).
-- Incluir `state` no payload de insert e no webhook.
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
 
-### 3. Layout
-```
-[  Cidade (input)  ] [ Estado (select) ] [ Bairro (input) ]
-```
-O select terá todas as UFs ordenadas alfabeticamente.
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
+
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+
