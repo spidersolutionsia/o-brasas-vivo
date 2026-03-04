@@ -44,7 +44,7 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 9kg',
         description: 'Para grandes eventos e quem quer garantir estoque.',
         weight: '9kg',
-        image: productBag,
+        image: productMascate9kg,
       },
     ],
   },
