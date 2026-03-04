@@ -368,12 +368,26 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           {(cepError || errors.cep) && <p className="text-destructive text-xs mt-1">{cepError || errors.cep}</p>}
         </div>
 
-        {/* City + Neighborhood */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* City + State + Neighborhood */}
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Cidade *</label>
             <Input value={form.city} onChange={(e) => updateField('city', e.target.value)} className="h-11 bg-background border-border" />
             {errors.city && <p className="text-destructive text-xs mt-1">{errors.city}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Estado *</label>
+            <Select value={form.state} onValueChange={(val) => updateField('state', val)}>
+              <SelectTrigger className="h-11 w-20 bg-background border-border">
+                <SelectValue placeholder="UF" />
+              </SelectTrigger>
+              <SelectContent>
+                {BRAZILIAN_STATES.map((uf) => (
+                  <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.state && <p className="text-destructive text-xs mt-1">{errors.state}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Bairro *</label>
