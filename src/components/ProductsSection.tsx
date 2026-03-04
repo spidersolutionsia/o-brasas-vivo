@@ -113,11 +113,7 @@ const ProductsSection = () => {
             </div>
 
             {/* Products Grid */}
-            <div className={`grid gap-8 max-w-5xl mx-auto ${
-              group.products.length === 2
-                ? 'md:grid-cols-2'
-                : 'md:grid-cols-3'
-            }`}>
+            <div className="grid gap-8 max-w-5xl mx-auto md:grid-cols-3">
               {group.products.map((product, index) => (
                 <div
                   key={index}
@@ -132,11 +128,6 @@ const ProductsSection = () => {
                       className="w-full h-full object-cover float-animation"
                       loading="lazy"
                     />
-                    {product.weight !== '5kg' && group.brand === 'Carvão Mascate' && (
-                      <span className="absolute bottom-4 right-4 bg-primary text-primary-foreground font-heading font-bold text-lg px-3 py-1 rounded-md shadow-lg">
-                        {product.weight}
-                      </span>
-                    )}
                   </div>
                   <div className="p-6 border-t border-border">
                     <div className="flex items-center justify-between mb-2">
