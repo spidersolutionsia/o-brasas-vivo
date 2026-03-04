@@ -1,29 +1,25 @@
 
+# Plano: Ajustar cards de produtos
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+## Alterações em `src/components/ProductsSection.tsx`
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+### 1. Cards Diamante Negro — mesmo tamanho e fundo preto
+- Manter o grid Diamante Negro com `md:grid-cols-2` mas usar `max-w-5xl` (igual ao Mascate) para que os cards fiquem maiores.
+- Trocar o fundo da área de imagem de `bg-background` para `bg-black` nos cards Diamante Negro (ou em todos, para consistência).
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+### 2. Overlay de peso nos cards Mascate
+- Como a imagem do saco mostra "5kg" em todos, adicionar um overlay com o peso correto (`2,5kg`, `9kg`) posicionado sobre a imagem.
+- Usar `position: relative` no container da imagem + `position: absolute` no badge de peso.
+- Para o saco de 5kg (que já está correto), não mostrar overlay ou mostrar igual para consistência visual.
 
-## Alteracoes
-
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
-
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
-
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
-
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
-
+### Layout do card de imagem:
+```text
+┌─────────────────────┐
+│  bg-black            │
+│                      │
+│    [imagem saco]     │
+│         ┌──────┐     │
+│         │ 2,5kg│ ◄── overlay badge
+│         └──────┘     │
+└─────────────────────┘
+```
