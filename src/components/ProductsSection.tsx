@@ -32,7 +32,7 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 2,5kg',
         description: 'Ideal para churrascos pequenos e do dia a dia.',
         weight: '2,5kg',
-        image: productBag,
+        image: productMascate25kg,
       },
       {
         name: 'Saco 5kg',
