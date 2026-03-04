@@ -84,6 +84,7 @@ const StepRegister = ({ onBack, onRegistered }: Props) => {
           ...prev,
           cep: clean,
           city: addr.city,
+          state: addr.state,
           neighborhood: addr.neighborhood,
           street: addr.street,
         }));
