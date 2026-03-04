@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import Pedido from "./pages/Pedido";
 import MeusPedidos from "./pages/MeusPedidos";
 import Cadastro from "./pages/Cadastro";
+import AdminLogin from "./pages/AdminLogin";
+import AdminPedidos from "./pages/AdminPedidos";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
