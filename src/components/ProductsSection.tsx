@@ -3,6 +3,7 @@ import productBag from '@/assets/product-bag-5kg.jpg';
 import productDiamante2kg from '@/assets/product-diamante-2kg.png';
 import productDiamante4kg from '@/assets/product-diamante-4kg.png';
 import productMascate9kg from '@/assets/product-mascate-9kg.png';
+import productMascate25kg from '@/assets/product-mascate-2.5kg.png';
 
 const benefits = [
   { icon: Flame, text: 'Alta durabilidade' },
@@ -31,7 +32,7 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 2,5kg',
         description: 'Ideal para churrascos pequenos e do dia a dia.',
         weight: '2,5kg',
-        image: productBag,
+        image: productMascate25kg,
       },
       {
         name: 'Saco 5kg',
