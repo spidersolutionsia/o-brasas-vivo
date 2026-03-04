@@ -1,29 +1,10 @@
 
+# Plano: Adicionar campo de confirmação de telefone no cadastro
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+## Alterações em `src/components/order/StepRegister.tsx`
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+1. **Form state**: Adicionar campos `confirmDdd` e `confirmPhone` ao estado do formulário.
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+2. **Validação (Zod + lógica)**: Após validar o schema base, verificar se `ddd + phone === confirmDdd + confirmPhone`. Se não coincidirem, setar erro `confirmPhone: 'Os telefones não coincidem.'`.
 
-## Alteracoes
-
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
-
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
-
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
-
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
-
+3. **UI**: Logo abaixo do bloco de telefone atual (linha ~275), adicionar um bloco idêntico com label **"Confirmar Telefone *"** contendo os campos `confirmDdd` e `confirmPhone` com os mesmos placeholders e formatação.
