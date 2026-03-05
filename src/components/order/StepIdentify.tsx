@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+
+const SAVED_LOGIN_KEY = 'saved_login';
+const SAVED_PASSWORD_KEY = 'saved_password';
 
 interface Props {
   onBack: () => void;
@@ -15,6 +19,17 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem(SAVED_LOGIN_KEY);
+    const savedPassword = localStorage.getItem(SAVED_PASSWORD_KEY);
+    if (savedLogin && savedPassword) {
+      setLoginInput(savedLogin);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +59,15 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
     }
 
     const customer = (data as any[])[0];
+
+    if (rememberMe) {
+      localStorage.setItem(SAVED_LOGIN_KEY, trimmed);
+      localStorage.setItem(SAVED_PASSWORD_KEY, password);
+    } else {
+      localStorage.removeItem(SAVED_LOGIN_KEY);
+      localStorage.removeItem(SAVED_PASSWORD_KEY);
+    }
+
     onCustomerFound(customer.id, customer.name, customer.email);
   };
 
@@ -82,6 +106,17 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="rememberMe"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked === true)}
+          />
+          <label htmlFor="rememberMe" className="text-sm text-muted-foreground cursor-pointer select-none">
+            Lembrar meus dados
+          </label>
         </div>
 
         {error && <p className="text-destructive text-sm text-center">{error}</p>}

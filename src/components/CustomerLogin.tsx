@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, X, LogOut, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
+
+const SAVED_LOGIN_KEY = 'saved_login';
+const SAVED_PASSWORD_KEY = 'saved_password';
 
 const CustomerLogin = () => {
   const [open, setOpen] = useState(false);
@@ -12,9 +16,20 @@ const CustomerLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const { customerEmail, customerName, isLoggedIn, login, logout } = useCustomerSession();
   const firstName = customerName?.split(' ')[0];
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem(SAVED_LOGIN_KEY);
+    const savedPassword = localStorage.getItem(SAVED_PASSWORD_KEY);
+    if (savedLogin && savedPassword) {
+      setLoginInput(savedLogin);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +55,15 @@ const CustomerLogin = () => {
     }
 
     const customer = (data as any[])[0];
+
+    if (rememberMe) {
+      localStorage.setItem(SAVED_LOGIN_KEY, trimmedLogin);
+      localStorage.setItem(SAVED_PASSWORD_KEY, password);
+    } else {
+      localStorage.removeItem(SAVED_LOGIN_KEY);
+      localStorage.removeItem(SAVED_PASSWORD_KEY);
+    }
+
     login(customer.email, customer.name);
     setOpen(false);
     setLoginInput('');
@@ -119,6 +143,17 @@ const CustomerLogin = () => {
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="rememberMeHeader"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  className="h-3.5 w-3.5"
+                />
+                <label htmlFor="rememberMeHeader" className="text-xs text-muted-foreground cursor-pointer select-none">
+                  Lembrar meus dados
+                </label>
               </div>
               {error && <p className="text-destructive text-xs">{error}</p>}
               <button

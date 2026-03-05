@@ -1,20 +1,29 @@
 
 
-# Plano: "Lembrar-me" no login do cliente
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
-Adicionar um checkbox "Lembrar meus dados" no formulário de login (StepIdentify). Quando marcado, salva email e senha no localStorage para preencher automaticamente na próxima visita.
+## Problema
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-## Implementação
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-**Arquivo:** `src/components/order/StepIdentify.tsx`
+## Alteracoes
 
-1. Adicionar estado `rememberMe` (checkbox) e carregar dados salvos do localStorage no mount
-2. Ao fazer login com sucesso, se `rememberMe` estiver marcado, salvar email e senha no localStorage (`saved_login`, `saved_password`). Se desmarcado, limpar esses dados.
-3. No mount, verificar se existem dados salvos e pré-preencher os campos + marcar o checkbox
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
 
-**Arquivo:** `src/components/CustomerLogin.tsx`
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
 
-- Aplicar a mesma lógica se este componente também tiver formulário de login
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
 
-**UI:** Checkbox com label "Lembrar meus dados" entre os campos de senha e o botão Entrar, usando o componente `Checkbox` do Radix já disponível no projeto.
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 
