@@ -55,6 +55,15 @@ const CustomerLogin = () => {
     }
 
     const customer = (data as any[])[0];
+
+    if (rememberMe) {
+      localStorage.setItem(SAVED_LOGIN_KEY, trimmedLogin);
+      localStorage.setItem(SAVED_PASSWORD_KEY, password);
+    } else {
+      localStorage.removeItem(SAVED_LOGIN_KEY);
+      localStorage.removeItem(SAVED_PASSWORD_KEY);
+    }
+
     login(customer.email, customer.name);
     setOpen(false);
     setLoginInput('');
