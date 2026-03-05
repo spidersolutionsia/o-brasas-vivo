@@ -144,6 +144,17 @@ const CustomerLogin = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="rememberMeHeader"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  className="h-3.5 w-3.5"
+                />
+                <label htmlFor="rememberMeHeader" className="text-xs text-muted-foreground cursor-pointer select-none">
+                  Lembrar meus dados
+                </label>
+              </div>
               {error && <p className="text-destructive text-xs">{error}</p>}
               <button
                 type="submit"
