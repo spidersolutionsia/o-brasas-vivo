@@ -1,29 +1,28 @@
 
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+# Plano: Sistema de Pontos + Total de Sacos na página Meus Pedidos
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+## O que será feito
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+Na página "Meus Pedidos", adicionar:
 
-## Alteracoes
+1. **Card de resumo no topo** com:
+   - Total de sacos pedidos (soma de todas as quantidades de todos os pedidos)
+   - Total de pontos acumulados (1 ponto por kg pedido)
+   - Visual atrativo com ícones (ex: estrela/flame para pontos)
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+2. **Cálculo de pontos**: Extrair o valor numérico do peso de cada item (ex: "2,5kg" → 2.5, "9kg" → 9), multiplicar pela quantidade, e somar tudo. Cada kg = 1 ponto.
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+## Implementação
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+**Arquivo:** `src/pages/MeusPedidos.tsx`
 
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+- Após carregar os pedidos, calcular:
+  - `totalBags`: soma de `item.quantity` de todos os pedidos
+  - `totalPoints`: soma de `parseFloat(item.weight.replace(',', '.')) * item.quantity` de todos os pedidos
+- Adicionar um card de resumo acima da lista de pedidos com essas duas métricas
+- Usar ícones do Lucide (ex: `Flame` para pontos, `Package` para sacos)
+- Estilizar com o padrão existente (`card-dark rounded-xl`)
+
+Tudo será calculado no frontend a partir dos dados dos pedidos já carregados — sem necessidade de alterações no banco.
 
