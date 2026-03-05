@@ -44,6 +44,15 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
     }
 
     const customer = (data as any[])[0];
+
+    if (rememberMe) {
+      localStorage.setItem(SAVED_LOGIN_KEY, trimmed);
+      localStorage.setItem(SAVED_PASSWORD_KEY, password);
+    } else {
+      localStorage.removeItem(SAVED_LOGIN_KEY);
+      localStorage.removeItem(SAVED_PASSWORD_KEY);
+    }
+
     onCustomerFound(customer.id, customer.name, customer.email);
   };
 
