@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, Truck, CheckCircle, Clock, ArrowLeft } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, ArrowLeft, Flame } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,6 +89,28 @@ const MeusPedidos = () => {
                 Meus <span className="section-title-accent">Pedidos</span>
               </h1>
             </div>
+
+            {isLoggedIn && !loading && orders.length > 0 && (() => {
+              const totalBags = orders.reduce((acc, order) => acc + order.items.reduce((iAcc, item) => iAcc + item.quantity, 0), 0);
+              const totalPoints = Math.floor(orders.reduce((acc, order) => acc + order.items.reduce((iAcc, item) => {
+                const weight = parseFloat(item.weight.replace(',', '.').replace(/kg/i, ''));
+                return iAcc + (weight * item.quantity);
+              }, 0), 0));
+              return (
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="card-dark rounded-xl p-5 text-center space-y-2">
+                    <Package className="w-8 h-8 text-primary mx-auto" />
+                    <p className="text-2xl font-heading font-bold text-foreground">{totalBags}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Sacos Pedidos</p>
+                  </div>
+                  <div className="card-dark rounded-xl p-5 text-center space-y-2">
+                    <Flame className="w-8 h-8 text-primary mx-auto" />
+                    <p className="text-2xl font-heading font-bold text-foreground">{totalPoints}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Pontos</p>
+                  </div>
+                </div>
+              );
+            })()}
 
             {!isLoggedIn ? (
               <div className="text-center card-dark rounded-xl p-8 space-y-4">
