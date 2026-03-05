@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+
+const SAVED_LOGIN_KEY = 'saved_login';
+const SAVED_PASSWORD_KEY = 'saved_password';
 
 interface Props {
   onBack: () => void;
@@ -15,6 +19,17 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem(SAVED_LOGIN_KEY);
+    const savedPassword = localStorage.getItem(SAVED_PASSWORD_KEY);
+    if (savedLogin && savedPassword) {
+      setLoginInput(savedLogin);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
