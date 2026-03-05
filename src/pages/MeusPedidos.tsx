@@ -90,6 +90,28 @@ const MeusPedidos = () => {
               </h1>
             </div>
 
+            {isLoggedIn && !loading && orders.length > 0 && (() => {
+              const totalBags = orders.reduce((acc, order) => acc + order.items.reduce((iAcc, item) => iAcc + item.quantity, 0), 0);
+              const totalPoints = Math.floor(orders.reduce((acc, order) => acc + order.items.reduce((iAcc, item) => {
+                const weight = parseFloat(item.weight.replace(',', '.').replace(/kg/i, ''));
+                return iAcc + (weight * item.quantity);
+              }, 0), 0));
+              return (
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="card-dark rounded-xl p-5 text-center space-y-2">
+                    <Package className="w-8 h-8 text-primary mx-auto" />
+                    <p className="text-2xl font-heading font-bold text-foreground">{totalBags}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Sacos Pedidos</p>
+                  </div>
+                  <div className="card-dark rounded-xl p-5 text-center space-y-2">
+                    <Flame className="w-8 h-8 text-primary mx-auto" />
+                    <p className="text-2xl font-heading font-bold text-foreground">{totalPoints}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Pontos</p>
+                  </div>
+                </div>
+              );
+            })()}
+
             {!isLoggedIn ? (
               <div className="text-center card-dark rounded-xl p-8 space-y-4">
                 <p className="text-muted-foreground">Faça login para ver seus pedidos.</p>
