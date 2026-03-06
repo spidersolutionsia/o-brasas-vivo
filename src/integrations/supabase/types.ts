@@ -100,6 +100,41 @@ export type Database = {
           },
         ]
       }
+      password_recovery_codes: {
+        Row: {
+          code: string
+          created_at: string
+          customer_id: string
+          expires_at: string
+          id: string
+          used: boolean
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          customer_id: string
+          expires_at?: string
+          id?: string
+          used?: boolean
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          customer_id?: string
+          expires_at?: string
+          id?: string
+          used?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "password_recovery_codes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -116,14 +151,24 @@ export type Database = {
       }
       generate_customer_code: { Args: never; Returns: string }
       generate_order_number: { Args: never; Returns: string }
-      recover_customer_password: {
+      generate_recovery_code: {
         Args: { p_login: string }
         Returns: {
           customer_email: string
           customer_id: string
           customer_name: string
           customer_phone: string
-          temp_password: string
+          recovery_code: string
+        }[]
+      }
+      reset_customer_password: {
+        Args: { p_customer_id: string; p_new_password: string }
+        Returns: boolean
+      }
+      verify_recovery_code: {
+        Args: { p_code: string; p_login: string }
+        Returns: {
+          customer_id: string
         }[]
       }
     }
