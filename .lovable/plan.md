@@ -1,29 +1,42 @@
 
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+## Plano: Recuperação de Senha com Código de Verificação
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+### Mudança de fluxo
+Atualmente o sistema gera uma senha temporária e envia diretamente. O novo fluxo será:
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+1. Usuário informa email/telefone → sistema localiza a conta
+2. Escolhe receber código por **Email** ou **WhatsApp**
+3. Sistema gera código de 6 dígitos, salva no banco com expiração, e envia
+4. Usuário digita o código no site → sistema valida
+5. Usuário define uma **nova senha** no site
 
-## Alteracoes
+### Alterações
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+**1. Banco de dados — nova tabela + funções RPC**
+- Criar tabela `password_recovery_codes` com colunas: `id`, `customer_id`, `code` (6 dígitos), `expires_at` (now + 10 min), `used` (boolean)
+- RLS: sem acesso direto (tudo via RPC security definer)
+- Nova RPC `generate_recovery_code(p_login text)` — localiza cliente, gera código numérico de 6 dígitos, insere na tabela, retorna dados do cliente + código
+- Nova RPC `verify_recovery_code(p_login text, p_code text)` — valida código não expirado e não usado, marca como usado, retorna `customer_id`
+- Nova RPC `reset_customer_password(p_customer_id uuid, p_new_password text)` — atualiza `password_hash` (trigger existente faz o hash)
+- Remover a RPC `recover_customer_password` antiga (ou mantê-la e substituir o uso)
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+**2. Edge Function `send-recovery-email`**
+- Ajustar template para enviar "código de verificação" em vez de "senha temporária"
+- Mudar o texto e a variável de `tempPassword` para `code`
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+**3. PasswordRecovery.tsx — novo fluxo com 4 etapas**
+- `input` → digita email/telefone e busca conta
+- `choose` → escolhe Email ou WhatsApp
+- `code` → **NOVA ETAPA** — campo para digitar o código de 6 dígitos com botão de verificar
+- `newPassword` → **NOVA ETAPA** — dois campos (nova senha + confirmar) e botão de salvar
+- `done` → confirmação de sucesso, botão "Voltar ao login"
 
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+**4. Webhook n8n**
+- Ajustar payload para enviar `code` em vez de `tempPassword`, mantendo evento `code_recovery`
+
+### Arquivos modificados/criados
+- **Nova migration SQL**: tabela `password_recovery_codes` + 3 RPCs
+- **Editado**: `supabase/functions/send-recovery-email/index.ts` — template do email com código
+- **Editado**: `src/components/PasswordRecovery.tsx` — novo fluxo com etapas code + newPassword
 
