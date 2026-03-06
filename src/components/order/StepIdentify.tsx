@@ -73,6 +73,14 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
     onCustomerFound(customer.id, customer.name, customer.email);
   };
 
+  if (showRecovery) {
+    return (
+      <div className="space-y-8">
+        <PasswordRecovery onBack={() => setShowRecovery(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -110,15 +118,24 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="rememberMe"
-            checked={rememberMe}
-            onCheckedChange={(checked) => setRememberMe(checked === true)}
-          />
-          <label htmlFor="rememberMe" className="text-sm text-muted-foreground cursor-pointer select-none">
-            Lembrar meus dados
-          </label>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="rememberMe"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked === true)}
+            />
+            <label htmlFor="rememberMe" className="text-sm text-muted-foreground cursor-pointer select-none">
+              Lembrar meus dados
+            </label>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowRecovery(true)}
+            className="text-sm text-primary hover:underline"
+          >
+            Esqueci minha senha
+          </button>
         </div>
 
         {error && <p className="text-destructive text-sm text-center">{error}</p>}
