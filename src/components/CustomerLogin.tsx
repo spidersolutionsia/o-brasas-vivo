@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
+import PasswordRecovery from '@/components/PasswordRecovery';
 
 const SAVED_LOGIN_KEY = 'saved_login';
 const SAVED_PASSWORD_KEY = 'saved_password';
@@ -17,6 +18,7 @@ const CustomerLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
   const { customerEmail, customerName, isLoggedIn, login, logout } = useCustomerSession();
   const firstName = customerName?.split(' ')[0];
   const navigate = useNavigate();
@@ -120,6 +122,8 @@ const CustomerLogin = () => {
                 Sair
               </button>
             </div>
+          ) : showRecovery ? (
+            <PasswordRecovery onBack={() => setShowRecovery(false)} compact />
           ) : (
             <form onSubmit={handleLogin} className="space-y-3">
               <Input
@@ -144,16 +148,25 @@ const CustomerLogin = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="rememberMeHeader"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked === true)}
-                  className="h-3.5 w-3.5"
-                />
-                <label htmlFor="rememberMeHeader" className="text-xs text-muted-foreground cursor-pointer select-none">
-                  Lembrar meus dados
-                </label>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="rememberMeHeader"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    className="h-3.5 w-3.5"
+                  />
+                  <label htmlFor="rememberMeHeader" className="text-xs text-muted-foreground cursor-pointer select-none">
+                    Lembrar meus dados
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowRecovery(true)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Esqueci a senha
+                </button>
               </div>
               {error && <p className="text-destructive text-xs">{error}</p>}
               <button

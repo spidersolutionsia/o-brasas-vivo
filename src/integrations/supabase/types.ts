@@ -116,6 +116,16 @@ export type Database = {
       }
       generate_customer_code: { Args: never; Returns: string }
       generate_order_number: { Args: never; Returns: string }
+      recover_customer_password: {
+        Args: { p_login: string }
+        Returns: {
+          customer_email: string
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          temp_password: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
