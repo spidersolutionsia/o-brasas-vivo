@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, MapPin, MessageCircle, ArrowLeft, Flame, Users, Clock, Beef } from 'lucide-react';
+import { Minus, Plus, MapPin, ArrowLeft, Flame, Users, Clock, Beef, Drumstick, Ribbon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
@@ -20,14 +20,51 @@ const cardVariants = {
   }),
 };
 
+type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'asinha' | 'linguica';
+
+interface Protein {
+  id: ProteinId;
+  label: string;
+  icon: React.ReactNode;
+  hasCarbonFactor?: boolean; // needs +30% charcoal
+}
+
+const proteins: Protein[] = [
+  { id: 'picanha', label: 'Picanha', icon: <Beef className="w-6 h-6" /> },
+  { id: 'contrafile', label: 'Contra-filé', icon: <Beef className="w-6 h-6" /> },
+  { id: 'fraldinha', label: 'Fraldinha', icon: <Beef className="w-6 h-6" /> },
+  { id: 'costela', label: 'Costela', icon: <Ribbon className="w-6 h-6" />, hasCarbonFactor: true },
+  { id: 'sobrecoxa', label: 'Sobrecoxa', icon: <Drumstick className="w-6 h-6" /> },
+  { id: 'asinha', label: 'Asinha', icon: <Drumstick className="w-6 h-6" /> },
+  { id: 'linguica', label: 'Linguiça', icon: <Flame className="w-6 h-6" /> },
+];
+
 const Calculadora = () => {
   const [men, setMen] = useState(0);
   const [women, setWomen] = useState(0);
   const [children, setChildren] = useState(0);
   const [duration, setDuration] = useState(4);
   const [hasAccompaniments, setHasAccompaniments] = useState(false);
+  const [selectedProteins, setSelectedProteins] = useState<Set<ProteinId>>(new Set(['picanha']));
 
   const totalPeople = men + women + children;
+
+  const toggleProtein = (id: ProteinId) => {
+    setSelectedProteins((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        if (next.size > 1) next.delete(id); // keep at least 1
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const hasCarbonFactor = useMemo(
+    () => proteins.some((p) => p.hasCarbonFactor && selectedProteins.has(p.id)),
+    [selectedProteins]
+  );
 
   const result = useMemo(() => {
     const baseMeat = men * 500 + women * 400 + children * 200;
@@ -36,37 +73,44 @@ const Calculadora = () => {
     const totalGrams = baseMeat * durationAdj * accompAdj;
     const totalKg = totalGrams / 1000;
 
-    let bagSize: string;
+    // Charcoal recommendation: 1kg charcoal per 1kg meat, +30% if costela
+    const charcoalKg = totalKg * (hasCarbonFactor ? 1.3 : 1);
+
     let bagLabel: string;
     let bagImage: string;
     let bagKg: number;
 
-    if (totalKg <= 2.5) {
-      bagSize = '2.5kg';
+    if (charcoalKg <= 2.5) {
       bagLabel = 'Saco de 2.5kg — O Essencial';
       bagImage = productBag25;
       bagKg = 2.5;
-    } else if (totalKg <= 5) {
-      bagSize = '5kg';
+    } else if (charcoalKg <= 5) {
       bagLabel = 'Saco de 5kg — O Churrasqueiro';
       bagImage = productBag5;
       bagKg = 5;
     } else {
-      bagSize = '9kg';
       bagLabel = 'Saco de 9kg — Mestre da Brasa';
       bagImage = productBag9;
       bagKg = 9;
     }
 
-    return { totalKg: Math.round(totalKg * 10) / 10, bagSize, bagLabel, bagImage, bagKg };
-  }, [men, women, children, duration, hasAccompaniments]);
+    // Distribute meat equally among selected proteins
+    const selectedCount = selectedProteins.size;
+    const perProteinKg = selectedCount > 0 ? Math.round((totalKg / selectedCount) * 10) / 10 : 0;
 
-  const whatsappLink = useMemo(() => {
-    const msg = encodeURIComponent(
-      `Olá! Usei o Calculômetro Mascate. Para o meu churrasco de ${totalPeople} pessoas, preciso de ${result.totalKg}kg de carne e um Saco de Carvão Mascate de ${result.bagKg}kg. Onde encontro o revendedor mais próximo?`
-    );
-    return `https://wa.me/5522992525529?text=${msg}`;
-  }, [totalPeople, result]);
+    const distribution = proteins
+      .filter((p) => selectedProteins.has(p.id))
+      .map((p) => ({ ...p, kg: perProteinKg }));
+
+    return {
+      totalKg: Math.round(totalKg * 10) / 10,
+      charcoalKg: Math.round(charcoalKg * 10) / 10,
+      bagLabel,
+      bagImage,
+      bagKg,
+      distribution,
+    };
+  }, [men, women, children, duration, hasAccompaniments, selectedProteins, hasCarbonFactor]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-['Inter'] relative overflow-hidden">
@@ -128,9 +172,65 @@ const Calculadora = () => {
           </div>
         </motion.div>
 
-        {/* Duration Card */}
+        {/* Proteins Card */}
         <motion.div
           custom={1}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 mb-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Beef className="w-5 h-5 text-[#ff6a00]" />
+            <h2 className="font-['Oswald'] text-lg font-semibold tracking-wide uppercase">Proteínas</h2>
+          </div>
+          <p className="text-white/40 text-xs mb-4">Selecione as carnes do seu churrasco</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            {proteins.map((protein) => {
+              const isSelected = selectedProteins.has(protein.id);
+              return (
+                <button
+                  key={protein.id}
+                  onClick={() => toggleProtein(protein.id)}
+                  className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#ff6a00]/10 border-[#ff6a00]/40 text-[#ff6a00]'
+                      : 'bg-white/[0.02] border-white/[0.06] text-white/40 hover:border-white/15 hover:text-white/60'
+                  }`}
+                >
+                  {protein.icon}
+                  <span className="text-xs font-medium">{protein.label}</span>
+                  {protein.hasCarbonFactor && isSelected && (
+                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-[#ff6a00]/20 text-[#ff6a00] px-1.5 py-0.5 rounded-full leading-none">
+                      +carvão
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <AnimatePresence>
+            {hasCarbonFactor && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 text-xs text-[#ff6a00]/80 bg-[#ff6a00]/5 rounded-lg px-3 py-2 border border-[#ff6a00]/10">
+                  🔥 Costela selecionada! +30% de carvão recomendado pelo tempo de queima.
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Duration Card */}
+        <motion.div
+          custom={2}
           variants={cardVariants}
           initial="hidden"
           animate="visible"
@@ -177,7 +277,7 @@ const Calculadora = () => {
 
         {/* Accompaniments */}
         <motion.div
-          custom={2}
+          custom={3}
           variants={cardVariants}
           initial="hidden"
           animate="visible"
@@ -190,7 +290,7 @@ const Calculadora = () => {
               className="mt-0.5 border-white/20 data-[state=checked]:bg-[#ff6a00] data-[state=checked]:border-[#ff6a00]"
             />
             <div>
-              <span className="font-medium text-sm">Teremos pão de alho, linguiça e entradas</span>
+              <span className="font-medium text-sm">Teremos pão de alho e entradas</span>
               <span className="block text-xs text-white/40 mt-0.5">Reduz 10% da carne necessária</span>
             </div>
           </label>
@@ -203,7 +303,7 @@ const Calculadora = () => {
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
               className="backdrop-blur-xl bg-white/[0.04] border border-[#ff6a00]/20 rounded-2xl p-6 mb-6 relative overflow-hidden"
             >
               <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#ff6a00]/10 blur-[60px]" />
@@ -245,6 +345,32 @@ const Calculadora = () => {
                 </div>
               </div>
 
+              {/* Meat Distribution */}
+              {result.distribution.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25, duration: 0.4 }}
+                  className="mt-5"
+                >
+                  <span className="text-white/40 text-xs uppercase tracking-widest">Distribuição por corte</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                    {result.distribution.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-2 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]"
+                      >
+                        <span className="text-[#ff6a00] flex-shrink-0">{item.icon}</span>
+                        <div className="min-w-0">
+                          <span className="text-xs text-white/70 block truncate">{item.label}</span>
+                          <span className="font-['Oswald'] text-sm font-bold text-white">{item.kg}kg</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
@@ -280,7 +406,7 @@ const Calculadora = () => {
 
         {/* Footer */}
         <motion.footer
-          custom={3}
+          custom={4}
           variants={cardVariants}
           initial="hidden"
           animate="visible"
