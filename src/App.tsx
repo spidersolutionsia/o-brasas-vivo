@@ -9,6 +9,7 @@ import MeusPedidos from "./pages/MeusPedidos";
 import Cadastro from "./pages/Cadastro";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPedidos from "./pages/AdminPedidos";
+import Calculadora from "./pages/Calculadora";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
