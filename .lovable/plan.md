@@ -1,17 +1,29 @@
 
 
-## Plano: Reduzir código de recuperação para 4 dígitos
+# Plano: Corrigir logout nao refletido na pagina de pedido
 
-Alteração simples em 2 lugares:
+## Problema
+O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
 
-### 1. Banco de dados — migration SQL
-Recriar a função `generate_recovery_code` trocando o loop de `1..6` para `1..4`.
+## Solucao
+Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
 
-### 2. Frontend — `src/components/PasswordRecovery.tsx`
-- Validação: `length !== 6` → `length !== 4`
-- Mensagens: "código de 6 dígitos" → "código de 4 dígitos"
-- Input: `maxLength={6}` → `maxLength={4}`, `slice(0, 6)` → `slice(0, 4)`, placeholder `"000000"` → `"0000"`
+## Alteracoes
 
-### 3. Edge Function — `supabase/functions/send-recovery-email/index.ts`
-Nenhuma alteração necessária (já usa a variável `code` dinamicamente).
+### 1. Criar `src/contexts/CustomerSessionContext.tsx`
+- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
+- Exportar um hook `useCustomerSession` que consome o contexto
+- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+
+### 2. Atualizar `src/hooks/useCustomerSession.ts`
+- Substituir a implementacao atual por uma re-exportacao do hook do contexto
+- Manter compatibilidade com todos os imports existentes
+
+### 3. Atualizar `src/App.tsx`
+- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+
+### Resultado
+- Logout no header reflete imediatamente na pagina de pedido
+- Login tambem reflete em todos os componentes
+- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
 

@@ -128,8 +128,8 @@ const PasswordRecovery = ({ onBack, compact = false }: Props) => {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = codeInput.trim();
-    if (trimmed.length !== 6) {
-      setError('Digite o código de 6 dígitos.');
+    if (trimmed.length !== 4) {
+      setError('Digite o código de 4 dígitos.');
       return;
     }
 
@@ -267,16 +267,16 @@ const PasswordRecovery = ({ onBack, compact = false }: Props) => {
         </p>
         <p className={`${textSize} text-muted-foreground`}>
           {sentVia === 'email'
-            ? `Enviamos um código de 6 dígitos para ${maskEmail(customerData!.email)}`
-            : `Enviamos um código de 6 dígitos via WhatsApp para ${maskPhone(customerData!.phone)}`}
+            ? `Enviamos um código de 4 dígitos para ${maskEmail(customerData!.email)}`
+            : `Enviamos um código de 4 dígitos via WhatsApp para ${maskPhone(customerData!.phone)}`}
         </p>
 
         <form onSubmit={handleVerifyCode} className={gap}>
           <Input
             value={codeInput}
-            onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            placeholder="000000"
-            maxLength={6}
+            onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="0000"
+            maxLength={4}
             className={`${inputHeight} bg-background border-border focus:border-primary text-center text-xl tracking-[0.5em] font-mono`}
             inputMode="numeric"
           />
