@@ -35,7 +35,7 @@ const HeroSection = () => {
           e.currentTarget.currentTime = 3;
         }}
         onEnded={(e) => {
-          e.currentTarget.currentTime = 2;
+          e.currentTarget.currentTime = 3;
           e.currentTarget.play();
         }}
       >
