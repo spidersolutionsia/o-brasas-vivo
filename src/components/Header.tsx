@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Package } from 'lucide-react';
+import { Menu, X, Package, Flame } from 'lucide-react';
 import logoHorizontal from '@/assets/logo-horizontal.jpg';
 import CustomerLogin from '@/components/CustomerLogin';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
