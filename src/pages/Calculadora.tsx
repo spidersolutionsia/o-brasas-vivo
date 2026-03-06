@@ -252,7 +252,7 @@ const Calculadora = () => {
                 transition={{ delay: 0.3, duration: 0.4 }}
                 className="mt-6"
               >
-                <Link to="/#pontos-de-venda">
+                <Link to="/#encontre">
                   <Button className="w-full bg-[#ff6a00] hover:bg-[#ff6a00]/90 text-white h-12 font-semibold gap-2 border-0">
                     <MapPin className="w-4 h-4" />
                     Onde Encontrar
