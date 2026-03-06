@@ -245,25 +245,19 @@ const Calculadora = () => {
                 </div>
               </div>
 
-              {/* CTAs */}
+              {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6"
+                className="mt-6"
               >
                 <Link to="/#pontos-de-venda">
-                  <Button className="w-full bg-white/10 hover:bg-white/15 text-white border border-white/10 h-12 font-semibold gap-2">
+                  <Button className="w-full bg-[#ff6a00] hover:bg-[#ff6a00]/90 text-white h-12 font-semibold gap-2 border-0">
                     <MapPin className="w-4 h-4" />
                     Onde Encontrar
                   </Button>
                 </Link>
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-[#25D366] hover:bg-[#20BD5B] text-white h-12 font-semibold gap-2 border-0">
-                    <MessageCircle className="w-4 h-4" />
-                    Receber Lista no WhatsApp
-                  </Button>
-                </a>
               </motion.div>
             </motion.div>
           )}
