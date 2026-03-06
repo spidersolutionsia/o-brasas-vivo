@@ -128,8 +128,8 @@ const PasswordRecovery = ({ onBack, compact = false }: Props) => {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = codeInput.trim();
-    if (trimmed.length !== 6) {
-      setError('Digite o código de 6 dígitos.');
+    if (trimmed.length !== 4) {
+      setError('Digite o código de 4 dígitos.');
       return;
     }
 
