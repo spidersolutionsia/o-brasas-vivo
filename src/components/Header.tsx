@@ -11,6 +11,7 @@ const navLinks = [
   { href: 'parceiros', label: 'Parceiros' },
   { href: 'encontre', label: 'Onde Encontrar' },
   { href: '/pedido', label: 'Fazer Pedido', isRoute: true },
+  { href: '/calculadora', label: 'Calculadora', isRoute: true },
 ];
 
 const Header = () => {
