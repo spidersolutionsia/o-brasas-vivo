@@ -9,6 +9,7 @@ import MeusPedidos from "./pages/MeusPedidos";
 import Cadastro from "./pages/Cadastro";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPedidos from "./pages/AdminPedidos";
+import Calculadora from "./pages/Calculadora";
 import NotFound from "./pages/NotFound";
 import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/meus-pedidos" element={<MeusPedidos />} />
           <Route path="/meu-pedido" element={<MeusPedidos />} />
+          <Route path="/calculadora" element={<Calculadora />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/pedidos" element={<AdminPedidos />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
