@@ -18,6 +18,7 @@ const CustomerLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
   const { customerEmail, customerName, isLoggedIn, login, logout } = useCustomerSession();
   const firstName = customerName?.split(' ')[0];
   const navigate = useNavigate();
