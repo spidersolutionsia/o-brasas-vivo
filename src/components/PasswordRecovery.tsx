@@ -267,8 +267,8 @@ const PasswordRecovery = ({ onBack, compact = false }: Props) => {
         </p>
         <p className={`${textSize} text-muted-foreground`}>
           {sentVia === 'email'
-            ? `Enviamos um código de 6 dígitos para ${maskEmail(customerData!.email)}`
-            : `Enviamos um código de 6 dígitos via WhatsApp para ${maskPhone(customerData!.phone)}`}
+            ? `Enviamos um código de 4 dígitos para ${maskEmail(customerData!.email)}`
+            : `Enviamos um código de 4 dígitos via WhatsApp para ${maskPhone(customerData!.phone)}`}
         </p>
 
         <form onSubmit={handleVerifyCode} className={gap}>
