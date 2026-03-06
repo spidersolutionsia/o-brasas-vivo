@@ -274,9 +274,9 @@ const PasswordRecovery = ({ onBack, compact = false }: Props) => {
         <form onSubmit={handleVerifyCode} className={gap}>
           <Input
             value={codeInput}
-            onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            placeholder="000000"
-            maxLength={6}
+            onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="0000"
+            maxLength={4}
             className={`${inputHeight} bg-background border-border focus:border-primary text-center text-xl tracking-[0.5em] font-mono`}
             inputMode="numeric"
           />
