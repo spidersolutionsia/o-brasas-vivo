@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
+import PasswordRecovery from '@/components/PasswordRecovery';
 
 const SAVED_LOGIN_KEY = 'saved_login';
 const SAVED_PASSWORD_KEY = 'saved_password';
