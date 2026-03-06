@@ -32,7 +32,7 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full object-cover scale-110"
         style={{ transform: `scale(1.1) translateY(${scrollY * 0.3}px)` }}
         onLoadedMetadata={(e) => {
-          e.currentTarget.currentTime = 2;
+          e.currentTarget.currentTime = 3;
         }}
         onEnded={(e) => {
           e.currentTarget.currentTime = 2;
