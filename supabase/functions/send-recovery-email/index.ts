@@ -13,9 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { customerName, customerEmail, tempPassword } = await req.json();
+    const { customerName, customerEmail, code } = await req.json();
 
-    if (!customerName || !customerEmail || !tempPassword) {
+    if (!customerName || !customerEmail || !code) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -58,8 +58,8 @@ serve(async (req) => {
     .subtitle { color: #a3a3a3; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; }
     .greeting { color: #ffffff; font-size: 18px; margin-bottom: 20px; }
     .message { color: #d4d4d4; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
-    .password-box { background-color: #1a1a1a; border: 2px solid #f97316; border-radius: 8px; padding: 16px; margin: 20px auto; display: inline-block; }
-    .password-text { color: #f97316; font-size: 28px; font-weight: bold; letter-spacing: 6px; font-family: monospace; }
+    .code-box { background-color: #1a1a1a; border: 2px solid #f97316; border-radius: 8px; padding: 16px; margin: 20px auto; display: inline-block; }
+    .code-text { color: #f97316; font-size: 32px; font-weight: bold; letter-spacing: 8px; font-family: monospace; }
     .warning { color: #a3a3a3; font-size: 12px; line-height: 1.5; margin-top: 20px; }
     .footer { color: #737373; font-size: 11px; text-align: center; margin-top: 30px; }
   </style>
@@ -72,14 +72,14 @@ serve(async (req) => {
       <div class="greeting">Olá, ${customerName}! 🔑</div>
       <div class="message">
         Recebemos sua solicitação de recuperação de senha.<br>
-        Sua nova senha temporária é:
+        Seu código de verificação é:
       </div>
-      <div class="password-box">
-        <span class="password-text">${tempPassword}</span>
+      <div class="code-box">
+        <span class="code-text">${code}</span>
       </div>
       <div class="warning">
-        Use esta senha para fazer login no site.<br>
-        Recomendamos que você a memorize ou anote em local seguro.
+        Este código expira em 10 minutos.<br>
+        Se você não solicitou esta recuperação, ignore este email.
       </div>
     </div>
     <div class="footer">
@@ -93,7 +93,7 @@ serve(async (req) => {
     await client.send({
       from: gmailUser,
       to: customerEmail,
-      subject: "Recuperação de Senha - Mascate Carvão",
+      subject: "Código de Verificação - Mascate Carvão",
       content: "auto",
       html: htmlBody,
     });
