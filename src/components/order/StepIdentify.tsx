@@ -21,6 +21,7 @@ const StepIdentify = ({ onBack, onCustomerFound, onRegister }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
 
   useEffect(() => {
     const savedLogin = localStorage.getItem(SAVED_LOGIN_KEY);
