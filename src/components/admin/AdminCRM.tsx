@@ -11,12 +11,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Search, Plus, RefreshCw, Route, Pencil } from "lucide-react";
-import { fetchTable, updateRow, insertRow, deleteRow } from "@/lib/externalSupabase";
+import { supabase } from "@/integrations/supabase/client";
+import { syncToExternal } from "@/lib/externalSupabase";
 import MiniCalendar from "./MiniCalendar";
 import RouteModal from "./RouteModal";
 import ClientModal from "./ClientModal";
 
-// Helpers
 const DIAS_SEMANA = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
 const DIAS_LABEL: Record<string, string> = {
   seg: "Segunda", ter: "Terça", qua: "Quarta", qui: "Quinta",
@@ -55,18 +55,15 @@ export default function AdminCRM() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Filters
   const [search, setSearch] = useState("");
   const [filterRota, setFilterRota] = useState("all");
   const [filterAtivo, setFilterAtivo] = useState("all");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filterByDay, setFilterByDay] = useState(false);
 
-  // Modals
   const [showRouteModal, setShowRouteModal] = useState(false);
   const [editingClient, setEditingClient] = useState<any>(null);
 
-  // Sort
   const [sortCol, setSortCol] = useState<SortCol>("nome");
   const [sortAsc, setSortAsc] = useState(true);
 
@@ -76,14 +73,17 @@ export default function AdminCRM() {
     setLoading(true);
     setError(null);
     try {
-      const [clientsData, rotasData, pedidosData] = await Promise.all([
-        fetchTable("crm_carvaomascate", { order: "nome.asc" }),
-        fetchTable("rotas_carvao", { order: "nome.asc" }),
-        fetchTable("pedidos_semana_carvao", { filters: `semana=eq.${currentWeek}` }),
+      const [clientsRes, rotasRes, pedidosRes] = await Promise.all([
+        supabase.from("crm_carvaomascate").select("*").order("nome", { ascending: true }),
+        supabase.from("rotas_carvao").select("*").order("nome", { ascending: true }),
+        supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek),
       ]);
-      setClients(clientsData || []);
-      setRotas(rotasData || []);
-      setPedidosSemana(pedidosData || []);
+      if (clientsRes.error) throw clientsRes.error;
+      if (rotasRes.error) throw rotasRes.error;
+      if (pedidosRes.error) throw pedidosRes.error;
+      setClients(clientsRes.data || []);
+      setRotas(rotasRes.data || []);
+      setPedidosSemana(pedidosRes.data || []);
     } catch (e: any) {
       setError(e.message);
       toast({ title: "Erro", description: e.message, variant: "destructive" });
@@ -93,38 +93,45 @@ export default function AdminCRM() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // Reload pedidos when week changes
   useEffect(() => {
     (async () => {
       try {
-        const data = await fetchTable("pedidos_semana_carvao", { filters: `semana=eq.${currentWeek}` });
+        const { data } = await supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek);
         setPedidosSemana(data || []);
       } catch { /* ignore */ }
     })();
   }, [currentWeek]);
 
-  // Handlers
-  const handleTogglePedido = async (clientId: string, telefone: string) => {
+  // Handlers — write local then sync to external
+  const handleTogglePedido = async (clientId: number, telefone: string) => {
     try {
       const existing = pedidosSemana.find((p: any) => p.cliente_id === clientId && p.semana === currentWeek);
       if (existing) {
         const newVal = !existing.confirmado;
-        await updateRow("pedidos_semana_carvao", existing.id, {
+        const updateData = {
           confirmado: newVal,
           data_confirmacao: newVal ? new Date().toISOString() : null,
-        });
-        setPedidosSemana((prev) => prev.map((p) => p.id === existing.id ? { ...p, confirmado: newVal } : p));
+        };
+        const { error } = await supabase.from("pedidos_semana_carvao").update(updateData).eq("id", existing.id);
+        if (error) throw error;
+        setPedidosSemana((prev) => prev.map((p) => p.id === existing.id ? { ...p, ...updateData } : p));
+        // Sync external
+        syncToExternal({ table: "pedidos_semana_carvao", action: "update", data: { ...updateData, telefone, semana: currentWeek }, match: { telefone, semana: currentWeek } });
       } else {
-        const result = await insertRow("pedidos_semana_carvao", {
+        const insertData = {
           cliente_id: clientId,
           telefone,
           semana: currentWeek,
           confirmado: true,
           data_confirmacao: new Date().toISOString(),
-        });
-        if (Array.isArray(result) && result[0]) {
+        };
+        const { data: result, error } = await supabase.from("pedidos_semana_carvao").insert(insertData).select();
+        if (error) throw error;
+        if (result && result[0]) {
           setPedidosSemana((prev) => [...prev, result[0]]);
         }
+        // Sync external
+        syncToExternal({ table: "pedidos_semana_carvao", action: "upsert", data: insertData });
       }
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
@@ -134,13 +141,21 @@ export default function AdminCRM() {
   const handleSaveClient = async (id: string | null, data: any) => {
     try {
       if (id) {
-        await updateRow("crm_carvaomascate", id, data);
-        setClients((prev) => prev.map((c) => c.id === id ? { ...c, ...data } : c));
+        const client = clients.find((c) => String(c.id) === String(id));
+        const telefone = data.telefone || client?.telefone;
+        const { error } = await supabase.from("crm_carvaomascate").update(data).eq("id", Number(id));
+        if (error) throw error;
+        setClients((prev) => prev.map((c) => String(c.id) === String(id) ? { ...c, ...data } : c));
+        // Sync by telefone
+        syncToExternal({ table: "crm_carvaomascate", action: "update", data, match: { telefone } });
       } else {
-        const result = await insertRow("crm_carvaomascate", data);
-        if (Array.isArray(result) && result[0]) {
+        const { data: result, error } = await supabase.from("crm_carvaomascate").insert(data).select();
+        if (error) throw error;
+        if (result && result[0]) {
           setClients((prev) => [...prev, result[0]]);
         }
+        // Sync external via upsert (telefone as conflict key)
+        syncToExternal({ table: "crm_carvaomascate", action: "upsert", data });
       }
       toast({ title: "Cliente salvo!" });
     } catch (e: any) {
@@ -151,13 +166,17 @@ export default function AdminCRM() {
   const handleSaveRota = async (data: any) => {
     try {
       if (data.id) {
-        await updateRow("rotas_carvao", data.id, data);
+        const { error } = await supabase.from("rotas_carvao").update(data).eq("id", data.id);
+        if (error) throw error;
         setRotas((prev) => prev.map((r) => r.id === data.id ? { ...r, ...data } : r));
+        syncToExternal({ table: "rotas_carvao", action: "update", data, match: { nome: data.nome } });
       } else {
-        const result = await insertRow("rotas_carvao", data);
-        if (Array.isArray(result) && result[0]) {
+        const { data: result, error } = await supabase.from("rotas_carvao").insert(data).select();
+        if (error) throw error;
+        if (result && result[0]) {
           setRotas((prev) => [...prev, result[0]]);
         }
+        syncToExternal({ table: "rotas_carvao", action: "upsert", data });
       }
       toast({ title: "Rota salva!" });
     } catch (e: any) {
@@ -167,18 +186,26 @@ export default function AdminCRM() {
 
   const handleDeleteRota = async (id: string) => {
     try {
-      await deleteRow("rotas_carvao", id);
+      const rota = rotas.find((r) => r.id === id);
+      const { error } = await supabase.from("rotas_carvao").delete().eq("id", id);
+      if (error) throw error;
       setRotas((prev) => prev.filter((r) => r.id !== id));
+      if (rota) syncToExternal({ table: "rotas_carvao", action: "delete", match: { nome: rota.nome } });
       toast({ title: "Rota removida!" });
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
   };
 
-  const handleUpdateField = async (clientId: string, field: string, value: any) => {
+  const handleUpdateField = async (clientId: number, field: string, value: any) => {
     try {
-      await updateRow("crm_carvaomascate", clientId, { [field]: value });
+      const client = clients.find((c) => c.id === clientId);
+      const { error } = await supabase.from("crm_carvaomascate").update({ [field]: value }).eq("id", clientId);
+      if (error) throw error;
       setClients((prev) => prev.map((c) => c.id === clientId ? { ...c, [field]: value } : c));
+      if (client?.telefone) {
+        syncToExternal({ table: "crm_carvaomascate", action: "update", data: { [field]: value }, match: { telefone: client.telefone } });
+      }
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
@@ -227,7 +254,6 @@ export default function AdminCRM() {
     else { setSortCol(col); setSortAsc(true); }
   };
 
-  // Stats
   const totalClientes = clients.length;
   const ativos = clients.filter((c) => (c.Ativo || "SIM") === "SIM").length;
   const pedidosConfirmados = pedidosSemana.filter((p) => p.confirmado).length;
@@ -318,7 +344,6 @@ export default function AdminCRM() {
 
         {/* Main table */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Search */}
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -341,7 +366,6 @@ export default function AdminCRM() {
             </div>
           )}
 
-          {/* Table */}
           <div className="border border-border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
