@@ -1,22 +1,61 @@
 
 
-## Plano: Renomear rotas para combinar com CSV
+## Plano: Cores por rota no calendário
+
+### Contexto
+As rotas (`rotas_carvao`) têm um campo `dia_semana` que ainda está vazio. Precisamos:
+1. Permitir atribuir `dia_semana` às rotas (já existe no RouteModal)
+2. Atribuir uma cor fixa a cada rota
+3. No MiniCalendar, mostrar indicadores coloridos nos dias que têm rotas com clientes ativos
 
 ### O que será feito
-Atualizar os nomes das 2 rotas na tabela `rotas_carvao`:
-- `"Rota 1"` → `"Rota1"`
-- `"Rota 2"` → `"Rota2"`
 
-Isso fará com que os nomes correspondam aos valores da coluna `rota` nos contatos do `crm_carvaomascate`, corrigindo o filtro por rota no painel.
+**1. Adicionar coluna `cor` na tabela `rotas_carvao`**
+- Nova coluna `cor TEXT` com default null
+- Migração SQL simples
+
+**2. Adicionar campo de cor no RouteModal**
+- Adicionar um seletor de cor (paleta pré-definida com ~8 cores: vermelho, azul, verde, laranja, roxo, rosa, ciano, amarelo)
+- Salvar a cor escolhida junto com os dados da rota
+
+**3. Atualizar MiniCalendar para mostrar cores das rotas**
+- Receber as rotas como prop (com `nome`, `dia_semana`, `cor`)
+- Receber os clientes ativos como prop
+- Para cada dia do calendário, verificar qual dia da semana é (seg, ter, etc.)
+- Buscar quais rotas têm `dia_semana` correspondente E possuem pelo menos 1 cliente ativo nessa rota
+- Renderizar bolinhas coloridas abaixo do número do dia (1 bolinha por rota ativa naquele dia)
+
+**4. Adicionar legenda**
+- Abaixo do calendário, mostrar uma legenda simples: bolinha colorida + nome da rota
 
 ### Detalhes técnicos
-Executar 2 UPDATEs via insert tool:
+
+**Migração SQL:**
 ```sql
-UPDATE rotas_carvao SET nome = 'Rota1' WHERE id = 'd970dcda-0af9-43fc-bc9b-c346487285f4';
-UPDATE rotas_carvao SET nome = 'Rota2' WHERE id = '4a4488d6-55bc-4968-b38c-d2a736de4373';
+ALTER TABLE rotas_carvao ADD COLUMN cor TEXT DEFAULT NULL;
 ```
 
-Também sincronizar com o banco externo via `crm-proxy` (update por nome antigo).
+**Arquivo: `src/components/admin/RouteModal.tsx`**
+- Adicionar array de cores pré-definidas
+- Renderizar botões circulares coloridos para seleção
+- Incluir `cor` no save
 
-Nenhuma alteração de código é necessária — o frontend já lê os nomes dinamicamente da tabela `rotas_carvao`.
+**Arquivo: `src/components/admin/MiniCalendar.tsx`**
+- Nova prop `rotas: { nome, dia_semana, cor }[]`
+- Nova prop `activeRouteNames: string[]` (rotas que têm clientes ativos)
+- Para cada dia, calcular dia da semana → filtrar rotas que caem nesse dia E estão em `activeRouteNames`
+- Renderizar dots coloridos dentro do botão do dia
+
+**Arquivo: `src/components/admin/AdminCRM.tsx`**
+- Calcular `activeRouteNames` (rotas que têm pelo menos 1 cliente ativo)
+- Passar `rotas` e `activeRouteNames` ao MiniCalendar
+
+### Arquivos
+
+| Arquivo | Ação |
+|---|---|
+| Migração SQL | Adicionar coluna `cor` |
+| `src/components/admin/RouteModal.tsx` | Seletor de cor |
+| `src/components/admin/MiniCalendar.tsx` | Indicadores coloridos por rota |
+| `src/components/admin/AdminCRM.tsx` | Passar props de rotas ao calendário |
 
