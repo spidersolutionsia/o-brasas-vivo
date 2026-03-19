@@ -195,7 +195,10 @@ export default function AdminCRM() {
         (c.cidade || "").toLowerCase().includes(s)
       );
     }
-    if (filterRota !== "all") result = result.filter((c) => (c.rota || "") === filterRota);
+    if (filterRota !== "all") {
+      const rotaFilter = filterRota === "__none__" ? "" : filterRota;
+      result = result.filter((c) => (c.rota || "") === rotaFilter);
+    }
     if (filterAtivo !== "all") result = result.filter((c) => (c.Ativo || "SIM") === filterAtivo);
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
@@ -291,7 +294,7 @@ export default function AdminCRM() {
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as rotas</SelectItem>
-                  <SelectItem value="">Sem rota</SelectItem>
+                  <SelectItem value="__none__">Sem rota</SelectItem>
                   {rotas.map((r) => (
                     <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
                   ))}
