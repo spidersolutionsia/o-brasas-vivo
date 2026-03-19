@@ -266,7 +266,9 @@ export default function AdminCRM() {
   };
 
   const totalClientes = clients.length;
-  const ativos = clients.filter((c) => (c.Ativo || "SIM") === "SIM").length;
+  const totalAtivos = clients.filter(isAtivo).length;
+  const totalInativos = clients.filter(isInativo).length;
+  const totalFaltaDados = clients.filter(isFaltaDados).length;
   const pedidosConfirmados = pedidosSemana.filter((p) => p.confirmado).length;
   const diaLabel = DIAS_LABEL[getDiaSemana(selectedDate)] || "";
 
