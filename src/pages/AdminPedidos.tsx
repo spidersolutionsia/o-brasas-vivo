@@ -14,7 +14,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText, Users } from "lucide-react";
+import AdminCRM from "@/components/admin/AdminCRM";
 
 type CustomerDetails = {
   name: string;
@@ -157,7 +159,7 @@ const AdminPedidos = () => {
           <div className="flex items-center gap-3">
             <Package className="w-6 h-6 text-primary" />
             <h1 className="text-xl font-bold text-foreground font-oswald">
-              Painel de Pedidos
+              Painel Administrativo
             </h1>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -167,7 +169,18 @@ const AdminPedidos = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <Tabs defaultValue="pedidos" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="pedidos" className="gap-1.5">
+              <Package className="w-4 h-4" /> Pedidos
+            </TabsTrigger>
+            <TabsTrigger value="crm" className="gap-1.5">
+              <Users className="w-4 h-4" /> Clientes & Rotas
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pedidos" className="space-y-6">
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -296,6 +309,12 @@ const AdminPedidos = () => {
         <p className="text-xs text-muted-foreground text-center">
           {filtered.length} pedido(s) encontrado(s) — Total: {orders.length}
         </p>
+          </TabsContent>
+
+          <TabsContent value="crm">
+            <AdminCRM />
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Order Detail Modal */}
