@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      crm_carvaomascate: {
+        Row: {
+          Abordagem: boolean | null
+          Ativo: string | null
+          cidade: string | null
+          created_at: string | null
+          dia_visita: string | null
+          entrega: string | null
+          id: number
+          nome: string | null
+          observacoes_rota: string | null
+          rota: string | null
+          telefone: string | null
+          totaldisparomes: number | null
+          ultimadatadisparo: string | null
+          Verificado: boolean | null
+        }
+        Insert: {
+          Abordagem?: boolean | null
+          Ativo?: string | null
+          cidade?: string | null
+          created_at?: string | null
+          dia_visita?: string | null
+          entrega?: string | null
+          id?: never
+          nome?: string | null
+          observacoes_rota?: string | null
+          rota?: string | null
+          telefone?: string | null
+          totaldisparomes?: number | null
+          ultimadatadisparo?: string | null
+          Verificado?: boolean | null
+        }
+        Update: {
+          Abordagem?: boolean | null
+          Ativo?: string | null
+          cidade?: string | null
+          created_at?: string | null
+          dia_visita?: string | null
+          entrega?: string | null
+          id?: never
+          nome?: string | null
+          observacoes_rota?: string | null
+          rota?: string | null
+          telefone?: string | null
+          totaldisparomes?: number | null
+          ultimadatadisparo?: string | null
+          Verificado?: boolean | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           cep: string | null
@@ -134,6 +185,74 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pedidos_semana_carvao: {
+        Row: {
+          cliente_id: number | null
+          confirmado: boolean | null
+          created_at: string | null
+          data_confirmacao: string | null
+          id: string
+          semana: string
+          telefone: string | null
+        }
+        Insert: {
+          cliente_id?: number | null
+          confirmado?: boolean | null
+          created_at?: string | null
+          data_confirmacao?: string | null
+          id?: string
+          semana: string
+          telefone?: string | null
+        }
+        Update: {
+          cliente_id?: number | null
+          confirmado?: boolean | null
+          created_at?: string | null
+          data_confirmacao?: string | null
+          id?: string
+          semana?: string
+          telefone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_semana_carvao_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "crm_carvaomascate"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rotas_carvao: {
+        Row: {
+          ativa: boolean | null
+          created_at: string | null
+          descricao: string | null
+          dia_semana: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          created_at?: string | null
+          descricao?: string | null
+          dia_semana?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          created_at?: string | null
+          descricao?: string | null
+          dia_semana?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
