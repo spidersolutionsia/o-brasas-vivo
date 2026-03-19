@@ -474,8 +474,6 @@ export default function AdminCRM() {
           </Tabs>
         </div>
       </div>
-        </div>
-      </div>
 
       {/* Modals */}
       <RouteModal
