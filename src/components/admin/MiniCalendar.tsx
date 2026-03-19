@@ -2,9 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+interface RotaInfo {
+  nome: string;
+  dia_semana?: string | null;
+  cor?: string | null;
+}
+
 interface MiniCalendarProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
+  rotas?: RotaInfo[];
+  activeRouteNames?: string[];
 }
 
 const MONTH_NAMES = [
@@ -13,8 +21,14 @@ const MONTH_NAMES = [
 ];
 
 const WEEK_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const WEEK_KEYS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
 
-export default function MiniCalendar({ selectedDate, onSelect }: MiniCalendarProps) {
+function getDiaSemanaKey(date: Date): string {
+  const idx = date.getDay(); // 0=Sun
+  return WEEK_KEYS[(idx + 6) % 7];
+}
+
+export default function MiniCalendar({ selectedDate, onSelect, rotas = [], activeRouteNames = [] }: MiniCalendarProps) {
   const [viewDate, setViewDate] = useState(new Date(selectedDate));
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -28,6 +42,17 @@ export default function MiniCalendar({ selectedDate, onSelect }: MiniCalendarPro
 
   const today = new Date();
   const selD = new Date(selectedDate);
+
+  // Pre-compute which day-of-week has which active colored routes
+  const routesByDia: Record<string, { nome: string; cor: string }[]> = {};
+  for (const r of rotas) {
+    if (r.dia_semana && r.cor && activeRouteNames.includes(r.nome)) {
+      if (!routesByDia[r.dia_semana]) routesByDia[r.dia_semana] = [];
+      routesByDia[r.dia_semana].push({ nome: r.nome, cor: r.cor });
+    }
+  }
+
+  const legendRoutes = rotas.filter((r) => r.cor && r.dia_semana && activeRouteNames.includes(r.nome));
 
   return (
     <div className="bg-card border border-border rounded-lg p-3">
@@ -57,11 +82,14 @@ export default function MiniCalendar({ selectedDate, onSelect }: MiniCalendarPro
           const dt = new Date(year, month, d);
           const isToday = dt.toDateString() === today.toDateString();
           const isSelected = dt.toDateString() === selD.toDateString();
+          const diaKey = getDiaSemanaKey(dt);
+          const dots = routesByDia[diaKey] || [];
+
           return (
             <button
               key={d}
               onClick={() => onSelect(dt)}
-              className={`text-xs h-7 w-full rounded transition-colors ${
+              className={`text-xs h-8 w-full rounded transition-colors flex flex-col items-center justify-center gap-0.5 ${
                 isSelected
                   ? "bg-primary text-primary-foreground font-bold"
                   : isToday
@@ -69,7 +97,18 @@ export default function MiniCalendar({ selectedDate, onSelect }: MiniCalendarPro
                   : "text-foreground hover:bg-muted"
               }`}
             >
-              {d}
+              <span>{d}</span>
+              {dots.length > 0 && (
+                <div className="flex gap-0.5">
+                  {dots.map((dot) => (
+                    <div
+                      key={dot.nome}
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: dot.cor }}
+                    />
+                  ))}
+                </div>
+              )}
             </button>
           );
         })}
@@ -86,6 +125,18 @@ export default function MiniCalendar({ selectedDate, onSelect }: MiniCalendarPro
       >
         Hoje
       </Button>
+
+      {/* Legenda */}
+      {legendRoutes.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-border space-y-1">
+          {legendRoutes.map((r) => (
+            <div key={r.nome} className="flex items-center gap-2 text-[11px] text-muted-foreground">
+              <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: r.cor! }} />
+              <span>{r.nome}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -227,6 +227,7 @@ export type Database = {
       rotas_carvao: {
         Row: {
           ativa: boolean | null
+          cor: string | null
           created_at: string | null
           descricao: string | null
           dia_semana: string | null
@@ -236,6 +237,7 @@ export type Database = {
         }
         Insert: {
           ativa?: boolean | null
+          cor?: string | null
           created_at?: string | null
           descricao?: string | null
           dia_semana?: string | null
@@ -245,6 +247,7 @@ export type Database = {
         }
         Update: {
           ativa?: boolean | null
+          cor?: string | null
           created_at?: string | null
           descricao?: string | null
           dia_semana?: string | null

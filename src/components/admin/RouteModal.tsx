@@ -12,6 +12,17 @@ const DIAS_LABEL: Record<string, string> = {
   sex: "Sexta", sab: "Sábado", dom: "Domingo",
 };
 
+const CORES_PALETA = [
+  { value: "#ef4444", label: "Vermelho" },
+  { value: "#3b82f6", label: "Azul" },
+  { value: "#22c55e", label: "Verde" },
+  { value: "#f97316", label: "Laranja" },
+  { value: "#8b5cf6", label: "Roxo" },
+  { value: "#ec4899", label: "Rosa" },
+  { value: "#06b6d4", label: "Ciano" },
+  { value: "#eab308", label: "Amarelo" },
+];
+
 interface Rota {
   id: string;
   nome: string;
@@ -19,6 +30,7 @@ interface Rota {
   dia_semana?: string | null;
   observacoes?: string | null;
   ativa?: boolean;
+  cor?: string | null;
 }
 
 interface RouteModalProps {
@@ -29,11 +41,34 @@ interface RouteModalProps {
   onDelete: (id: string) => Promise<void>;
 }
 
+function ColorPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground mb-1.5">Cor da rota</p>
+      <div className="flex flex-wrap gap-2">
+        {CORES_PALETA.map((c) => (
+          <button
+            key={c.value}
+            type="button"
+            title={c.label}
+            onClick={() => onChange(c.value)}
+            className={`w-7 h-7 rounded-full border-2 transition-all ${
+              value === c.value ? "border-foreground scale-110 ring-2 ring-primary/30" : "border-transparent hover:scale-105"
+            }`}
+            style={{ backgroundColor: c.value }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: RouteModalProps) {
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newDia, setNewDia] = useState("");
   const [newObs, setNewObs] = useState("");
+  const [newCor, setNewCor] = useState(CORES_PALETA[0].value);
   const [editing, setEditing] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
   const [saving, setSaving] = useState(false);
@@ -41,8 +76,8 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setSaving(true);
-    await onSave({ nome: newName.trim(), descricao: newDesc, dia_semana: newDia || null, observacoes: newObs || null, ativa: true });
-    setNewName(""); setNewDesc(""); setNewDia(""); setNewObs("");
+    await onSave({ nome: newName.trim(), descricao: newDesc, dia_semana: newDia || null, observacoes: newObs || null, cor: newCor, ativa: true });
+    setNewName(""); setNewDesc(""); setNewDia(""); setNewObs(""); setNewCor(CORES_PALETA[0].value);
     setSaving(false);
   };
 
@@ -77,6 +112,7 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
               ))}
             </SelectContent>
           </Select>
+          <ColorPicker value={newCor} onChange={setNewCor} />
           <Textarea placeholder="Observações..." value={newObs} onChange={(e) => setNewObs(e.target.value)} className="min-h-[60px]" />
           <Button onClick={handleCreate} disabled={saving || !newName.trim()} className="w-full">
             <Plus className="w-4 h-4 mr-1" /> Criar Rota
@@ -100,6 +136,7 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
                       ))}
                     </SelectContent>
                   </Select>
+                  <ColorPicker value={editData.cor || CORES_PALETA[0].value} onChange={(v) => setEditData((p: any) => ({ ...p, cor: v }))} />
                   <Textarea value={editData.observacoes || ""} placeholder="Observações" onChange={(e) => setEditData((p: any) => ({ ...p, observacoes: e.target.value }))} className="min-h-[50px]" />
                   <div className="flex gap-2">
                     <Button size="sm" onClick={handleUpdate} disabled={saving}>Salvar</Button>
@@ -108,17 +145,22 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
                 </div>
               ) : (
                 <div className="flex items-start justify-between">
-                  <div>
-                    <div className="font-semibold text-sm text-foreground">
-                      {r.nome}
-                      {r.ativa === false && <span className="text-destructive text-xs ml-2">INATIVA</span>}
+                  <div className="flex items-start gap-2">
+                    {r.cor && (
+                      <div className="w-3 h-3 rounded-full mt-1 shrink-0" style={{ backgroundColor: r.cor }} />
+                    )}
+                    <div>
+                      <div className="font-semibold text-sm text-foreground">
+                        {r.nome}
+                        {r.ativa === false && <span className="text-destructive text-xs ml-2">INATIVA</span>}
+                      </div>
+                      {r.descricao && <p className="text-xs text-muted-foreground mt-0.5">{r.descricao}</p>}
+                      {r.dia_semana && <p className="text-xs text-primary mt-1">📅 {DIAS_LABEL[r.dia_semana]}</p>}
+                      {r.observacoes && <p className="text-xs text-muted-foreground mt-1 italic">{r.observacoes}</p>}
                     </div>
-                    {r.descricao && <p className="text-xs text-muted-foreground mt-0.5">{r.descricao}</p>}
-                    {r.dia_semana && <p className="text-xs text-primary mt-1">📅 {DIAS_LABEL[r.dia_semana]}</p>}
-                    {r.observacoes && <p className="text-xs text-muted-foreground mt-1 italic">{r.observacoes}</p>}
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditing(r.id); setEditData({ nome: r.nome, descricao: r.descricao, dia_semana: r.dia_semana, observacoes: r.observacoes }); }}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditing(r.id); setEditData({ nome: r.nome, descricao: r.descricao, dia_semana: r.dia_semana, observacoes: r.observacoes, cor: r.cor }); }}>
                       <Pencil className="w-3.5 h-3.5" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(r.id)}>

@@ -254,6 +254,14 @@ export default function AdminCRM() {
 
   const tabClients = activeTab === "ativos" ? clientsAtivos : activeTab === "inativos" ? clientsInativos : clientsFaltaDados;
 
+  // Compute which routes have at least one active client (for calendar dots)
+  const activeRouteNames = useMemo(() => {
+    const ativosAll = clients.filter(isAtivo);
+    const names = new Set<string>();
+    ativosAll.forEach((c) => { if (c.rota) names.add(c.rota); });
+    return Array.from(names);
+  }, [clients]);
+
   const pedidoMap = useMemo(() => {
     const map: Record<string, any> = {};
     pedidosSemana.forEach((p) => { map[p.cliente_id] = p; });
@@ -314,7 +322,7 @@ export default function AdminCRM() {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Sidebar */}
         <div className="w-full lg:w-64 shrink-0 space-y-3">
-          <MiniCalendar selectedDate={selectedDate} onSelect={setSelectedDate} />
+          <MiniCalendar selectedDate={selectedDate} onSelect={setSelectedDate} rotas={rotas} activeRouteNames={activeRouteNames} />
 
           <div className="bg-card border border-border rounded-lg p-3 space-y-3">
             <label className="flex items-center gap-2 text-sm cursor-pointer">
