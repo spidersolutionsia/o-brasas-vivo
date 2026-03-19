@@ -212,7 +212,7 @@ export default function AdminCRM() {
     }
   };
 
-  // Filtering + Sorting
+  // Filtering + Sorting (without Ativo filter — tabs handle that)
   const filteredClients = useMemo(() => {
     let result = [...clients];
     if (search) {
@@ -227,7 +227,6 @@ export default function AdminCRM() {
       const rotaFilter = filterRota === "__none__" ? "" : filterRota;
       result = result.filter((c) => (c.rota || "") === rotaFilter);
     }
-    if (filterAtivo !== "all") result = result.filter((c) => (c.Ativo || "SIM") === filterAtivo);
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
       result = result.filter((c) => c.dia_visita === dia);
@@ -242,7 +241,18 @@ export default function AdminCRM() {
       return 0;
     });
     return result;
-  }, [clients, search, filterRota, filterAtivo, filterByDay, selectedDate, sortCol, sortAsc]);
+  }, [clients, search, filterRota, filterByDay, selectedDate, sortCol, sortAsc]);
+
+  // Tab-based categorization
+  const isInativo = (c: any) => c.Ativo === "NÃO" || c.Ativo === "NAO";
+  const isAtivo = (c: any) => !isInativo(c) && !!c.cidade;
+  const isFaltaDados = (c: any) => !isInativo(c) && !c.cidade;
+
+  const clientsAtivos = useMemo(() => filteredClients.filter(isAtivo), [filteredClients]);
+  const clientsInativos = useMemo(() => filteredClients.filter(isInativo), [filteredClients]);
+  const clientsFaltaDados = useMemo(() => filteredClients.filter(isFaltaDados), [filteredClients]);
+
+  const tabClients = activeTab === "ativos" ? clientsAtivos : activeTab === "inativos" ? clientsInativos : clientsFaltaDados;
 
   const pedidoMap = useMemo(() => {
     const map: Record<string, any> = {};
