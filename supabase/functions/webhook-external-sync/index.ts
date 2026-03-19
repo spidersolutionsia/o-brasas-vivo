@@ -7,17 +7,22 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// Columns allowed per table (whitelist approach to avoid unknown column errors)
+// Columns allowed per table (whitelist; excludes identity cols for crm)
 const ALLOWED_COLUMNS: Record<string, string[]> = {
   crm_carvaomascate: [
-    "id", "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
+    "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
     "observacoes_rota", "entrega", "Abordagem", "Verificado",
     "totaldisparomes", "ultimadatadisparo", "created_at",
   ],
   rotas_carvao: [
     "id", "nome", "descricao", "dia_semana", "observacoes", "ativa", "created_at",
-    // "cor" is local-only, so NOT listed here
   ],
+};
+
+// Match key for finding the local row (used for update & delete)
+const MATCH_KEY: Record<string, string> = {
+  crm_carvaomascate: "telefone",
+  rotas_carvao: "id",
 };
 
 function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
@@ -29,12 +34,6 @@ function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
   }
   return cleaned;
 }
-
-// Primary key per table
-const PRIMARY_KEY: Record<string, string> = {
-  crm_carvaomascate: "id",
-  rotas_carvao: "id",
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
