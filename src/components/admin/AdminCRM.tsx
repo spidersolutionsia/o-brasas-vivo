@@ -58,7 +58,7 @@ export default function AdminCRM() {
 
   const [search, setSearch] = useState("");
   const [filterRota, setFilterRota] = useState("all");
-  const [filterAtivo, setFilterAtivo] = useState("all");
+  const [activeTab, setActiveTab] = useState("ativos");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filterByDay, setFilterByDay] = useState(false);
 
