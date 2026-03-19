@@ -291,7 +291,7 @@ export default function AdminCRM() {
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as rotas</SelectItem>
-                  <SelectItem value="">Sem rota</SelectItem>
+                  <SelectItem value="__none__">Sem rota</SelectItem>
                   {rotas.map((r) => (
                     <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
                   ))}
