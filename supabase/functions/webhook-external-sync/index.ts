@@ -7,17 +7,26 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// Columns that exist in Lovable Cloud but NOT in the external DB
-// When syncing FROM external, we must NOT overwrite these local-only columns
-const LOCAL_ONLY_COLUMNS: Record<string, string[]> = {
-  rotas_carvao: ["cor"],
+// Columns allowed per table (whitelist approach to avoid unknown column errors)
+const ALLOWED_COLUMNS: Record<string, string[]> = {
+  crm_carvaomascate: [
+    "id", "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
+    "observacoes_rota", "entrega", "Abordagem", "Verificado",
+    "totaldisparomes", "ultimadatadisparo", "created_at",
+  ],
+  rotas_carvao: [
+    "id", "nome", "descricao", "dia_semana", "observacoes", "ativa", "created_at",
+    // "cor" is local-only, so NOT listed here
+  ],
 };
 
-function stripLocalOnlyColumns(record: Record<string, unknown>, table: string) {
-  const cols = LOCAL_ONLY_COLUMNS[table];
-  if (!cols || !record) return record;
-  const cleaned = { ...record };
-  for (const col of cols) delete cleaned[col];
+function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
+  const allowed = ALLOWED_COLUMNS[table];
+  if (!allowed || !record) return record;
+  const cleaned: Record<string, unknown> = {};
+  for (const col of allowed) {
+    if (col in record) cleaned[col] = record[col];
+  }
   return cleaned;
 }
 
