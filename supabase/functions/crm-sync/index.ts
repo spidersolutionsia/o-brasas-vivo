@@ -23,7 +23,26 @@ serve(async (req) => {
       });
     }
 
-    const { table, action, data, match } = await req.json();
+    const { table, action, data: rawData, match } = await req.json();
+
+    // Strip columns that only exist in the local DB (not in external)
+    const LOCAL_ONLY_COLUMNS: Record<string, string[]> = {
+      rotas_carvao: ["cor"],
+    };
+
+    function stripLocalColumns(obj: Record<string, unknown>, tbl: string) {
+      const cols = LOCAL_ONLY_COLUMNS[tbl];
+      if (!cols || !obj) return obj;
+      const cleaned = { ...obj };
+      for (const col of cols) delete cleaned[col];
+      return cleaned;
+    }
+
+    const data = rawData
+      ? Array.isArray(rawData)
+        ? rawData.map((d: Record<string, unknown>) => stripLocalColumns(d, table))
+        : stripLocalColumns(rawData, table)
+      : rawData;
 
     if (!table || !action) {
       return new Response(JSON.stringify({ error: "Missing table or action" }), {
