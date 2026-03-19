@@ -77,7 +77,7 @@ serve(async (req) => {
     switch (type) {
       case "INSERT":
       case "UPDATE": {
-        const cleanRecord = stripLocalOnlyColumns(record, table);
+        const cleanRecord = stripToAllowedColumns(record, table);
         const { data, error } = await supabase
           .from(table)
           .upsert(cleanRecord, { onConflict: pk })
