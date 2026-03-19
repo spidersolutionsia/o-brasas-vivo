@@ -1,29 +1,51 @@
 
 
-# Plano: Corrigir logout nao refletido na pagina de pedido
+## Plano: Aba "Clientes & Rotas" no Painel Administrativo
 
-## Problema
-O hook `useCustomerSession` e usado de forma independente em `CustomerLogin` e `Pedido`. Cada componente cria sua propria instancia do hook com seu proprio estado. Quando o logout e chamado no `CustomerLogin`, ele limpa o localStorage e o estado daquela instancia, mas a instancia do `Pedido` continua com os valores antigos em memoria -- o `isLoggedIn` continua `true`.
+### Contexto
+O CRM uploaded conecta a um Supabase externo com 3 tabelas: `crm_carvaomascate`, `rotas_carvao`, `pedidos_semana_carvao`. Preciso integrar essa funcionalidade como uma nova aba no painel admin existente.
 
-## Solucao
-Transformar o `useCustomerSession` em um Context Provider (React Context), para que todas as instancias compartilhem o mesmo estado. Quando o logout for chamado em qualquer lugar, todos os componentes que usam o contexto serao atualizados automaticamente.
+### O que será feito
 
-## Alteracoes
+**1. Configuração da conexão externa**
+- Criar um segundo cliente Supabase no frontend usando URL e anon key do projeto externo
+- Solicitar ao usuário as credenciais (URL + anon key) via secrets — a anon key é pública, mas vou guardar como secret para manter organizado
+- Arquivo: `src/lib/externalSupabase.ts`
 
-### 1. Criar `src/contexts/CustomerSessionContext.tsx`
-- Criar um React Context com Provider que encapsula a logica atual do `useCustomerSession`
-- Exportar um hook `useCustomerSession` que consome o contexto
-- Manter a mesma interface (`customerCode`, `customerName`, `isLoggedIn`, `login`, `logout`)
+**2. Reestruturar o painel admin com abas**
+- Adicionar sistema de abas (Tabs do shadcn) no `AdminPedidos.tsx`: **Pedidos** | **Clientes & Rotas**
+- A aba Pedidos mantém o conteúdo atual intacto
+- A aba Clientes & Rotas carrega o novo componente CRM
 
-### 2. Atualizar `src/hooks/useCustomerSession.ts`
-- Substituir a implementacao atual por uma re-exportacao do hook do contexto
-- Manter compatibilidade com todos os imports existentes
+**3. Componente CRM — `src/components/admin/AdminCRM.tsx`**
+Reescrever o CRM usando os componentes shadcn/tailwind do projeto:
+- **Sidebar lateral** com mini calendário, filtros (rota, status ativo/inativo, dia da semana)
+- **Tabela de clientes** com busca, ordenação por colunas, badge de status, seletor inline de rota, checkbox de pedido semanal
+- **Modal de edição/criação de cliente** (Dialog do shadcn) com campos: nome, telefone, cidade, ativo, rota, dia de visita, observações, entrega
+- **Modal de gerenciamento de rotas** — criar, editar, deletar rotas com nome, descrição, dia padrão, observações
+- **Cards de estatísticas** (total, ativos, pedidos confirmados, filtrados)
 
-### 3. Atualizar `src/App.tsx`
-- Envolver a aplicacao com o `CustomerSessionProvider` para que todos os componentes filhos compartilhem o mesmo estado
+**4. Componentes auxiliares**
+- `src/components/admin/RouteModal.tsx` — gerenciar rotas (CRUD)
+- `src/components/admin/ClientModal.tsx` — editar/criar cliente
+- `src/components/admin/MiniCalendar.tsx` — calendário compacto para seleção de data/semana
 
-### Resultado
-- Logout no header reflete imediatamente na pagina de pedido
-- Login tambem reflete em todos os componentes
-- Nenhuma mudanca nos componentes que ja usam `useCustomerSession` -- a interface permanece identica
+### Funcionalidades preservadas do CRM original
+- Filtro por rota, status ativo, dia da semana do calendário
+- Ordenação por coluna (nome, telefone, cidade, rota, ativo)
+- Toggle de pedido semanal por cliente (checkbox que insere/atualiza na tabela `pedidos_semana_carvao`)
+- Cálculo de semana ISO para agrupar pedidos
+- Edição inline de rota na tabela
+- CRUD completo de clientes e rotas
+
+### Arquivos criados/editados
+- **Novo**: `src/lib/externalSupabase.ts` — cliente Supabase externo
+- **Novo**: `src/components/admin/AdminCRM.tsx` — componente principal do CRM
+- **Novo**: `src/components/admin/RouteModal.tsx`
+- **Novo**: `src/components/admin/ClientModal.tsx`
+- **Novo**: `src/components/admin/MiniCalendar.tsx`
+- **Editado**: `src/pages/AdminPedidos.tsx` — adicionar Tabs com aba Pedidos + Clientes & Rotas
+
+### Pré-requisito
+Vou precisar que você forneça a **URL** e a **anon key** do projeto Supabase externo onde estão as tabelas do CRM.
 
