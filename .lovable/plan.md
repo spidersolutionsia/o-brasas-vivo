@@ -1,61 +1,39 @@
 
 
-## Plano: Tabelas internas com sincronização via telefone
+## Plano: Atualizar CSV + dividir clientes em 3 abas
 
-### Objetivo
-Criar 3 tabelas internas no Lovable Cloud espelhando as externas. O app lê/escreve localmente, e cada alteração é sincronizada com o externo usando o **telefone do cliente como chave de busca** (não o ID).
+### 1. Importar CSV atualizado
+Executar script Python para upsert dos 811 registros do CSV na tabela interna `crm_carvaomascate` (match por `telefone`), atualizando campos como `Ativo`, `cidade`, `entrega`, etc. Também sincronizar com o externo via `crm-proxy`.
 
-### 1. Migração SQL — criar tabelas internas
+### 2. Adicionar Tabs no painel CRM
+Substituir a tabela única por 3 abas usando o componente `Tabs` já existente:
 
-**`crm_carvaomascate`**: `id` (bigint PK, gerado), `nome`, `telefone` (text, unique), `cidade`, `"Ativo"`, `rota`, `dia_visita`, `observacoes_rota`, `entrega`, `"Abordagem"` (bool), `"Verificado"` (bool), `totaldisparomes` (int), `ultimadatadisparo` (text), `created_at`
+- **Ativos** — `Ativo === "SIM"` e `cidade` preenchida
+- **Inativos** — `Ativo === "NÃO"` ou `Ativo === "NAO"`
+- **Falta Dados** — `Ativo !== "NÃO"/"NAO"` e `cidade` vazia/null (clientes que precisam completar cadastro)
 
-**`rotas_carvao`**: `id` (uuid PK), `nome`, `descricao`, `dia_padrao`, `observacoes`, `created_at`
+Cada aba mostra a contagem no título (ex: "Ativos (234)") e aplica os mesmos filtros de busca, rota e dia.
 
-**`pedidos_semana_carvao`**: `id` (uuid PK), `cliente_id` (bigint), `telefone` (text), `semana`, `confirmado` (bool), `data_confirmacao` (timestamptz), `created_at`
+O filtro "Status" (Ativo/Inativo) na sidebar será removido, pois as abas já cumprem essa função.
 
-RLS: políticas abertas para anon (mesmo padrão das tabelas orders/customers).
+### Detalhes técnicos
 
-### 2. Edge Function `crm-sync`
+**Arquivo: `src/components/admin/AdminCRM.tsx`**
+- Importar `Tabs, TabsList, TabsTrigger, TabsContent` de `@/components/ui/tabs`
+- Adicionar state `activeTab` com valores `"ativos" | "inativos" | "faltaDados"`
+- Criar 3 listas derivadas via `useMemo` a partir de `filteredClients` (que já aplica busca/rota/dia)
+- Remover o filtro `filterAtivo` e o Select de Status da sidebar
+- A tabela (Table) é renderizada uma vez, recebendo a lista da aba ativa
+- Stats cards atualizados: Total, Ativos, Inativos, Falta Dados
 
-Recebe `{ table, action, data, match }`. Ao sincronizar com o externo:
-- **Sempre usa `telefone` como filtro** para localizar o registro na tabela externa
-- Insert: envia upsert com telefone como conflict key
-- Update: busca pelo telefone no match (`?telefone=eq.XXXX`)
-- Delete: deleta pelo telefone
-
-Isso garante que mesmo que os IDs internos e externos sejam diferentes, a sincronização funciona corretamente.
-
-### 3. Refatorar frontend
-
-- `AdminCRM.tsx`: lê/escreve no Supabase local via `supabase` client. Após cada operação bem-sucedida, chama `crm-sync` em background passando o telefone.
-- `ClientModal.tsx` e `RouteModal.tsx`: ajustados para usar client local.
-- `externalSupabase.ts`: simplificado — mantém apenas função de sync.
-
-### 4. Importação inicial
-
-Script único para copiar os 811 registros do externo (via `crm-proxy` select) para as tabelas internas locais.
+**Script de importação (temporário)**
+- Ler CSV, limpar tipos, upsert via Supabase local por `telefone`
+- Sincronizar com externo via `crm-proxy`
 
 ### Arquivos
 
 | Arquivo | Ação |
 |---|---|
-| Migração SQL (3 tabelas + RLS) | Criar |
-| `supabase/functions/crm-sync/index.ts` | Criar |
-| `src/components/admin/AdminCRM.tsx` | Editar |
-| `src/components/admin/ClientModal.tsx` | Editar |
-| `src/components/admin/RouteModal.tsx` | Editar |
-| `src/lib/externalSupabase.ts` | Refatorar |
-
-### Detalhe-chave: sincronização por telefone
-
-```text
-Local DB (insert/update/delete)
-       ↓
-  crm-sync Edge Function
-       ↓
-  External Supabase REST API
-  → match: { telefone: "11999999999" }
-```
-
-O telefone é o identificador universal entre os dois bancos. Todas as operações de sync usam `telefone` como filtro, nunca o `id`.
+| `src/components/admin/AdminCRM.tsx` | Editar — adicionar Tabs, remover filtro Status |
+| Script Python (temporário) | Importar CSV atualizado |
 
