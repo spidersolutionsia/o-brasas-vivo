@@ -285,16 +285,16 @@ export default function AdminCRM() {
           <p className="text-xs text-muted-foreground">Total</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-green-500">{ativos}</p>
+          <p className="text-2xl font-bold text-green-500">{totalAtivos}</p>
           <p className="text-xs text-muted-foreground">Ativos</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{pedidosConfirmados}</p>
-          <p className="text-xs text-muted-foreground">Pedidos {currentWeek}</p>
+          <p className="text-2xl font-bold text-red-500">{totalInativos}</p>
+          <p className="text-xs text-muted-foreground">Inativos</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-violet-400">{filteredClients.length}</p>
-          <p className="text-xs text-muted-foreground">Filtrados</p>
+          <p className="text-2xl font-bold text-amber-500">{totalFaltaDados}</p>
+          <p className="text-xs text-muted-foreground">Falta Dados</p>
         </div>
       </div>
 
