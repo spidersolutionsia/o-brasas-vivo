@@ -1,0 +1,1 @@
+ALTER TABLE rotas_carvao ADD COLUMN cor TEXT DEFAULT NULL;
