@@ -159,6 +159,31 @@ const AdminPedidos = () => {
           <div className="flex items-center gap-3">
             <Package className="w-6 h-6 text-primary" />
             <h1 className="text-xl font-bold text-foreground font-oswald">
+              Painel Administrativo
+            </h1>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <Tabs defaultValue="pedidos" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="pedidos" className="gap-1.5">
+              <Package className="w-4 h-4" /> Pedidos
+            </TabsTrigger>
+            <TabsTrigger value="crm" className="gap-1.5">
+              <Users className="w-4 h-4" /> Clientes & Rotas
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pedidos" className="space-y-6">
+          <div className="flex items-center gap-3">
+            <Package className="w-6 h-6 text-primary" />
+            <h1 className="text-xl font-bold text-foreground font-oswald">
               Painel de Pedidos
             </h1>
           </div>
