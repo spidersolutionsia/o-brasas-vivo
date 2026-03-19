@@ -14,7 +14,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText, Users } from "lucide-react";
+import AdminCRM from "@/components/admin/AdminCRM";
 
 type CustomerDetails = {
   name: string;
