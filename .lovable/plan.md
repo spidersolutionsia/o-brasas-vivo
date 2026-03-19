@@ -1,51 +1,61 @@
 
 
-## Plano: Aba "Clientes & Rotas" no Painel Administrativo
+## Plano: Tabelas internas com sincronização via telefone
 
-### Contexto
-O CRM uploaded conecta a um Supabase externo com 3 tabelas: `crm_carvaomascate`, `rotas_carvao`, `pedidos_semana_carvao`. Preciso integrar essa funcionalidade como uma nova aba no painel admin existente.
+### Objetivo
+Criar 3 tabelas internas no Lovable Cloud espelhando as externas. O app lê/escreve localmente, e cada alteração é sincronizada com o externo usando o **telefone do cliente como chave de busca** (não o ID).
 
-### O que será feito
+### 1. Migração SQL — criar tabelas internas
 
-**1. Configuração da conexão externa**
-- Criar um segundo cliente Supabase no frontend usando URL e anon key do projeto externo
-- Solicitar ao usuário as credenciais (URL + anon key) via secrets — a anon key é pública, mas vou guardar como secret para manter organizado
-- Arquivo: `src/lib/externalSupabase.ts`
+**`crm_carvaomascate`**: `id` (bigint PK, gerado), `nome`, `telefone` (text, unique), `cidade`, `"Ativo"`, `rota`, `dia_visita`, `observacoes_rota`, `entrega`, `"Abordagem"` (bool), `"Verificado"` (bool), `totaldisparomes` (int), `ultimadatadisparo` (text), `created_at`
 
-**2. Reestruturar o painel admin com abas**
-- Adicionar sistema de abas (Tabs do shadcn) no `AdminPedidos.tsx`: **Pedidos** | **Clientes & Rotas**
-- A aba Pedidos mantém o conteúdo atual intacto
-- A aba Clientes & Rotas carrega o novo componente CRM
+**`rotas_carvao`**: `id` (uuid PK), `nome`, `descricao`, `dia_padrao`, `observacoes`, `created_at`
 
-**3. Componente CRM — `src/components/admin/AdminCRM.tsx`**
-Reescrever o CRM usando os componentes shadcn/tailwind do projeto:
-- **Sidebar lateral** com mini calendário, filtros (rota, status ativo/inativo, dia da semana)
-- **Tabela de clientes** com busca, ordenação por colunas, badge de status, seletor inline de rota, checkbox de pedido semanal
-- **Modal de edição/criação de cliente** (Dialog do shadcn) com campos: nome, telefone, cidade, ativo, rota, dia de visita, observações, entrega
-- **Modal de gerenciamento de rotas** — criar, editar, deletar rotas com nome, descrição, dia padrão, observações
-- **Cards de estatísticas** (total, ativos, pedidos confirmados, filtrados)
+**`pedidos_semana_carvao`**: `id` (uuid PK), `cliente_id` (bigint), `telefone` (text), `semana`, `confirmado` (bool), `data_confirmacao` (timestamptz), `created_at`
 
-**4. Componentes auxiliares**
-- `src/components/admin/RouteModal.tsx` — gerenciar rotas (CRUD)
-- `src/components/admin/ClientModal.tsx` — editar/criar cliente
-- `src/components/admin/MiniCalendar.tsx` — calendário compacto para seleção de data/semana
+RLS: políticas abertas para anon (mesmo padrão das tabelas orders/customers).
 
-### Funcionalidades preservadas do CRM original
-- Filtro por rota, status ativo, dia da semana do calendário
-- Ordenação por coluna (nome, telefone, cidade, rota, ativo)
-- Toggle de pedido semanal por cliente (checkbox que insere/atualiza na tabela `pedidos_semana_carvao`)
-- Cálculo de semana ISO para agrupar pedidos
-- Edição inline de rota na tabela
-- CRUD completo de clientes e rotas
+### 2. Edge Function `crm-sync`
 
-### Arquivos criados/editados
-- **Novo**: `src/lib/externalSupabase.ts` — cliente Supabase externo
-- **Novo**: `src/components/admin/AdminCRM.tsx` — componente principal do CRM
-- **Novo**: `src/components/admin/RouteModal.tsx`
-- **Novo**: `src/components/admin/ClientModal.tsx`
-- **Novo**: `src/components/admin/MiniCalendar.tsx`
-- **Editado**: `src/pages/AdminPedidos.tsx` — adicionar Tabs com aba Pedidos + Clientes & Rotas
+Recebe `{ table, action, data, match }`. Ao sincronizar com o externo:
+- **Sempre usa `telefone` como filtro** para localizar o registro na tabela externa
+- Insert: envia upsert com telefone como conflict key
+- Update: busca pelo telefone no match (`?telefone=eq.XXXX`)
+- Delete: deleta pelo telefone
 
-### Pré-requisito
-Vou precisar que você forneça a **URL** e a **anon key** do projeto Supabase externo onde estão as tabelas do CRM.
+Isso garante que mesmo que os IDs internos e externos sejam diferentes, a sincronização funciona corretamente.
+
+### 3. Refatorar frontend
+
+- `AdminCRM.tsx`: lê/escreve no Supabase local via `supabase` client. Após cada operação bem-sucedida, chama `crm-sync` em background passando o telefone.
+- `ClientModal.tsx` e `RouteModal.tsx`: ajustados para usar client local.
+- `externalSupabase.ts`: simplificado — mantém apenas função de sync.
+
+### 4. Importação inicial
+
+Script único para copiar os 811 registros do externo (via `crm-proxy` select) para as tabelas internas locais.
+
+### Arquivos
+
+| Arquivo | Ação |
+|---|---|
+| Migração SQL (3 tabelas + RLS) | Criar |
+| `supabase/functions/crm-sync/index.ts` | Criar |
+| `src/components/admin/AdminCRM.tsx` | Editar |
+| `src/components/admin/ClientModal.tsx` | Editar |
+| `src/components/admin/RouteModal.tsx` | Editar |
+| `src/lib/externalSupabase.ts` | Refatorar |
+
+### Detalhe-chave: sincronização por telefone
+
+```text
+Local DB (insert/update/delete)
+       ↓
+  crm-sync Edge Function
+       ↓
+  External Supabase REST API
+  → match: { telefone: "11999999999" }
+```
+
+O telefone é o identificador universal entre os dois bancos. Todas as operações de sync usam `telefone` como filtro, nunca o `id`.
 
