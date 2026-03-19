@@ -355,9 +355,6 @@ export default function AdminCRM() {
                 className="pl-10"
               />
             </div>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {filteredClients.length} cliente{filteredClients.length !== 1 ? "s" : ""}
-            </span>
           </div>
 
           {error && (
@@ -367,102 +364,116 @@ export default function AdminCRM() {
             </div>
           )}
 
-          <div className="border border-border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("nome")}>
-                    Nome {sortCol === "nome" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("telefone")}>
-                    Telefone {sortCol === "telefone" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer hidden sm:table-cell" onClick={() => handleSort("cidade")}>
-                    Cidade {sortCol === "cidade" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("rota")}>
-                    Rota {sortCol === "rota" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
-                    Ativo {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
-                  <TableHead className="text-center w-[60px]">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredClients.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      {search || filterRota !== "all" || filterAtivo !== "all" || filterByDay
-                        ? "Nenhum cliente encontrado com esses filtros"
-                        : "Nenhum cliente cadastrado"}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredClients.map((c) => {
-                    const pedido = pedidoMap[c.id];
-                    const isConfirmed = pedido?.confirmado || false;
-                    return (
-                      <TableRow key={c.id}>
-                        <TableCell>
-                          <div className="font-semibold text-sm">{c.nome || "—"}</div>
-                          {c.observacoes_rota && (
-                            <div className="text-[11px] text-muted-foreground mt-0.5">{c.observacoes_rota}</div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {formatPhone(c.telefone)}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-sm">
-                          {c.cidade || "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={c.rota || "__none__"}
-                            onValueChange={(v) => handleUpdateField(c.id, "rota", v === "__none__" ? null : v)}
-                          >
-                            <SelectTrigger className="h-7 text-xs w-28">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">—</SelectItem>
-                              {rotas.map((r) => (
-                                <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              (c.Ativo || "SIM") === "SIM"
-                                ? "bg-green-500/15 text-green-400 border-green-500/30"
-                                : "bg-red-500/15 text-red-400 border-red-500/30"
-                            }
-                          >
-                            {(c.Ativo || "SIM") === "SIM" ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Checkbox
-                            checked={isConfirmed}
-                            onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
-                          />
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingClient(c)}>
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full">
+              <TabsTrigger value="ativos" className="flex-1">Ativos ({clientsAtivos.length})</TabsTrigger>
+              <TabsTrigger value="inativos" className="flex-1">Inativos ({clientsInativos.length})</TabsTrigger>
+              <TabsTrigger value="faltaDados" className="flex-1">Falta Dados ({clientsFaltaDados.length})</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value={activeTab} className="mt-3">
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/30">
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("nome")}>
+                        Nome {sortCol === "nome" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("telefone")}>
+                        Telefone {sortCol === "telefone" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer hidden sm:table-cell" onClick={() => handleSort("cidade")}>
+                        Cidade {sortCol === "cidade" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("rota")}>
+                        Rota {sortCol === "rota" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
+                        Status {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
+                      <TableHead className="text-center w-[60px]">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tabClients.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          {search || filterRota !== "all" || filterByDay
+                            ? "Nenhum cliente encontrado com esses filtros"
+                            : "Nenhum cliente nesta categoria"}
                         </TableCell>
                       </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                    ) : (
+                      tabClients.map((c) => {
+                        const pedido = pedidoMap[c.id];
+                        const isConfirmed = pedido?.confirmado || false;
+                        return (
+                          <TableRow key={c.id}>
+                            <TableCell>
+                              <div className="font-semibold text-sm">{c.nome || "—"}</div>
+                              {c.observacoes_rota && (
+                                <div className="text-[11px] text-muted-foreground mt-0.5">{c.observacoes_rota}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">
+                              {formatPhone(c.telefone)}
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell text-sm">
+                              {c.cidade || "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={c.rota || "__none__"}
+                                onValueChange={(v) => handleUpdateField(c.id, "rota", v === "__none__" ? null : v)}
+                              >
+                                <SelectTrigger className="h-7 text-xs w-28">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="__none__">—</SelectItem>
+                                  {rotas.map((r) => (
+                                    <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  isInativo(c)
+                                    ? "bg-red-500/15 text-red-400 border-red-500/30"
+                                    : !c.cidade
+                                    ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                                    : "bg-green-500/15 text-green-400 border-green-500/30"
+                                }
+                              >
+                                {isInativo(c) ? "Inativo" : !c.cidade ? "Falta Dados" : "Ativo"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Checkbox
+                                checked={isConfirmed}
+                                onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
+                              />
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingClient(c)}>
+                                <Pencil className="w-3.5 h-3.5" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
         </div>
       </div>
 
