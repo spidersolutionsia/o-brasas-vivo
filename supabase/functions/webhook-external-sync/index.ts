@@ -7,17 +7,22 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// Columns allowed per table (whitelist approach to avoid unknown column errors)
+// Columns allowed per table (whitelist; excludes identity cols for crm)
 const ALLOWED_COLUMNS: Record<string, string[]> = {
   crm_carvaomascate: [
-    "id", "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
+    "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
     "observacoes_rota", "entrega", "Abordagem", "Verificado",
     "totaldisparomes", "ultimadatadisparo", "created_at",
   ],
   rotas_carvao: [
     "id", "nome", "descricao", "dia_semana", "observacoes", "ativa", "created_at",
-    // "cor" is local-only, so NOT listed here
   ],
+};
+
+// Match key for finding the local row (used for update & delete)
+const MATCH_KEY: Record<string, string> = {
+  crm_carvaomascate: "telefone",
+  rotas_carvao: "id",
 };
 
 function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
@@ -29,12 +34,6 @@ function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
   }
   return cleaned;
 }
-
-// Primary key per table
-const PRIMARY_KEY: Record<string, string> = {
-  crm_carvaomascate: "id",
-  rotas_carvao: "id",
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -71,17 +70,40 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const pk = PRIMARY_KEY[table] || "id";
+    const matchKey = MATCH_KEY[table] || "id";
     let result;
 
     switch (type) {
       case "INSERT":
       case "UPDATE": {
         const cleanRecord = stripToAllowedColumns(record, table);
-        const { data, error } = await supabase
+        const matchValue = record[matchKey];
+        if (!matchValue) {
+          throw new Error(`No match key '${matchKey}' in record for ${table}`);
+        }
+
+        // Check if row exists locally
+        const { data: existing } = await supabase
           .from(table)
-          .upsert(cleanRecord, { onConflict: pk })
-          .select();
+          .select(matchKey)
+          .eq(matchKey, matchValue)
+          .maybeSingle();
+
+        let data, error;
+        if (existing) {
+          // Update existing row
+          ({ data, error } = await supabase
+            .from(table)
+            .update(cleanRecord)
+            .eq(matchKey, matchValue)
+            .select());
+        } else {
+          // Insert new row (without identity column)
+          ({ data, error } = await supabase
+            .from(table)
+            .insert(cleanRecord)
+            .select());
+        }
 
         if (error) throw new Error(error.message);
         result = data;
@@ -89,13 +111,14 @@ serve(async (req) => {
       }
       case "DELETE": {
         const ref = old_record || record;
-        if (!ref || !ref[pk]) {
-          throw new Error(`No primary key value for DELETE on ${table}`);
+        const matchValue = ref?.[matchKey];
+        if (!matchValue) {
+          throw new Error(`No match key '${matchKey}' for DELETE on ${table}`);
         }
         const { data, error } = await supabase
           .from(table)
           .delete()
-          .eq(pk, ref[pk])
+          .eq(matchKey, matchValue)
           .select();
 
         if (error) throw new Error(error.message);
