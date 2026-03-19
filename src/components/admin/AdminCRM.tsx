@@ -254,6 +254,14 @@ export default function AdminCRM() {
 
   const tabClients = activeTab === "ativos" ? clientsAtivos : activeTab === "inativos" ? clientsInativos : clientsFaltaDados;
 
+  // Compute which routes have at least one active client (for calendar dots)
+  const activeRouteNames = useMemo(() => {
+    const ativosAll = clients.filter(isAtivo);
+    const names = new Set<string>();
+    ativosAll.forEach((c) => { if (c.rota) names.add(c.rota); });
+    return Array.from(names);
+  }, [clients]);
+
   const pedidoMap = useMemo(() => {
     const map: Record<string, any> = {};
     pedidosSemana.forEach((p) => { map[p.cliente_id] = p; });
