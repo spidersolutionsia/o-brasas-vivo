@@ -340,18 +340,6 @@ export default function AdminCRM() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Status</p>
-              <Select value={filterAtivo} onValueChange={setFilterAtivo}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="SIM">Ativos</SelectItem>
-                  <SelectItem value="NAO">Inativos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </div>
 
