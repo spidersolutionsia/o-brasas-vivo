@@ -10,6 +10,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Search, Plus, RefreshCw, Route, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { syncToExternal } from "@/lib/externalSupabase";
@@ -57,7 +58,7 @@ export default function AdminCRM() {
 
   const [search, setSearch] = useState("");
   const [filterRota, setFilterRota] = useState("all");
-  const [filterAtivo, setFilterAtivo] = useState("all");
+  const [activeTab, setActiveTab] = useState("ativos");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filterByDay, setFilterByDay] = useState(false);
 
@@ -211,7 +212,7 @@ export default function AdminCRM() {
     }
   };
 
-  // Filtering + Sorting
+  // Filtering + Sorting (without Ativo filter — tabs handle that)
   const filteredClients = useMemo(() => {
     let result = [...clients];
     if (search) {
@@ -226,7 +227,6 @@ export default function AdminCRM() {
       const rotaFilter = filterRota === "__none__" ? "" : filterRota;
       result = result.filter((c) => (c.rota || "") === rotaFilter);
     }
-    if (filterAtivo !== "all") result = result.filter((c) => (c.Ativo || "SIM") === filterAtivo);
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
       result = result.filter((c) => c.dia_visita === dia);
@@ -241,7 +241,18 @@ export default function AdminCRM() {
       return 0;
     });
     return result;
-  }, [clients, search, filterRota, filterAtivo, filterByDay, selectedDate, sortCol, sortAsc]);
+  }, [clients, search, filterRota, filterByDay, selectedDate, sortCol, sortAsc]);
+
+  // Tab-based categorization
+  const isInativo = (c: any) => c.Ativo === "NÃO" || c.Ativo === "NAO";
+  const isAtivo = (c: any) => !isInativo(c) && !!c.cidade;
+  const isFaltaDados = (c: any) => !isInativo(c) && !c.cidade;
+
+  const clientsAtivos = useMemo(() => filteredClients.filter(isAtivo), [filteredClients]);
+  const clientsInativos = useMemo(() => filteredClients.filter(isInativo), [filteredClients]);
+  const clientsFaltaDados = useMemo(() => filteredClients.filter(isFaltaDados), [filteredClients]);
+
+  const tabClients = activeTab === "ativos" ? clientsAtivos : activeTab === "inativos" ? clientsInativos : clientsFaltaDados;
 
   const pedidoMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -255,7 +266,9 @@ export default function AdminCRM() {
   };
 
   const totalClientes = clients.length;
-  const ativos = clients.filter((c) => (c.Ativo || "SIM") === "SIM").length;
+  const totalAtivos = clients.filter(isAtivo).length;
+  const totalInativos = clients.filter(isInativo).length;
+  const totalFaltaDados = clients.filter(isFaltaDados).length;
   const pedidosConfirmados = pedidosSemana.filter((p) => p.confirmado).length;
   const diaLabel = DIAS_LABEL[getDiaSemana(selectedDate)] || "";
 
@@ -272,16 +285,16 @@ export default function AdminCRM() {
           <p className="text-xs text-muted-foreground">Total</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-green-500">{ativos}</p>
+          <p className="text-2xl font-bold text-green-500">{totalAtivos}</p>
           <p className="text-xs text-muted-foreground">Ativos</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{pedidosConfirmados}</p>
-          <p className="text-xs text-muted-foreground">Pedidos {currentWeek}</p>
+          <p className="text-2xl font-bold text-red-500">{totalInativos}</p>
+          <p className="text-xs text-muted-foreground">Inativos</p>
         </div>
         <div className="bg-card border border-border rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-violet-400">{filteredClients.length}</p>
-          <p className="text-xs text-muted-foreground">Filtrados</p>
+          <p className="text-2xl font-bold text-amber-500">{totalFaltaDados}</p>
+          <p className="text-xs text-muted-foreground">Falta Dados</p>
         </div>
       </div>
 
@@ -327,18 +340,6 @@ export default function AdminCRM() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Status</p>
-              <Select value={filterAtivo} onValueChange={setFilterAtivo}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="SIM">Ativos</SelectItem>
-                  <SelectItem value="NAO">Inativos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </div>
 
@@ -354,9 +355,6 @@ export default function AdminCRM() {
                 className="pl-10"
               />
             </div>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {filteredClients.length} cliente{filteredClients.length !== 1 ? "s" : ""}
-            </span>
           </div>
 
           {error && (
@@ -366,102 +364,114 @@ export default function AdminCRM() {
             </div>
           )}
 
-          <div className="border border-border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("nome")}>
-                    Nome {sortCol === "nome" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("telefone")}>
-                    Telefone {sortCol === "telefone" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer hidden sm:table-cell" onClick={() => handleSort("cidade")}>
-                    Cidade {sortCol === "cidade" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("rota")}>
-                    Rota {sortCol === "rota" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
-                    Ativo {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
-                  </TableHead>
-                  <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
-                  <TableHead className="text-center w-[60px]">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredClients.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      {search || filterRota !== "all" || filterAtivo !== "all" || filterByDay
-                        ? "Nenhum cliente encontrado com esses filtros"
-                        : "Nenhum cliente cadastrado"}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredClients.map((c) => {
-                    const pedido = pedidoMap[c.id];
-                    const isConfirmed = pedido?.confirmado || false;
-                    return (
-                      <TableRow key={c.id}>
-                        <TableCell>
-                          <div className="font-semibold text-sm">{c.nome || "—"}</div>
-                          {c.observacoes_rota && (
-                            <div className="text-[11px] text-muted-foreground mt-0.5">{c.observacoes_rota}</div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {formatPhone(c.telefone)}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-sm">
-                          {c.cidade || "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={c.rota || "__none__"}
-                            onValueChange={(v) => handleUpdateField(c.id, "rota", v === "__none__" ? null : v)}
-                          >
-                            <SelectTrigger className="h-7 text-xs w-28">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">—</SelectItem>
-                              {rotas.map((r) => (
-                                <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              (c.Ativo || "SIM") === "SIM"
-                                ? "bg-green-500/15 text-green-400 border-green-500/30"
-                                : "bg-red-500/15 text-red-400 border-red-500/30"
-                            }
-                          >
-                            {(c.Ativo || "SIM") === "SIM" ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Checkbox
-                            checked={isConfirmed}
-                            onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
-                          />
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingClient(c)}>
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full">
+              <TabsTrigger value="ativos" className="flex-1">Ativos ({clientsAtivos.length})</TabsTrigger>
+              <TabsTrigger value="inativos" className="flex-1">Inativos ({clientsInativos.length})</TabsTrigger>
+              <TabsTrigger value="faltaDados" className="flex-1">Falta Dados ({clientsFaltaDados.length})</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value={activeTab} className="mt-3">
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/30">
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("nome")}>
+                        Nome {sortCol === "nome" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("telefone")}>
+                        Telefone {sortCol === "telefone" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer hidden sm:table-cell" onClick={() => handleSort("cidade")}>
+                        Cidade {sortCol === "cidade" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("rota")}>
+                        Rota {sortCol === "rota" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
+                        Status {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
+                      </TableHead>
+                      <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
+                      <TableHead className="text-center w-[60px]">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tabClients.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          {search || filterRota !== "all" || filterByDay
+                            ? "Nenhum cliente encontrado com esses filtros"
+                            : "Nenhum cliente nesta categoria"}
                         </TableCell>
                       </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                    ) : (
+                      tabClients.map((c) => {
+                        const pedido = pedidoMap[c.id];
+                        const isConfirmed = pedido?.confirmado || false;
+                        return (
+                          <TableRow key={c.id}>
+                            <TableCell>
+                              <div className="font-semibold text-sm">{c.nome || "—"}</div>
+                              {c.observacoes_rota && (
+                                <div className="text-[11px] text-muted-foreground mt-0.5">{c.observacoes_rota}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">
+                              {formatPhone(c.telefone)}
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell text-sm">
+                              {c.cidade || "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={c.rota || "__none__"}
+                                onValueChange={(v) => handleUpdateField(c.id, "rota", v === "__none__" ? null : v)}
+                              >
+                                <SelectTrigger className="h-7 text-xs w-28">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="__none__">—</SelectItem>
+                                  {rotas.map((r) => (
+                                    <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  isInativo(c)
+                                    ? "bg-red-500/15 text-red-400 border-red-500/30"
+                                    : !c.cidade
+                                    ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                                    : "bg-green-500/15 text-green-400 border-green-500/30"
+                                }
+                              >
+                                {isInativo(c) ? "Inativo" : !c.cidade ? "Falta Dados" : "Ativo"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Checkbox
+                                checked={isConfirmed}
+                                onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
+                              />
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingClient(c)}>
+                                <Pencil className="w-3.5 h-3.5" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
