@@ -70,17 +70,40 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const pk = PRIMARY_KEY[table] || "id";
+    const matchKey = MATCH_KEY[table] || "id";
     let result;
 
     switch (type) {
       case "INSERT":
       case "UPDATE": {
         const cleanRecord = stripToAllowedColumns(record, table);
-        const { data, error } = await supabase
+        const matchValue = record[matchKey];
+        if (!matchValue) {
+          throw new Error(`No match key '${matchKey}' in record for ${table}`);
+        }
+
+        // Check if row exists locally
+        const { data: existing } = await supabase
           .from(table)
-          .upsert(cleanRecord, { onConflict: pk })
-          .select();
+          .select(matchKey)
+          .eq(matchKey, matchValue)
+          .maybeSingle();
+
+        let data, error;
+        if (existing) {
+          // Update existing row
+          ({ data, error } = await supabase
+            .from(table)
+            .update(cleanRecord)
+            .eq(matchKey, matchValue)
+            .select());
+        } else {
+          // Insert new row (without identity column)
+          ({ data, error } = await supabase
+            .from(table)
+            .insert(cleanRecord)
+            .select());
+        }
 
         if (error) throw new Error(error.message);
         result = data;
@@ -88,13 +111,14 @@ serve(async (req) => {
       }
       case "DELETE": {
         const ref = old_record || record;
-        if (!ref || !ref[pk]) {
-          throw new Error(`No primary key value for DELETE on ${table}`);
+        const matchValue = ref?.[matchKey];
+        if (!matchValue) {
+          throw new Error(`No match key '${matchKey}' for DELETE on ${table}`);
         }
         const { data, error } = await supabase
           .from(table)
           .delete()
-          .eq(pk, ref[pk])
+          .eq(matchKey, matchValue)
           .select();
 
         if (error) throw new Error(error.message);
