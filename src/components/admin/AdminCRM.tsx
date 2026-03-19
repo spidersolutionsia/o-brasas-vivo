@@ -195,7 +195,10 @@ export default function AdminCRM() {
         (c.cidade || "").toLowerCase().includes(s)
       );
     }
-    if (filterRota !== "all") result = result.filter((c) => (c.rota || "") === filterRota);
+    if (filterRota !== "all") {
+      const rotaFilter = filterRota === "__none__" ? "" : filterRota;
+      result = result.filter((c) => (c.rota || "") === rotaFilter);
+    }
     if (filterAtivo !== "all") result = result.filter((c) => (c.Ativo || "SIM") === filterAtivo);
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
