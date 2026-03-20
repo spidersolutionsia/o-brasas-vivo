@@ -1,62 +1,66 @@
 
-## Plano atualizado: sincronizar `Disparo` mesmo com coluna externa nula
 
-### Diagnóstico
-O `NULL` não é o que gera o erro 400. O erro acontece porque a integração está tentando enviar `disparo` (minúsculo), mas o banco externo aparenta ter a coluna `Disparo` (D maiúsculo), como no print. Em PostgreSQL isso pode virar um identificador diferente se foi criado com aspas.
+## Sistema de Intervalo de Rotas e Múltiplas Rotas por Cliente
 
-Resumo:
-- `NULL` é aceitável para toggle/checkbox.
-- O problema real é o nome da coluna no contrato entre banco local e banco externo.
+### Resumo
+Criar um sistema onde rotas alternam entre semanas (semana sim, semana não) e clientes podem pertencer a mais de uma rota.
 
-### O que vou ajustar
+### Mudanças no Banco de Dados
 
-**1. Tornar o sync de saída compatível com o banco externo**
-- Em `supabase/functions/crm-sync/index.ts`, adicionar um mapeamento de colunas para `crm_carvaomascate`.
-- Converter `disparo` local para `Disparo` no payload enviado ao banco externo.
-- Aplicar isso tanto em `update` quanto em `upsert`/`insert`.
+**1. Adicionar coluna `intervalo` e `semana_referencia` na tabela `rotas_carvao`**
+- `intervalo` (integer, default 1): a cada quantas semanas a rota opera (1 = toda semana, 2 = quinzenal)
+- `semana_referencia` (text, nullable): semana ISO de referência para calcular alternância (ex: "2026-W12" = essa semana é "ativa", pula a próxima, etc.)
 
-**2. Tornar o sync de entrada compatível também**
-- Em `supabase/functions/webhook-external-sync/index.ts`, mapear `Disparo` recebido do externo para `disparo` local antes de salvar.
-- Ajustar a whitelist para aceitar esse campo vindo com o nome externo e persistir no nome local.
+**2. Mudar coluna `rota` de text para text[] (array) na tabela `crm_carvaomascate`**
+- Permitir múltiplas rotas por cliente (ex: `["Rota1", "Rota2"]`)
+- Migração converte valores existentes de string simples para array de 1 elemento
 
-**3. Manter a UI tolerante a `NULL`**
-- Em `AdminCRM.tsx`, manter o checkbox e contagens tratando `null` como `false`.
-- Hoje o checkbox já usa `!!c.disparo`, então a mudança aqui tende a ser mínima ou nenhuma.
+### Mudanças na UI
 
-**4. Validar o fluxo completo**
-- Marcar um cliente no CRM.
-- Confirmar que o request enviado ao `crm-sync` sai com o campo traduzido corretamente.
-- Confirmar que o valor muda no banco externo.
-- Desmarcar e repetir para validar ida e volta.
+**3. RouteModal — campos de intervalo**
+- Adicionar select para `intervalo` (Semanal / Quinzenal)
+- Quando quinzenal, mostrar um date picker ou input para definir a semana de referência (semana em que a rota está ativa)
+- Exibir indicador visual de qual semana a rota está ativa/inativa
 
-### Detalhes técnicos
-Estratégia sugerida:
-```ts
-// saída: local -> externo
-const EXTERNAL_COLUMN_MAP = {
-  crm_carvaomascate: {
-    disparo: "Disparo",
-  },
-};
+**4. ClientModal — múltiplas rotas**
+- Trocar o Select único de rota por checkboxes ou multi-select
+- Permitir selecionar 0, 1 ou mais rotas
 
-// entrada: externo -> local
-const LOCAL_COLUMN_MAP = {
-  crm_carvaomascate: {
-    Disparo: "disparo",
-  },
-};
-```
+**5. AdminCRM tabela — exibir múltiplas rotas**
+- Na coluna Rota, exibir badges para cada rota do cliente
+- Inline editing via multi-select em vez de select único
+- Ajustar filtro de rota para funcionar com arrays (cliente aparece se contém a rota filtrada)
 
-Fluxo:
+**6. MiniCalendar — respeitar alternância**
+- Ao renderizar dots coloridos, verificar se a rota está ativa naquela semana específica usando `intervalo` e `semana_referencia`
+- Semanas inativas não mostram o dot da rota
+
+**7. Filtro por dia — respeitar alternância**
+- Quando "filtrar por dia" está ativo, considerar também se a rota do cliente está na semana ativa
+
+### Lógica de Alternância
+
 ```text
-UI local: disparo
-   -> crm-sync traduz para Disparo
-   -> banco externo salva em Disparo
+Dado: semana_referencia = "2026-W12", intervalo = 2
 
-Webhook externo: Disparo
-   -> webhook-external-sync traduz para disparo
-   -> banco local salva em disparo
+Para saber se semana X é ativa:
+  weekDiff = weekNumber(X) - weekNumber(referencia)
+  isActive = weekDiff % intervalo === 0
+
+Exemplo (intervalo=2, ref=W12):
+  W12 ✓  W13 ✗  W14 ✓  W15 ✗  W16 ✓ ...
 ```
 
-### Observação importante
-Se depois disso ainda houver erro de coluna não encontrada, aí o próximo passo será confirmar se a coluna externa foi criada exatamente como `"Disparo"` (com aspas) ou `disparo` (sem aspas). Mas pelo print, o ajuste de mapeamento é o caminho mais seguro sem depender de recriar a coluna externa.
+### Sync Externo
+- Adicionar `intervalo` e `semana_referencia` ao `LOCAL_ONLY_COLUMNS` de `rotas_carvao` no `crm-sync` (a menos que o banco externo também precise dessas colunas)
+- Para `rota` como array: o banco externo provavelmente espera text simples — converter array para string separada por vírgula no sync de saída, e vice-versa na entrada
+
+### Arquivos Modificados
+- `supabase/functions/crm-sync/index.ts` — ajustar sync para array de rotas
+- `supabase/functions/webhook-external-sync/index.ts` — idem
+- `src/components/admin/RouteModal.tsx` — campos intervalo/referência
+- `src/components/admin/ClientModal.tsx` — multi-select de rotas
+- `src/components/admin/AdminCRM.tsx` — filtros, exibição e lógica de alternância
+- `src/components/admin/MiniCalendar.tsx` — dots respeitando alternância
+- Migration SQL para novas colunas
+
