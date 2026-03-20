@@ -29,6 +29,7 @@ serve(async (req) => {
     const LOCAL_ONLY_COLUMNS: Record<string, string[]> = {
       rotas_carvao: ["cor"],
       pedidos_semana_carvao: ["cliente_id"],
+      crm_carvaomascate: ["disparo"],
     };
 
     function stripLocalColumns(obj: Record<string, unknown>, tbl: string) {
