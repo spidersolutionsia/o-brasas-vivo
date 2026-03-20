@@ -200,14 +200,14 @@ export default function AdminCRM() {
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
       result = result.filter((c) => {
-        if (c.dia_visita !== dia) return false;
-        // Also check if at least one of the client's routes is active this week
         const clientRotas = normalizeRotaArray(c.rota);
-        if (clientRotas.length === 0) return true; // no route restriction
+        if (clientRotas.length === 0) return false;
+        // Check if any of the client's routes operates on this day AND is active this week
         return clientRotas.some((rNome) => {
           const rota = rotaMap[rNome];
-          if (!rota) return true;
-          return isRotaActiveOnDate(selectedDate, rota.intervalo || 1, rota.semana_referencia);
+          if (!rota) return false;
+          return rota.dia_semana === dia &&
+            isRotaActiveOnDate(selectedDate, rota.intervalo || 1, rota.semana_referencia);
         });
       });
     }
