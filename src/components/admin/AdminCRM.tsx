@@ -92,14 +92,7 @@ export default function AdminCRM() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek);
-        setPedidosSemana(data || []);
-      } catch { /* ignore */ }
-    })();
-  }, [currentWeek]);
+  // pedidos_semana_carvao effect removed — disparo is on crm_carvaomascate now
 
   // Handlers — write local then sync to external
   const handleTogglePedido = async (clientId: number, telefone: string) => {
