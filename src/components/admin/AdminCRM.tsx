@@ -11,7 +11,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Search, Plus, RefreshCw, Route, Pencil } from "lucide-react";
+import { Search, Plus, RefreshCw, Route, Pencil, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { syncToExternal } from "@/lib/externalSupabase";
 import { normalizeRotaArray, isRotaActiveOnDate } from "@/lib/rotaUtils";
