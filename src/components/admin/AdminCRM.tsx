@@ -95,36 +95,13 @@ export default function AdminCRM() {
   // pedidos_semana_carvao effect removed — disparo is on crm_carvaomascate now
 
   // Handlers — write local then sync to external
-  const handleTogglePedido = async (clientId: number, telefone: string) => {
+  const handleToggleDisparo = async (clientId: number, telefone: string, currentVal: boolean) => {
     try {
-      const existing = pedidosSemana.find((p: any) => p.cliente_id === clientId && p.semana === currentWeek);
-      if (existing) {
-        const newVal = !existing.confirmado;
-        const updateData = {
-          confirmado: newVal,
-          data_confirmacao: newVal ? new Date().toISOString() : null,
-        };
-        const { error } = await supabase.from("pedidos_semana_carvao").update(updateData).eq("id", existing.id);
-        if (error) throw error;
-        setPedidosSemana((prev) => prev.map((p) => p.id === existing.id ? { ...p, ...updateData } : p));
-        // Sync external
-        syncToExternal({ table: "pedidos_semana_carvao", action: "update", data: { ...updateData, telefone, semana: currentWeek }, match: { telefone, semana: currentWeek } });
-      } else {
-        const insertData = {
-          cliente_id: clientId,
-          telefone,
-          semana: currentWeek,
-          confirmado: true,
-          data_confirmacao: new Date().toISOString(),
-        };
-        const { data: result, error } = await supabase.from("pedidos_semana_carvao").insert(insertData).select();
-        if (error) throw error;
-        if (result && result[0]) {
-          setPedidosSemana((prev) => [...prev, result[0]]);
-        }
-        // Sync external
-        syncToExternal({ table: "pedidos_semana_carvao", action: "upsert", data: insertData });
-      }
+      const newVal = !currentVal;
+      const { error } = await supabase.from("crm_carvaomascate").update({ disparo: newVal }).eq("id", clientId);
+      if (error) throw error;
+      setClients((prev) => prev.map((c) => c.id === clientId ? { ...c, disparo: newVal } : c));
+      syncToExternal({ table: "crm_carvaomascate", action: "update", data: { disparo: newVal }, match: { telefone } });
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
