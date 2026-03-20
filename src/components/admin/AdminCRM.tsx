@@ -230,11 +230,7 @@ export default function AdminCRM() {
     return Array.from(names);
   }, [clients]);
 
-  const pedidoMap = useMemo(() => {
-    const map: Record<string, any> = {};
-    pedidosSemana.forEach((p) => { map[p.cliente_id] = p; });
-    return map;
-  }, [pedidosSemana]);
+  // pedidoMap removed — disparo is directly on client record
 
   const handleSort = (col: SortCol) => {
     if (sortCol === col) setSortAsc(!sortAsc);
