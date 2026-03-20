@@ -51,7 +51,8 @@ type SortCol = "nome" | "telefone" | "cidade" | "rota" | "Ativo";
 export default function AdminCRM() {
   const [clients, setClients] = useState<any[]>([]);
   const [rotas, setRotas] = useState<any[]>([]);
-  const [pedidosSemana, setPedidosSemana] = useState<any[]>([]);
+  // pedidosSemana kept for potential future use
+  // const [pedidosSemana, setPedidosSemana] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -68,72 +69,39 @@ export default function AdminCRM() {
   const [sortCol, setSortCol] = useState<SortCol>("nome");
   const [sortAsc, setSortAsc] = useState(true);
 
-  const currentWeek = getISOWeek(selectedDate);
+  // const currentWeek = getISOWeek(selectedDate);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [clientsRes, rotasRes, pedidosRes] = await Promise.all([
+      const [clientsRes, rotasRes] = await Promise.all([
         supabase.from("crm_carvaomascate").select("*").order("nome", { ascending: true }),
         supabase.from("rotas_carvao").select("*").order("nome", { ascending: true }),
-        supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek),
       ]);
       if (clientsRes.error) throw clientsRes.error;
       if (rotasRes.error) throw rotasRes.error;
-      if (pedidosRes.error) throw pedidosRes.error;
       setClients(clientsRes.data || []);
       setRotas(rotasRes.data || []);
-      setPedidosSemana(pedidosRes.data || []);
     } catch (e: any) {
       setError(e.message);
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
     setLoading(false);
-  }, [currentWeek, toast]);
+  }, [toast]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek);
-        setPedidosSemana(data || []);
-      } catch { /* ignore */ }
-    })();
-  }, [currentWeek]);
+  // pedidos_semana_carvao effect removed — disparo is on crm_carvaomascate now
 
   // Handlers — write local then sync to external
-  const handleTogglePedido = async (clientId: number, telefone: string) => {
+  const handleToggleDisparo = async (clientId: number, telefone: string, currentVal: boolean) => {
     try {
-      const existing = pedidosSemana.find((p: any) => p.cliente_id === clientId && p.semana === currentWeek);
-      if (existing) {
-        const newVal = !existing.confirmado;
-        const updateData = {
-          confirmado: newVal,
-          data_confirmacao: newVal ? new Date().toISOString() : null,
-        };
-        const { error } = await supabase.from("pedidos_semana_carvao").update(updateData).eq("id", existing.id);
-        if (error) throw error;
-        setPedidosSemana((prev) => prev.map((p) => p.id === existing.id ? { ...p, ...updateData } : p));
-        // Sync external
-        syncToExternal({ table: "pedidos_semana_carvao", action: "update", data: { ...updateData, telefone, semana: currentWeek }, match: { telefone, semana: currentWeek } });
-      } else {
-        const insertData = {
-          cliente_id: clientId,
-          telefone,
-          semana: currentWeek,
-          confirmado: true,
-          data_confirmacao: new Date().toISOString(),
-        };
-        const { data: result, error } = await supabase.from("pedidos_semana_carvao").insert(insertData).select();
-        if (error) throw error;
-        if (result && result[0]) {
-          setPedidosSemana((prev) => [...prev, result[0]]);
-        }
-        // Sync external
-        syncToExternal({ table: "pedidos_semana_carvao", action: "upsert", data: insertData });
-      }
+      const newVal = !currentVal;
+      const { error } = await supabase.from("crm_carvaomascate").update({ disparo: newVal }).eq("id", clientId);
+      if (error) throw error;
+      setClients((prev) => prev.map((c) => c.id === clientId ? { ...c, disparo: newVal } : c));
+      syncToExternal({ table: "crm_carvaomascate", action: "update", data: { disparo: newVal }, match: { telefone } });
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
@@ -262,11 +230,7 @@ export default function AdminCRM() {
     return Array.from(names);
   }, [clients]);
 
-  const pedidoMap = useMemo(() => {
-    const map: Record<string, any> = {};
-    pedidosSemana.forEach((p) => { map[p.cliente_id] = p; });
-    return map;
-  }, [pedidosSemana]);
+  // pedidoMap removed — disparo is directly on client record
 
   const handleSort = (col: SortCol) => {
     if (sortCol === col) setSortAsc(!sortAsc);
@@ -277,7 +241,7 @@ export default function AdminCRM() {
   const totalAtivos = clients.filter(isAtivo).length;
   const totalInativos = clients.filter(isInativo).length;
   const totalFaltaDados = clients.filter(isFaltaDados).length;
-  const pedidosConfirmados = pedidosSemana.filter((p) => p.confirmado).length;
+  const disparosAtivos = clients.filter((c) => c.disparo).length;
   const diaLabel = DIAS_LABEL[getDiaSemana(selectedDate)] || "";
 
   if (loading) {
@@ -331,8 +295,8 @@ export default function AdminCRM() {
             </label>
 
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Semana</p>
-              <p className="text-sm font-bold text-primary">{currentWeek}</p>
+              <p className="text-xs text-muted-foreground mb-1">Disparos ativos</p>
+              <p className="text-sm font-bold text-primary">{disparosAtivos}</p>
             </div>
 
             <div>
@@ -399,7 +363,7 @@ export default function AdminCRM() {
                       <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
                         Status {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
                       </TableHead>
-                      <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
+                      <TableHead className="text-center">Disparo</TableHead>
                       <TableHead className="text-center w-[60px]">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -414,8 +378,6 @@ export default function AdminCRM() {
                       </TableRow>
                     ) : (
                       tabClients.map((c) => {
-                        const pedido = pedidoMap[c.id];
-                        const isConfirmed = pedido?.confirmado || false;
                         return (
                           <TableRow key={c.id}>
                             <TableCell>
@@ -462,8 +424,8 @@ export default function AdminCRM() {
                             </TableCell>
                             <TableCell className="text-center">
                               <Checkbox
-                                checked={isConfirmed}
-                                onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
+                                checked={!!c.disparo}
+                                onCheckedChange={() => handleToggleDisparo(c.id, c.telefone, !!c.disparo)}
                               />
                             </TableCell>
                             <TableCell className="text-center">

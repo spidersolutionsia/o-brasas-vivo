@@ -21,6 +21,7 @@ export type Database = {
           cidade: string | null
           created_at: string | null
           dia_visita: string | null
+          disparo: boolean | null
           entrega: string | null
           id: number
           nome: string | null
@@ -37,6 +38,7 @@ export type Database = {
           cidade?: string | null
           created_at?: string | null
           dia_visita?: string | null
+          disparo?: boolean | null
           entrega?: string | null
           id?: never
           nome?: string | null
@@ -53,6 +55,7 @@ export type Database = {
           cidade?: string | null
           created_at?: string | null
           dia_visita?: string | null
+          disparo?: boolean | null
           entrega?: string | null
           id?: never
           nome?: string | null
