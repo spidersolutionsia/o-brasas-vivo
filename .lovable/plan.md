@@ -1,30 +1,28 @@
 
 
-## Simplificar o campo "Semana de referência"
+## Corrigir filtro por dia no CRM
 
-O campo atual pede um código ISO como "2026-W12" que é técnico e confuso. Vou substituir por uma abordagem intuitiva.
+### Problema
+O filtro por dia (linha 203 do `AdminCRM.tsx`) verifica `c.dia_visita` no cliente, mas o dia da semana está definido na **rota** (`dia_semana` na tabela `rotas_carvao`), não no cliente. Por isso ao clicar num dia e filtrar, nenhum cliente aparece.
 
-### Mudança
+### Correção
 
-**Substituir o input de texto por uma pergunta simples:**
+**Arquivo: `src/components/admin/AdminCRM.tsx`** (linhas 200-213)
 
-Em vez de pedir "2026-W12", mostrar:
+Substituir a lógica do `filterByDay` para:
+1. Pegar o dia da semana do `selectedDate`
+2. Para cada cliente, verificar se alguma das suas rotas tem `dia_semana` igual a esse dia
+3. Adicionalmente, verificar se essa rota está ativa na semana (alternância quinzenal)
 
-> **"Esta semana a rota está ativa?"**
-> [ Sim, esta semana é ativa ] [ Não, começa na próxima ]
+```text
+Lógica atual (errada):
+  cliente.dia_visita === dia  ← campo não existe
 
-Quando o usuário escolher, o sistema calcula automaticamente o `semana_referencia` correto nos bastidores:
-- "Sim" → salva a semana atual como referência
-- "Não" → salva a semana seguinte como referência
+Lógica correta:
+  Para cada rota do cliente:
+    rotaMap[rotaNome].dia_semana === dia
+    AND isRotaActiveOnDate(...)
+```
 
-O indicador "✓ Ativa esta semana / ✗ Inativa esta semana" continua aparecendo para confirmar visualmente.
-
-### Arquivo modificado
-- `src/components/admin/RouteModal.tsx` — trocar Input por dois botões/toggle tanto na criação quanto na edição
-
-### Detalhes técnicos
-- Remover o `<Input>` de semana de referência
-- Adicionar dois botões estilo toggle: "Ativa esta semana" / "Inativa esta semana"
-- Ao clicar, setar `semanaRef = getISOWeek(new Date())` ou `getISOWeek(nextWeek)`
-- Manter a lógica de `rotaUtils.ts` intacta — só muda a UI
+Apenas uma mudança de ~10 linhas no bloco de filtro. Nenhum outro arquivo precisa ser alterado.
 
