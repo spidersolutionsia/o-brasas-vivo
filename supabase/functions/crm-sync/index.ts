@@ -50,10 +50,16 @@ serve(async (req) => {
 
     function mapToExternalColumns(obj: Record<string, unknown>, tbl: string) {
       const map = EXTERNAL_COLUMN_MAP[tbl];
-      if (!map || !obj) return obj;
+      if (!obj) return obj;
       const mapped: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(obj)) {
-        mapped[map[key] || key] = value;
+        const extKey = map?.[key] || key;
+        // Convert rota array to comma-separated string for external DB
+        if (tbl === "crm_carvaomascate" && key === "rota" && Array.isArray(value)) {
+          mapped[extKey] = value.join(",");
+        } else {
+          mapped[extKey] = value;
+        }
       }
       return mapped;
     }
