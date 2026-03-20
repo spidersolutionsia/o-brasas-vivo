@@ -75,23 +75,20 @@ export default function AdminCRM() {
     setLoading(true);
     setError(null);
     try {
-      const [clientsRes, rotasRes, pedidosRes] = await Promise.all([
+      const [clientsRes, rotasRes] = await Promise.all([
         supabase.from("crm_carvaomascate").select("*").order("nome", { ascending: true }),
         supabase.from("rotas_carvao").select("*").order("nome", { ascending: true }),
-        supabase.from("pedidos_semana_carvao").select("*").eq("semana", currentWeek),
       ]);
       if (clientsRes.error) throw clientsRes.error;
       if (rotasRes.error) throw rotasRes.error;
-      if (pedidosRes.error) throw pedidosRes.error;
       setClients(clientsRes.data || []);
       setRotas(rotasRes.data || []);
-      setPedidosSemana(pedidosRes.data || []);
     } catch (e: any) {
       setError(e.message);
       toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
     setLoading(false);
-  }, [currentWeek, toast]);
+  }, [toast]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
