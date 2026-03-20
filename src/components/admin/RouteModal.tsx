@@ -163,16 +163,33 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
             </Select>
           </div>
           {parseInt(newIntervalo) > 1 && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-1.5">Semana de referência (ativa)</p>
-              <Input
-                placeholder="ex: 2026-W12"
-                value={newSemanaRef}
-                onChange={(e) => setNewSemanaRef(e.target.value)}
-              />
-              <p className="text-[10px] text-muted-foreground mt-1">
-                Semana atual: {getISOWeek(new Date())}. A rota será ativa nesta semana e a cada {newIntervalo} semanas.
-              </p>
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">Esta semana a rota está ativa?</p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={isRotaActiveOnDate(new Date(), parseInt(newIntervalo), newSemanaRef) ? "default" : "outline"}
+                  onClick={() => setNewSemanaRef(getISOWeek(new Date()))}
+                  className="flex-1"
+                >
+                  Sim, esta semana
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={!isRotaActiveOnDate(new Date(), parseInt(newIntervalo), newSemanaRef) ? "default" : "outline"}
+                  onClick={() => {
+                    const next = new Date();
+                    next.setDate(next.getDate() + 7);
+                    setNewSemanaRef(getISOWeek(next));
+                  }}
+                  className="flex-1"
+                >
+                  Não, começa na próxima
+                </Button>
+              </div>
+              <WeekActiveIndicator intervalo={parseInt(newIntervalo)} semanaReferencia={newSemanaRef} />
             </div>
           )}
           <ColorPicker value={newCor} onChange={setNewCor} />
