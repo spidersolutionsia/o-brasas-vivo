@@ -319,6 +319,9 @@ export default function AdminCRM() {
         <Button variant="outline" size="icon" className="h-8 w-8" onClick={loadData}>
           <RefreshCw className="w-4 h-4" />
         </Button>
+        <Button variant="outline" size="sm" onClick={handleExport}>
+          <Download className="w-4 h-4 mr-1" /> Exportar
+        </Button>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
