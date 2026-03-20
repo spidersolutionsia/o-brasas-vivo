@@ -1,28 +1,24 @@
 
 
-## Corrigir filtro por dia no CRM
+## Exportar lista filtrada do CRM (Excel)
 
-### Problema
-O filtro por dia (linha 203 do `AdminCRM.tsx`) verifica `c.dia_visita` no cliente, mas o dia da semana está definido na **rota** (`dia_semana` na tabela `rotas_carvao`), não no cliente. Por isso ao clicar num dia e filtrar, nenhum cliente aparece.
+### O que será feito
+Adicionar um botão "Exportar" ao lado dos botões de ação existentes (Rotas, Novo Cliente, Refresh). Ao clicar, exporta em Excel (.xlsx) exatamente os clientes visíveis na tela — respeitando busca, filtro de rota, filtro por dia e aba ativa (Ativos/Inativos/Falta Dados).
 
-### Correção
+### Mudanças
 
-**Arquivo: `src/components/admin/AdminCRM.tsx`** (linhas 200-213)
+**1. Instalar dependência `xlsx`** (SheetJS) para gerar Excel no browser.
 
-Substituir a lógica do `filterByDay` para:
-1. Pegar o dia da semana do `selectedDate`
-2. Para cada cliente, verificar se alguma das suas rotas tem `dia_semana` igual a esse dia
-3. Adicionalmente, verificar se essa rota está ativa na semana (alternância quinzenal)
+**2. Arquivo: `src/components/admin/AdminCRM.tsx`**
 
-```text
-Lógica atual (errada):
-  cliente.dia_visita === dia  ← campo não existe
+- Importar `xlsx` (utils + writeFile)
+- Adicionar função `handleExport()` que:
+  - Pega `tabClients` (já filtrado pela busca, rota, dia e aba)
+  - Mapeia para colunas: Nome, Telefone, Cidade, Rota(s), Status, Disparo, Observações
+  - Converte array de rotas em string separada por vírgula
+  - Gera e baixa arquivo `.xlsx` com nome tipo `CRM_Ativos_2026-03-20.xlsx`
+- Adicionar botão com ícone de download na área de ações (linha ~292-302)
 
-Lógica correta:
-  Para cada rota do cliente:
-    rotaMap[rotaNome].dia_semana === dia
-    AND isRotaActiveOnDate(...)
-```
-
-Apenas uma mudança de ~10 linhas no bloco de filtro. Nenhum outro arquivo precisa ser alterado.
+### Resultado
+O usuário filtra por "bomjardim" na busca, aba "Ativos", e ao clicar "Exportar" baixa um Excel só com esses 14 clientes visíveis.
 
