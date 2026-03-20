@@ -241,7 +241,7 @@ export default function AdminCRM() {
   const totalAtivos = clients.filter(isAtivo).length;
   const totalInativos = clients.filter(isInativo).length;
   const totalFaltaDados = clients.filter(isFaltaDados).length;
-  const pedidosConfirmados = pedidosSemana.filter((p) => p.confirmado).length;
+  const disparosAtivos = clients.filter((c) => c.disparo).length;
   const diaLabel = DIAS_LABEL[getDiaSemana(selectedDate)] || "";
 
   if (loading) {
