@@ -256,6 +256,25 @@ export default function AdminCRM() {
     else { setSortCol(col); setSortAsc(true); }
   };
 
+  const handleExport = () => {
+    const tabLabel = activeTab === "ativos" ? "Ativos" : activeTab === "inativos" ? "Inativos" : "FaltaDados";
+    const rows = tabClients.map((c: any) => ({
+      Nome: c.nome || "",
+      Telefone: c.telefone || "",
+      Cidade: c.cidade || "",
+      "Rota(s)": normalizeRotaArray(c.rota).join(", "),
+      Status: c.Ativo || "",
+      Disparo: c.disparo ? "Sim" : "Não",
+      Observações: c.observacoes_rota || "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, tabLabel);
+    const today = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(wb, `CRM_${tabLabel}_${today}.xlsx`);
+    toast({ title: `${rows.length} registros exportados!` });
+  };
+
   const totalClientes = clients.length;
   const totalAtivos = clients.filter(isAtivo).length;
   const totalInativos = clients.filter(isInativo).length;
