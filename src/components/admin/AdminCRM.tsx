@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Search, Plus, RefreshCw, Route, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { syncToExternal } from "@/lib/externalSupabase";
+import { normalizeRotaArray, isRotaActiveOnDate } from "@/lib/rotaUtils";
 import MiniCalendar from "./MiniCalendar";
 import RouteModal from "./RouteModal";
 import ClientModal from "./ClientModal";
@@ -51,8 +52,6 @@ type SortCol = "nome" | "telefone" | "cidade" | "rota" | "Ativo";
 export default function AdminCRM() {
   const [clients, setClients] = useState<any[]>([]);
   const [rotas, setRotas] = useState<any[]>([]);
-  // pedidosSemana kept for potential future use
-  // const [pedidosSemana, setPedidosSemana] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -68,8 +67,6 @@ export default function AdminCRM() {
 
   const [sortCol, setSortCol] = useState<SortCol>("nome");
   const [sortAsc, setSortAsc] = useState(true);
-
-  // const currentWeek = getISOWeek(selectedDate);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -92,9 +89,6 @@ export default function AdminCRM() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // pedidos_semana_carvao effect removed — disparo is on crm_carvaomascate now
-
-  // Handlers — write local then sync to external
   const handleToggleDisparo = async (clientId: number, telefone: string, currentVal: boolean) => {
     try {
       const newVal = !currentVal;
@@ -115,7 +109,6 @@ export default function AdminCRM() {
         const { error } = await supabase.from("crm_carvaomascate").update(data).eq("id", Number(id));
         if (error) throw error;
         setClients((prev) => prev.map((c) => String(c.id) === String(id) ? { ...c, ...data } : c));
-        // Sync by telefone
         syncToExternal({ table: "crm_carvaomascate", action: "update", data, match: { telefone } });
       } else {
         const { data: result, error } = await supabase.from("crm_carvaomascate").insert(data).select();
@@ -123,7 +116,6 @@ export default function AdminCRM() {
         if (result && result[0]) {
           setClients((prev) => [...prev, result[0]]);
         }
-        // Sync external via upsert (telefone as conflict key)
         syncToExternal({ table: "crm_carvaomascate", action: "upsert", data });
       }
       toast({ title: "Cliente salvo!" });
@@ -180,7 +172,14 @@ export default function AdminCRM() {
     }
   };
 
-  // Filtering + Sorting (without Ativo filter — tabs handle that)
+  // Build a map of rota name -> rota object for quick lookup
+  const rotaMap = useMemo(() => {
+    const m: Record<string, any> = {};
+    rotas.forEach((r) => { m[r.nome] = r; });
+    return m;
+  }, [rotas]);
+
+  // Filtering + Sorting
   const filteredClients = useMemo(() => {
     let result = [...clients];
     if (search) {
@@ -192,16 +191,35 @@ export default function AdminCRM() {
       );
     }
     if (filterRota !== "all") {
-      const rotaFilter = filterRota === "__none__" ? "" : filterRota;
-      result = result.filter((c) => (c.rota || "") === rotaFilter);
+      if (filterRota === "__none__") {
+        result = result.filter((c) => normalizeRotaArray(c.rota).length === 0);
+      } else {
+        result = result.filter((c) => normalizeRotaArray(c.rota).includes(filterRota));
+      }
     }
     if (filterByDay) {
       const dia = getDiaSemana(selectedDate);
-      result = result.filter((c) => c.dia_visita === dia);
+      result = result.filter((c) => {
+        if (c.dia_visita !== dia) return false;
+        // Also check if at least one of the client's routes is active this week
+        const clientRotas = normalizeRotaArray(c.rota);
+        if (clientRotas.length === 0) return true; // no route restriction
+        return clientRotas.some((rNome) => {
+          const rota = rotaMap[rNome];
+          if (!rota) return true;
+          return isRotaActiveOnDate(selectedDate, rota.intervalo || 1, rota.semana_referencia);
+        });
+      });
     }
     result.sort((a, b) => {
-      let av = a[sortCol] || "";
-      let bv = b[sortCol] || "";
+      let av: any, bv: any;
+      if (sortCol === "rota") {
+        av = normalizeRotaArray(a.rota).join(",");
+        bv = normalizeRotaArray(b.rota).join(",");
+      } else {
+        av = a[sortCol] || "";
+        bv = b[sortCol] || "";
+      }
       if (typeof av === "string") av = av.toLowerCase();
       if (typeof bv === "string") bv = bv.toLowerCase();
       if (av < bv) return sortAsc ? -1 : 1;
@@ -209,7 +227,7 @@ export default function AdminCRM() {
       return 0;
     });
     return result;
-  }, [clients, search, filterRota, filterByDay, selectedDate, sortCol, sortAsc]);
+  }, [clients, search, filterRota, filterByDay, selectedDate, sortCol, sortAsc, rotaMap]);
 
   // Tab-based categorization
   const isInativo = (c: any) => c.Ativo === "NÃO" || c.Ativo === "NAO";
@@ -226,11 +244,11 @@ export default function AdminCRM() {
   const activeRouteNames = useMemo(() => {
     const ativosAll = clients.filter(isAtivo);
     const names = new Set<string>();
-    ativosAll.forEach((c) => { if (c.rota) names.add(c.rota); });
+    ativosAll.forEach((c) => {
+      normalizeRotaArray(c.rota).forEach((r) => names.add(r));
+    });
     return Array.from(names);
   }, [clients]);
-
-  // pedidoMap removed — disparo is directly on client record
 
   const handleSort = (col: SortCol) => {
     if (sortCol === col) setSortAsc(!sortAsc);
@@ -378,6 +396,7 @@ export default function AdminCRM() {
                       </TableRow>
                     ) : (
                       tabClients.map((c) => {
+                        const clientRotas = normalizeRotaArray(c.rota);
                         return (
                           <TableRow key={c.id}>
                             <TableCell>
@@ -393,20 +412,29 @@ export default function AdminCRM() {
                               {c.cidade || "—"}
                             </TableCell>
                             <TableCell>
-                              <Select
-                                value={c.rota || "__none__"}
-                                onValueChange={(v) => handleUpdateField(c.id, "rota", v === "__none__" ? null : v)}
-                              >
-                                <SelectTrigger className="h-7 text-xs w-28">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="__none__">—</SelectItem>
-                                  {rotas.map((r) => (
-                                    <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <div className="flex flex-wrap gap-1">
+                                {clientRotas.length === 0 ? (
+                                  <span className="text-xs text-muted-foreground">—</span>
+                                ) : (
+                                  clientRotas.map((rNome) => {
+                                    const rota = rotaMap[rNome];
+                                    return (
+                                      <Badge
+                                        key={rNome}
+                                        variant="outline"
+                                        className="text-[10px] px-1.5 py-0"
+                                        style={rota?.cor ? {
+                                          borderColor: rota.cor,
+                                          color: rota.cor,
+                                          backgroundColor: `${rota.cor}15`,
+                                        } : undefined}
+                                      >
+                                        {rNome}
+                                      </Badge>
+                                    );
+                                  })
+                                )}
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Badge
