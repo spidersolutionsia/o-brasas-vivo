@@ -69,7 +69,7 @@ export default function AdminCRM() {
   const [sortCol, setSortCol] = useState<SortCol>("nome");
   const [sortAsc, setSortAsc] = useState(true);
 
-  const currentWeek = getISOWeek(selectedDate);
+  // const currentWeek = getISOWeek(selectedDate);
 
   const loadData = useCallback(async () => {
     setLoading(true);
