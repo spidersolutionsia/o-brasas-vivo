@@ -12,11 +12,18 @@ const ALLOWED_COLUMNS: Record<string, string[]> = {
   crm_carvaomascate: [
     "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
     "observacoes_rota", "entrega", "Abordagem", "Verificado",
-    "totaldisparomes", "ultimadatadisparo", "created_at", "disparo",
+    "totaldisparomes", "ultimadatadisparo", "created_at", "Disparo", "disparo",
   ],
   rotas_carvao: [
     "id", "nome", "descricao", "dia_semana", "observacoes", "ativa", "created_at",
   ],
+};
+
+// Map external column names to local column names
+const LOCAL_COLUMN_MAP: Record<string, Record<string, string>> = {
+  crm_carvaomascate: {
+    Disparo: "disparo",
+  },
 };
 
 // Match key for finding the local row (used for update & delete)
@@ -33,6 +40,16 @@ function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
     if (col in record) cleaned[col] = record[col];
   }
   return cleaned;
+}
+
+function mapToLocalColumns(record: Record<string, unknown>, table: string) {
+  const map = LOCAL_COLUMN_MAP[table];
+  if (!map || !record) return record;
+  const mapped: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(record)) {
+    mapped[map[key] || key] = value;
+  }
+  return mapped;
 }
 
 serve(async (req) => {
@@ -54,8 +71,6 @@ serve(async (req) => {
     }
 
     const payload = await req.json();
-    // Supabase Database Webhook payload format:
-    // { type: "INSERT"|"UPDATE"|"DELETE", table: "table_name", schema: "public", record: {...}, old_record: {...} }
     const { type, table, record, old_record } = payload;
 
     if (!type || !table) {
@@ -76,13 +91,12 @@ serve(async (req) => {
     switch (type) {
       case "INSERT":
       case "UPDATE": {
-        const cleanRecord = stripToAllowedColumns(record, table);
+        const cleanRecord = mapToLocalColumns(stripToAllowedColumns(record, table), table);
         const matchValue = record[matchKey];
         if (!matchValue) {
           throw new Error(`No match key '${matchKey}' in record for ${table}`);
         }
 
-        // Check if row exists locally
         const { data: existing } = await supabase
           .from(table)
           .select(matchKey)
@@ -91,14 +105,12 @@ serve(async (req) => {
 
         let data, error;
         if (existing) {
-          // Update existing row
           ({ data, error } = await supabase
             .from(table)
             .update(cleanRecord)
             .eq(matchKey, matchValue)
             .select());
         } else {
-          // Insert new row (without identity column)
           ({ data, error } = await supabase
             .from(table)
             .insert(cleanRecord)
