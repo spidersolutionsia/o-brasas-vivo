@@ -51,7 +51,8 @@ type SortCol = "nome" | "telefone" | "cidade" | "rota" | "Ativo";
 export default function AdminCRM() {
   const [clients, setClients] = useState<any[]>([]);
   const [rotas, setRotas] = useState<any[]>([]);
-  const [pedidosSemana, setPedidosSemana] = useState<any[]>([]);
+  // pedidosSemana kept for potential future use
+  // const [pedidosSemana, setPedidosSemana] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
