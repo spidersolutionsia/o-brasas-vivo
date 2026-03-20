@@ -27,7 +27,7 @@ serve(async (req) => {
 
     // Strip columns that only exist in the local DB (not in external)
     const LOCAL_ONLY_COLUMNS: Record<string, string[]> = {
-      rotas_carvao: ["cor", "intervalo", "semana_referencia"],
+      rotas_carvao: ["cor", "intervalo", "semana_referencia", "id"],
       pedidos_semana_carvao: ["cliente_id"],
     };
 
