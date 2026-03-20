@@ -30,8 +30,6 @@ serve(async (req) => {
       rotas_carvao: ["cor", "intervalo", "semana_referencia"],
       pedidos_semana_carvao: ["cliente_id"],
     };
-      pedidos_semana_carvao: ["cliente_id"],
-    };
 
     // Map local column names to external column names
     const EXTERNAL_COLUMN_MAP: Record<string, Record<string, string>> = {
