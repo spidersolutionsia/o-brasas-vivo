@@ -378,8 +378,6 @@ export default function AdminCRM() {
                       </TableRow>
                     ) : (
                       tabClients.map((c) => {
-                        const pedido = pedidoMap[c.id];
-                        const isConfirmed = pedido?.confirmado || false;
                         return (
                           <TableRow key={c.id}>
                             <TableCell>
@@ -426,8 +424,8 @@ export default function AdminCRM() {
                             </TableCell>
                             <TableCell className="text-center">
                               <Checkbox
-                                checked={isConfirmed}
-                                onCheckedChange={() => handleTogglePedido(c.id, c.telefone)}
+                                checked={!!c.disparo}
+                                onCheckedChange={() => handleToggleDisparo(c.id, c.telefone, !!c.disparo)}
                               />
                             </TableCell>
                             <TableCell className="text-center">

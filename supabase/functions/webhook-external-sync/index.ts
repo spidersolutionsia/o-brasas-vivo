@@ -12,7 +12,7 @@ const ALLOWED_COLUMNS: Record<string, string[]> = {
   crm_carvaomascate: [
     "nome", "telefone", "cidade", "Ativo", "rota", "dia_visita",
     "observacoes_rota", "entrega", "Abordagem", "Verificado",
-    "totaldisparomes", "ultimadatadisparo", "created_at",
+    "totaldisparomes", "ultimadatadisparo", "created_at", "disparo",
   ],
   rotas_carvao: [
     "id", "nome", "descricao", "dia_semana", "observacoes", "ativa", "created_at",

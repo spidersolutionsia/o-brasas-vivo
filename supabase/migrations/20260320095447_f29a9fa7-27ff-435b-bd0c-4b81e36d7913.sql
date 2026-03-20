@@ -1,0 +1,1 @@
+ALTER TABLE public.crm_carvaomascate ADD COLUMN disparo boolean DEFAULT false;
