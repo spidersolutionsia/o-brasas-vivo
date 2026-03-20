@@ -363,7 +363,7 @@ export default function AdminCRM() {
                       <TableHead className="cursor-pointer" onClick={() => handleSort("Ativo")}>
                         Status {sortCol === "Ativo" && (sortAsc ? "↑" : "↓")}
                       </TableHead>
-                      <TableHead className="text-center">Pedido {currentWeek.split("-")[1]}</TableHead>
+                      <TableHead className="text-center">Disparo</TableHead>
                       <TableHead className="text-center w-[60px]">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
