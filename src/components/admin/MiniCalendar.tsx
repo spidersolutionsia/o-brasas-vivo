@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { isRotaActiveOnDate } from "@/lib/rotaUtils";
 
 interface RotaInfo {
   nome: string;
   dia_semana?: string | null;
   cor?: string | null;
+  intervalo?: number;
+  semana_referencia?: string | null;
 }
 
 interface MiniCalendarProps {
@@ -24,7 +27,7 @@ const WEEK_DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 const WEEK_KEYS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
 
 function getDiaSemanaKey(date: Date): string {
-  const idx = date.getDay(); // 0=Sun
+  const idx = date.getDay();
   return WEEK_KEYS[(idx + 6) % 7];
 }
 
@@ -43,13 +46,21 @@ export default function MiniCalendar({ selectedDate, onSelect, rotas = [], activ
   const today = new Date();
   const selD = new Date(selectedDate);
 
-  // Pre-compute which day-of-week has which active colored routes
-  const routesByDia: Record<string, { nome: string; cor: string }[]> = {};
-  for (const r of rotas) {
-    if (r.dia_semana && r.cor && activeRouteNames.includes(r.nome)) {
-      if (!routesByDia[r.dia_semana]) routesByDia[r.dia_semana] = [];
-      routesByDia[r.dia_semana].push({ nome: r.nome, cor: r.cor });
+  // For each day-of-week, compute which routes are active considering alternation
+  function getDotsForDate(dt: Date) {
+    const diaKey = getDiaSemanaKey(dt);
+    const dots: { nome: string; cor: string }[] = [];
+    for (const r of rotas) {
+      if (
+        r.dia_semana === diaKey &&
+        r.cor &&
+        activeRouteNames.includes(r.nome) &&
+        isRotaActiveOnDate(dt, r.intervalo || 1, r.semana_referencia)
+      ) {
+        dots.push({ nome: r.nome, cor: r.cor });
+      }
     }
+    return dots;
   }
 
   const legendRoutes = rotas.filter((r) => r.cor && r.dia_semana && activeRouteNames.includes(r.nome));
@@ -82,8 +93,7 @@ export default function MiniCalendar({ selectedDate, onSelect, rotas = [], activ
           const dt = new Date(year, month, d);
           const isToday = dt.toDateString() === today.toDateString();
           const isSelected = dt.toDateString() === selD.toDateString();
-          const diaKey = getDiaSemanaKey(dt);
-          const dots = routesByDia[diaKey] || [];
+          const dots = getDotsForDate(dt);
 
           return (
             <button
@@ -126,13 +136,15 @@ export default function MiniCalendar({ selectedDate, onSelect, rotas = [], activ
         Hoje
       </Button>
 
-      {/* Legenda */}
       {legendRoutes.length > 0 && (
         <div className="mt-2 pt-2 border-t border-border space-y-1">
           {legendRoutes.map((r) => (
             <div key={r.nome} className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: r.cor! }} />
               <span>{r.nome}</span>
+              {(r.intervalo || 1) > 1 && (
+                <span className="text-[10px] opacity-60">quinzenal</span>
+              )}
             </div>
           ))}
         </div>

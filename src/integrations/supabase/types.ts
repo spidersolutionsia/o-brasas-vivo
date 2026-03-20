@@ -26,7 +26,7 @@ export type Database = {
           id: number
           nome: string | null
           observacoes_rota: string | null
-          rota: string | null
+          rota: string[] | null
           telefone: string | null
           totaldisparomes: number | null
           ultimadatadisparo: string | null
@@ -43,7 +43,7 @@ export type Database = {
           id?: never
           nome?: string | null
           observacoes_rota?: string | null
-          rota?: string | null
+          rota?: string[] | null
           telefone?: string | null
           totaldisparomes?: number | null
           ultimadatadisparo?: string | null
@@ -60,7 +60,7 @@ export type Database = {
           id?: never
           nome?: string | null
           observacoes_rota?: string | null
-          rota?: string | null
+          rota?: string[] | null
           telefone?: string | null
           totaldisparomes?: number | null
           ultimadatadisparo?: string | null
@@ -235,8 +235,10 @@ export type Database = {
           descricao: string | null
           dia_semana: string | null
           id: string
+          intervalo: number
           nome: string
           observacoes: string | null
+          semana_referencia: string | null
         }
         Insert: {
           ativa?: boolean | null
@@ -245,8 +247,10 @@ export type Database = {
           descricao?: string | null
           dia_semana?: string | null
           id?: string
+          intervalo?: number
           nome: string
           observacoes?: string | null
+          semana_referencia?: string | null
         }
         Update: {
           ativa?: boolean | null
@@ -255,8 +259,10 @@ export type Database = {
           descricao?: string | null
           dia_semana?: string | null
           id?: string
+          intervalo?: number
           nome?: string
           observacoes?: string | null
+          semana_referencia?: string | null
         }
         Relationships: []
       }

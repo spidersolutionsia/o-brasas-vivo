@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Check } from "lucide-react";
+import { normalizeRotaArray } from "@/lib/rotaUtils";
 
 const DIAS_SEMANA = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
 const DIAS_LABEL: Record<string, string> = {
@@ -22,23 +24,32 @@ interface ClientModalProps {
 }
 
 export default function ClientModal({ open, client, rotas, onClose, onSave }: ClientModalProps) {
+  const initialRotas = normalizeRotaArray(client?.rota);
+  
   const [data, setData] = useState({
     nome: client?.nome || "",
     telefone: client?.telefone || "",
     cidade: client?.cidade || "",
     Ativo: client?.Ativo || "SIM",
-    rota: client?.rota || "",
     dia_visita: client?.dia_visita || "",
     observacoes_rota: client?.observacoes_rota || "",
     entrega: client?.entrega || "",
   });
+  const [selectedRotas, setSelectedRotas] = useState<string[]>(initialRotas);
 
   const handleSave = () => {
-    onSave(client?.id || null, data);
+    const rota = selectedRotas.length > 0 ? selectedRotas : null;
+    onSave(client?.id || null, { ...data, rota });
     onClose();
   };
 
   const update = (field: string, value: string) => setData((p) => ({ ...p, [field]: value }));
+
+  const toggleRota = (nome: string) => {
+    setSelectedRotas((prev) =>
+      prev.includes(nome) ? prev.filter((r) => r !== nome) : [...prev, nome]
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -74,29 +85,48 @@ export default function ClientModal({ open, client, rotas, onClose, onSave }: Cl
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Rota</Label>
-              <Select value={data.rota || "__none__"} onValueChange={(v) => update("rota", v === "__none__" ? "" : v)}>
+              <Label className="text-xs">Dia de Visita</Label>
+              <Select value={data.dia_visita || "__none__"} onValueChange={(v) => update("dia_visita", v === "__none__" ? "" : v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none__">Sem rota</SelectItem>
-                  {rotas.map((r) => (
-                    <SelectItem key={r.id} value={r.nome}>{r.nome}</SelectItem>
+                  <SelectItem value="__none__">Nenhum</SelectItem>
+                  {DIAS_SEMANA.map((d) => (
+                    <SelectItem key={d} value={d}>{DIAS_LABEL[d]}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div>
-            <Label className="text-xs">Dia de Visita</Label>
-            <Select value={data.dia_visita || "__none__"} onValueChange={(v) => update("dia_visita", v === "__none__" ? "" : v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">Nenhum</SelectItem>
-                {DIAS_SEMANA.map((d) => (
-                  <SelectItem key={d} value={d}>{DIAS_LABEL[d]}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label className="text-xs mb-2 block">Rotas</Label>
+            <div className="flex flex-wrap gap-2">
+              {rotas.map((r) => {
+                const checked = selectedRotas.includes(r.nome);
+                return (
+                  <label
+                    key={r.id}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs cursor-pointer transition-colors ${
+                      checked
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => toggleRota(r.nome)}
+                      className="h-3.5 w-3.5"
+                    />
+                    {r.cor && (
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: r.cor }} />
+                    )}
+                    {r.nome}
+                  </label>
+                );
+              })}
+              {rotas.length === 0 && (
+                <p className="text-xs text-muted-foreground">Nenhuma rota cadastrada</p>
+              )}
+            </div>
           </div>
           <div>
             <Label className="text-xs">Observações da Rota</Label>

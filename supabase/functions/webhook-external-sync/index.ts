@@ -44,10 +44,16 @@ function stripToAllowedColumns(record: Record<string, unknown>, table: string) {
 
 function mapToLocalColumns(record: Record<string, unknown>, table: string) {
   const map = LOCAL_COLUMN_MAP[table];
-  if (!map || !record) return record;
+  if (!record) return record;
   const mapped: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(record)) {
-    mapped[map[key] || key] = value;
+    const localKey = map?.[key] || key;
+    // Convert rota string from external to array for local DB
+    if (table === "crm_carvaomascate" && localKey === "rota" && typeof value === "string") {
+      mapped[localKey] = value ? value.split(",").map((s: string) => s.trim()).filter(Boolean) : null;
+    } else {
+      mapped[localKey] = value;
+    }
   }
   return mapped;
 }
