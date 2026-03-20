@@ -295,8 +295,8 @@ export default function AdminCRM() {
             </label>
 
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Semana</p>
-              <p className="text-sm font-bold text-primary">{currentWeek}</p>
+              <p className="text-xs text-muted-foreground mb-1">Disparos ativos</p>
+              <p className="text-sm font-bold text-primary">{disparosAtivos}</p>
             </div>
 
             <div>
