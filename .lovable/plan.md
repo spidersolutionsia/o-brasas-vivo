@@ -1,34 +1,24 @@
 
 
-## Plano: Botão "Disparo" no CRM
+## Problema
 
-### Resumo
-Substituir o checkbox de "Pedido semanal" por um checkbox "Disparo" que controla a coluna `disparo` (bool) na tabela `crm_carvaomascate`, sincronizando com o banco externo.
+A coluna `disparo` está em `LOCAL_ONLY_COLUMNS` no `crm-sync`, o que faz ela ser removida do payload antes de enviar ao Supabase externo. Por isso o update vai vazio e retorna `{"data":[]}`.
 
-### Passos
+O erro anterior (400/PGRST204) aconteceu porque a coluna `disparo` **não existia** no banco externo. A solução correta é:
 
-**1. Migração — Adicionar coluna `disparo` à tabela `crm_carvaomascate`**
-- Nova coluna `disparo` do tipo `boolean`, default `false`, nullable.
+## Plano
 
-**2. Atualizar `webhook-external-sync`**
-- Adicionar `"disparo"` à whitelist de `ALLOWED_COLUMNS` para `crm_carvaomascate`.
-
-**3. Atualizar `crm-sync`**
-- Garantir que a coluna `disparo` não esteja em `LOCAL_ONLY_COLUMNS` (ela deve ser sincronizada).
-
-**4. Atualizar `AdminCRM.tsx`**
-- Renomear o header da coluna de `Pedido W__` para `Disparo`.
-- Substituir `handleTogglePedido` por `handleToggleDisparo`: faz update de `disparo` (bool toggle) direto na tabela `crm_carvaomascate` local, e sincroniza com o externo via `crm-sync`.
-- O checkbox lê `c.disparo` em vez de `pedidoMap[c.id]?.confirmado`.
-- Remover lógica/estado de `pedidosSemana` e `currentWeek` que não será mais necessária (ou mantê-la inativa para uso futuro).
-
-### Detalhes técnicos
-
-- O handler `handleToggleDisparo(clientId, telefone)` fará:
-  ```typescript
-  const newVal = !client.disparo;
-  await supabase.from("crm_carvaomascate").update({ disparo: newVal }).eq("id", clientId);
-  syncToExternal({ table: "crm_carvaomascate", action: "update", data: { disparo: newVal }, match: { telefone } });
+**1. Criar a coluna `disparo` no Supabase externo**
+- Você precisa adicionar manualmente a coluna `disparo` (boolean, default false) na tabela `crm_carvaomascate` do seu projeto Supabase externo. Isso pode ser feito via SQL Editor no dashboard do Supabase externo:
+  ```sql
+  ALTER TABLE crm_carvaomascate ADD COLUMN IF NOT EXISTS disparo boolean DEFAULT false;
   ```
-- Deploy das edge functions `webhook-external-sync` e `crm-sync` após edição.
+
+**2. Remover `disparo` de `LOCAL_ONLY_COLUMNS` no `crm-sync`**
+- Em `supabase/functions/crm-sync/index.ts`, remover `"disparo"` da lista de `crm_carvaomascate` em `LOCAL_ONLY_COLUMNS`, permitindo que o valor seja sincronizado.
+
+**3. Re-deploy da edge function `crm-sync`**
+
+### Pré-requisito
+Antes de eu implementar o passo 2, você precisa confirmar que adicionou a coluna `disparo` no banco externo. Caso contrário, o erro 400 voltará.
 
