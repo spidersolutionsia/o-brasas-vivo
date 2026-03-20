@@ -11,7 +11,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Search, Plus, RefreshCw, Route, Pencil } from "lucide-react";
+import { Search, Plus, RefreshCw, Route, Pencil, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { syncToExternal } from "@/lib/externalSupabase";
 import { normalizeRotaArray, isRotaActiveOnDate } from "@/lib/rotaUtils";
@@ -255,6 +256,25 @@ export default function AdminCRM() {
     else { setSortCol(col); setSortAsc(true); }
   };
 
+  const handleExport = () => {
+    const tabLabel = activeTab === "ativos" ? "Ativos" : activeTab === "inativos" ? "Inativos" : "FaltaDados";
+    const rows = tabClients.map((c: any) => ({
+      Nome: c.nome || "",
+      Telefone: c.telefone || "",
+      Cidade: c.cidade || "",
+      "Rota(s)": normalizeRotaArray(c.rota).join(", "),
+      Status: c.Ativo || "",
+      Disparo: c.disparo ? "Sim" : "Não",
+      Observações: c.observacoes_rota || "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, tabLabel);
+    const today = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(wb, `CRM_${tabLabel}_${today}.xlsx`);
+    toast({ title: `${rows.length} registros exportados!` });
+  };
+
   const totalClientes = clients.length;
   const totalAtivos = clients.filter(isAtivo).length;
   const totalInativos = clients.filter(isInativo).length;
@@ -298,6 +318,9 @@ export default function AdminCRM() {
         </Button>
         <Button variant="outline" size="icon" className="h-8 w-8" onClick={loadData}>
           <RefreshCw className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport}>
+          <Download className="w-4 h-4 mr-1" /> Exportar
         </Button>
       </div>
 
