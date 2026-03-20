@@ -228,14 +228,33 @@ export default function RouteModal({ open, rotas, onClose, onSave, onDelete }: R
                     </Select>
                   </div>
                   {parseInt(editData.intervalo || "1") > 1 && (
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1.5">Semana de referência (ativa)</p>
-                      <Input
-                        value={editData.semana_referencia || ""}
-                        placeholder="ex: 2026-W12"
-                        onChange={(e) => setEditData((p: any) => ({ ...p, semana_referencia: e.target.value }))}
-                      />
-                      <p className="text-[10px] text-muted-foreground mt-1">Semana atual: {getISOWeek(new Date())}</p>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Esta semana a rota está ativa?</p>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={isRotaActiveOnDate(new Date(), parseInt(editData.intervalo || "1"), editData.semana_referencia) ? "default" : "outline"}
+                          onClick={() => setEditData((p: any) => ({ ...p, semana_referencia: getISOWeek(new Date()) }))}
+                          className="flex-1"
+                        >
+                          Sim, esta semana
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={!isRotaActiveOnDate(new Date(), parseInt(editData.intervalo || "1"), editData.semana_referencia) ? "default" : "outline"}
+                          onClick={() => {
+                            const next = new Date();
+                            next.setDate(next.getDate() + 7);
+                            setEditData((p: any) => ({ ...p, semana_referencia: getISOWeek(next) }));
+                          }}
+                          className="flex-1"
+                        >
+                          Não, começa na próxima
+                        </Button>
+                      </div>
+                      <WeekActiveIndicator intervalo={parseInt(editData.intervalo || "1")} semanaReferencia={editData.semana_referencia} />
                     </div>
                   )}
                   <ColorPicker value={editData.cor || CORES_PALETA[0].value} onChange={(v) => setEditData((p: any) => ({ ...p, cor: v }))} />
