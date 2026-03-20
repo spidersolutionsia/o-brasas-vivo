@@ -31,6 +31,13 @@ serve(async (req) => {
       pedidos_semana_carvao: ["cliente_id"],
     };
 
+    // Map local column names to external column names
+    const EXTERNAL_COLUMN_MAP: Record<string, Record<string, string>> = {
+      crm_carvaomascate: {
+        disparo: "Disparo",
+      },
+    };
+
     function stripLocalColumns(obj: Record<string, unknown>, tbl: string) {
       const cols = LOCAL_ONLY_COLUMNS[tbl];
       if (!cols || !obj) return obj;
@@ -39,10 +46,20 @@ serve(async (req) => {
       return cleaned;
     }
 
+    function mapToExternalColumns(obj: Record<string, unknown>, tbl: string) {
+      const map = EXTERNAL_COLUMN_MAP[tbl];
+      if (!map || !obj) return obj;
+      const mapped: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(obj)) {
+        mapped[map[key] || key] = value;
+      }
+      return mapped;
+    }
+
     const data = rawData
       ? Array.isArray(rawData)
-        ? rawData.map((d: Record<string, unknown>) => stripLocalColumns(d, table))
-        : stripLocalColumns(rawData, table)
+        ? rawData.map((d: Record<string, unknown>) => mapToExternalColumns(stripLocalColumns(d, table), table))
+        : mapToExternalColumns(stripLocalColumns(rawData, table), table)
       : rawData;
 
     if (!table || !action) {
