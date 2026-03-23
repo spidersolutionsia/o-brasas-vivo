@@ -102,12 +102,28 @@ const Calculadora = () => {
       bagKg = 9;
     }
 
-    // Distribute meat equally among selected meat proteins (exclude pão de alho)
+    // Distribute meat: linguiça gets 30% of a normal share (just to start the BBQ)
     const meatProteins = proteins.filter((p) => selectedProteins.has(p.id) && !p.isNotMeat);
-    const selectedCount = meatProteins.length;
-    const perProteinKg = selectedCount > 0 ? Math.round((totalKg / selectedCount) * 10) / 10 : 0;
+    const hasLinguica = meatProteins.some((p) => p.id === 'linguica');
+    const othersCount = meatProteins.filter((p) => p.id !== 'linguica').length;
 
-    const distribution = meatProteins.map((p) => ({ ...p, kg: perProteinKg, unit: 'kg' as const }));
+    let distribution: Array<typeof meatProteins[0] & { kg: number; unit: 'kg' }>;
+    if (hasLinguica && othersCount > 0) {
+      // linguiça = 30% of equal share, rest redistributed to other cuts
+      const equalShare = totalKg / meatProteins.length;
+      const linguicaKg = Math.round(equalShare * 0.3 * 10) / 10;
+      const remaining = totalKg - linguicaKg;
+      const perOtherKg = Math.round((remaining / othersCount) * 10) / 10;
+      distribution = meatProteins.map((p) => ({
+        ...p,
+        kg: p.id === 'linguica' ? linguicaKg : perOtherKg,
+        unit: 'kg' as const,
+      }));
+    } else {
+      const selectedCount = meatProteins.length;
+      const perProteinKg = selectedCount > 0 ? Math.round((totalKg / selectedCount) * 10) / 10 : 0;
+      distribution = meatProteins.map((p) => ({ ...p, kg: perProteinKg, unit: 'kg' as const }));
+    }
 
     // Pão de alho: 2 unidades por pessoa
     const paoAlhoUnits = hasPaoAlho ? totalPeople * 2 : 0;
