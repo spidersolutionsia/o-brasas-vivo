@@ -19,7 +19,7 @@ const cardVariants = {
   }),
 };
 
-type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'linguica' | 'cupim' | 'coracao' | 'costelinha' | 'panceta' | 'queijo' | 'cordeiro' | 'paoalho';
+type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'linguica' | 'cupim' | 'coracao' | 'costelinha' | 'panceta' | 'queijo' | 'cordeiro' | 'paoalho' | 'asinha';
 
 interface Protein {
   id: ProteinId;
@@ -30,7 +30,7 @@ interface Protein {
 }
 
 // IDs that are "entradas" — receive reduced portion (45% of a standard share)
-const ENTRADA_IDS: Set<ProteinId> = new Set(['linguica', 'coracao']);
+const ENTRADA_IDS: Set<ProteinId> = new Set(['linguica', 'coracao', 'asinha']);
 
 const proteins: Protein[] = [
   { id: 'picanha', label: 'Picanha', icon: <Beef className="w-6 h-6" /> },
@@ -41,6 +41,7 @@ const proteins: Protein[] = [
   { id: 'costelinha', label: 'Costelinha Suína', icon: <Ribbon className="w-6 h-6" />, hasCarbonFactor: true },
   { id: 'sobrecoxa', label: 'Sobrecoxa', icon: <Drumstick className="w-6 h-6" /> },
   { id: 'coracao', label: 'Coração de Frango', icon: <Drumstick className="w-6 h-6" /> },
+  { id: 'asinha', label: 'Asinha de Frango', icon: <Drumstick className="w-6 h-6" /> },
   { id: 'linguica', label: 'Linguiça', icon: <Flame className="w-6 h-6" /> },
   { id: 'panceta', label: 'Panceta', icon: <Beef className="w-6 h-6" /> },
   { id: 'queijo', label: 'Queijo Coalho', icon: <Flame className="w-6 h-6" /> },
