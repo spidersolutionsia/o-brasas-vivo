@@ -111,7 +111,7 @@ const Calculadora = () => {
     if (hasLinguica && othersCount > 0) {
       // linguiça = 30% of equal share, rest redistributed to other cuts
       const equalShare = totalKg / meatProteins.length;
-      const linguicaKg = Math.round(equalShare * 0.3 * 10) / 10;
+      const linguicaKg = Math.round(equalShare * 0.45 * 10) / 10;
       const remaining = totalKg - linguicaKg;
       const perOtherKg = Math.round((remaining / othersCount) * 10) / 10;
       distribution = meatProteins.map((p) => ({
