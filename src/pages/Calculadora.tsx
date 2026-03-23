@@ -371,6 +371,18 @@ const Calculadora = () => {
                     <span className="text-white/40 text-xs uppercase tracking-widest">Carvão ideal</span>
                     <div className="font-['Oswald'] text-xl font-semibold text-white mt-0.5">{result.bagLabel}</div>
                   </div>
+
+                  {/* Dica Mascate */}
+                  <div className="mt-3 bg-[#ff6a00]/5 border border-[#ff6a00]/10 rounded-lg px-4 py-3">
+                    <p className="text-white/60 text-xs leading-relaxed">
+                      Para o seu churrasco de <span className="text-white font-semibold">{duration}h</span>, você vai precisar de{' '}
+                      <span className="text-[#ff6a00] font-semibold">{result.totalKg}kg de carne</span> e o ideal é o{' '}
+                      <span className="text-white font-semibold">{result.bagLabel.split('—')[0].trim()}</span> da Carvão Mascate.
+                    </p>
+                    <p className="text-[#ff6a00]/70 text-xs mt-2 italic">
+                      💡 Dica Mascate: Com o nosso {result.bagLabel.split('—')[0].trim().toLowerCase()}, você garante brasa forte do início ao fim sem precisar repor toda hora.
+                    </p>
+                  </div>
                 </div>
               </div>
 
