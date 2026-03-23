@@ -20,13 +20,13 @@ const cardVariants = {
   }),
 };
 
-type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'asinha' | 'linguica';
+type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'linguica' | 'cupim' | 'coracao' | 'costelinha' | 'panceta' | 'queijo' | 'cordeiro';
 
 interface Protein {
   id: ProteinId;
   label: string;
   icon: React.ReactNode;
-  hasCarbonFactor?: boolean; // needs +30% charcoal
+  hasCarbonFactor?: boolean; // needs +30% charcoal (fogo lento)
 }
 
 const proteins: Protein[] = [
@@ -34,9 +34,14 @@ const proteins: Protein[] = [
   { id: 'contrafile', label: 'Contra-filé', icon: <Beef className="w-6 h-6" /> },
   { id: 'fraldinha', label: 'Fraldinha', icon: <Beef className="w-6 h-6" /> },
   { id: 'costela', label: 'Costela', icon: <Ribbon className="w-6 h-6" />, hasCarbonFactor: true },
+  { id: 'cupim', label: 'Cupim', icon: <Beef className="w-6 h-6" />, hasCarbonFactor: true },
+  { id: 'costelinha', label: 'Costelinha Suína', icon: <Ribbon className="w-6 h-6" />, hasCarbonFactor: true },
   { id: 'sobrecoxa', label: 'Sobrecoxa', icon: <Drumstick className="w-6 h-6" /> },
-  { id: 'asinha', label: 'Asinha', icon: <Drumstick className="w-6 h-6" /> },
+  { id: 'coracao', label: 'Coração de Frango', icon: <Drumstick className="w-6 h-6" /> },
   { id: 'linguica', label: 'Linguiça', icon: <Flame className="w-6 h-6" /> },
+  { id: 'panceta', label: 'Panceta', icon: <Beef className="w-6 h-6" /> },
+  { id: 'queijo', label: 'Queijo Coalho', icon: <Flame className="w-6 h-6" /> },
+  { id: 'cordeiro', label: 'Cordeiro', icon: <Beef className="w-6 h-6" /> },
 ];
 
 const Calculadora = () => {
@@ -186,7 +191,7 @@ const Calculadora = () => {
           </div>
           <p className="text-white/40 text-xs mb-4">Selecione as carnes do seu churrasco</p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
             {proteins.map((protein) => {
               const isSelected = selectedProteins.has(protein.id);
               return (
@@ -221,8 +226,8 @@ const Calculadora = () => {
                 className="overflow-hidden"
               >
                 <div className="mt-3 text-xs text-[#ff6a00]/80 bg-[#ff6a00]/5 rounded-lg px-3 py-2 border border-[#ff6a00]/10">
-                  🔥 Costela selecionada! +30% de carvão recomendado pelo tempo de queima.
-                </div>
+                   🔥 Corte de fogo lento selecionado! +30% de carvão recomendado pelo tempo de queima prolongada.
+                 </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -379,11 +384,11 @@ const Calculadora = () => {
                 className="mt-6"
               >
                 <Link to="/#encontre">
-                  <Button className="w-full bg-[#ff6a00] hover:bg-[#ff6a00]/90 text-white h-12 font-semibold gap-2 border-0">
-                    <MapPin className="w-4 h-4" />
-                    Onde Encontrar
-                  </Button>
-                </Link>
+                   <Button className="w-full bg-[#ff6a00] hover:bg-[#ff6a00]/90 text-white h-12 font-['Oswald'] text-base font-semibold gap-2 border-0 uppercase tracking-wide">
+                     <MapPin className="w-5 h-5" />
+                     Encontrar Revendedor Mais Próximo
+                   </Button>
+                 </Link>
               </motion.div>
             </motion.div>
           )}
@@ -413,8 +418,8 @@ const Calculadora = () => {
           className="text-center mt-12 pt-8 border-t border-white/[0.06]"
         >
           <p className="text-white/30 text-xs leading-relaxed">
-            Carvão Mascate — A qualidade que você vê antes de acender.<br />
-            Venda exclusiva para revendedores.
+            Venda exclusiva para revendedores.<br />
+            Carvão Mascate: Mais brasa, menos fumaça.
           </p>
         </motion.footer>
       </div>
