@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, MapPin, ArrowLeft, Flame, Users, Clock, Beef, Drumstick, Ribbon } from 'lucide-react';
+import { Minus, Plus, MapPin, ArrowLeft, Flame, Users, Clock, Beef, Drumstick, Ribbon, Sandwich } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 
@@ -20,13 +19,14 @@ const cardVariants = {
   }),
 };
 
-type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'linguica' | 'cupim' | 'coracao' | 'costelinha' | 'panceta' | 'queijo' | 'cordeiro';
+type ProteinId = 'picanha' | 'contrafile' | 'fraldinha' | 'costela' | 'sobrecoxa' | 'linguica' | 'cupim' | 'coracao' | 'costelinha' | 'panceta' | 'queijo' | 'cordeiro' | 'paoalho';
 
 interface Protein {
   id: ProteinId;
   label: string;
   icon: React.ReactNode;
-  hasCarbonFactor?: boolean; // needs +30% charcoal (fogo lento)
+  hasCarbonFactor?: boolean;
+  isNotMeat?: boolean; // items calculated differently (e.g. units)
 }
 
 const proteins: Protein[] = [
@@ -42,6 +42,7 @@ const proteins: Protein[] = [
   { id: 'panceta', label: 'Panceta', icon: <Beef className="w-6 h-6" /> },
   { id: 'queijo', label: 'Queijo Coalho', icon: <Flame className="w-6 h-6" /> },
   { id: 'cordeiro', label: 'Cordeiro', icon: <Beef className="w-6 h-6" /> },
+  { id: 'paoalho', label: 'Pão de Alho', icon: <Sandwich className="w-6 h-6" />, isNotMeat: true },
 ];
 
 const Calculadora = () => {
@@ -49,7 +50,6 @@ const Calculadora = () => {
   const [women, setWomen] = useState(0);
   const [children, setChildren] = useState(0);
   const [duration, setDuration] = useState(4);
-  const [hasAccompaniments, setHasAccompaniments] = useState(false);
   const [selectedProteins, setSelectedProteins] = useState<Set<ProteinId>>(new Set(['picanha']));
 
   const totalPeople = men + women + children;
@@ -71,14 +71,17 @@ const Calculadora = () => {
     [selectedProteins]
   );
 
+  const hasPaoAlho = selectedProteins.has('paoalho');
+
   const result = useMemo(() => {
     const baseMeat = men * 500 + women * 400 + children * 200;
     const durationAdj = duration > 4 ? 1.2 : 1;
-    const accompAdj = hasAccompaniments ? 0.9 : 1;
+    // Pão de alho reduz 10% da carne
+    const accompAdj = hasPaoAlho ? 0.9 : 1;
     const totalGrams = baseMeat * durationAdj * accompAdj;
     const totalKg = totalGrams / 1000;
 
-    // Charcoal recommendation: 1kg charcoal per 1kg meat, +30% if costela
+    // Charcoal recommendation: 1kg charcoal per 1kg meat, +30% if fogo lento
     const charcoalKg = totalKg * (hasCarbonFactor ? 1.3 : 1);
 
     let bagLabel: string;
@@ -99,13 +102,15 @@ const Calculadora = () => {
       bagKg = 9;
     }
 
-    // Distribute meat equally among selected proteins
-    const selectedCount = selectedProteins.size;
+    // Distribute meat equally among selected meat proteins (exclude pão de alho)
+    const meatProteins = proteins.filter((p) => selectedProteins.has(p.id) && !p.isNotMeat);
+    const selectedCount = meatProteins.length;
     const perProteinKg = selectedCount > 0 ? Math.round((totalKg / selectedCount) * 10) / 10 : 0;
 
-    const distribution = proteins
-      .filter((p) => selectedProteins.has(p.id))
-      .map((p) => ({ ...p, kg: perProteinKg }));
+    const distribution = meatProteins.map((p) => ({ ...p, kg: perProteinKg, unit: 'kg' as const }));
+
+    // Pão de alho: 2 unidades por pessoa
+    const paoAlhoUnits = hasPaoAlho ? totalPeople * 2 : 0;
 
     return {
       totalKg: Math.round(totalKg * 10) / 10,
@@ -114,8 +119,9 @@ const Calculadora = () => {
       bagImage,
       bagKg,
       distribution,
+      paoAlhoUnits,
     };
-  }, [men, women, children, duration, hasAccompaniments, selectedProteins, hasCarbonFactor]);
+  }, [men, women, children, duration, selectedProteins, hasCarbonFactor, hasPaoAlho, totalPeople]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-['Inter'] relative overflow-hidden">
@@ -211,6 +217,11 @@ const Calculadora = () => {
                       +carvão
                     </span>
                   )}
+                  {protein.isNotMeat && isSelected && (
+                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full leading-none">
+                      -10% carne
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -280,26 +291,6 @@ const Calculadora = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Accompaniments */}
-        <motion.div
-          custom={3}
-          variants={cardVariants}
-          initial="hidden"
-          animate="visible"
-          className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 mb-6"
-        >
-          <label className="flex items-start gap-3 cursor-pointer">
-            <Checkbox
-              checked={hasAccompaniments}
-              onCheckedChange={(v) => setHasAccompaniments(!!v)}
-              className="mt-0.5 border-white/20 data-[state=checked]:bg-[#ff6a00] data-[state=checked]:border-[#ff6a00]"
-            />
-            <div>
-              <span className="font-medium text-sm">Teremos pão de alho e entradas</span>
-              <span className="block text-xs text-white/40 mt-0.5">Reduz 10% da carne necessária</span>
-            </div>
-          </label>
-        </motion.div>
 
         {/* Result Card */}
         <AnimatePresence>
@@ -372,6 +363,15 @@ const Calculadora = () => {
                         </div>
                       </div>
                     ))}
+                    {result.paoAlhoUnits > 0 && (
+                      <div className="flex items-center gap-2 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]">
+                        <span className="text-[#ff6a00] flex-shrink-0"><Sandwich className="w-6 h-6" /></span>
+                        <div className="min-w-0">
+                          <span className="text-xs text-white/70 block truncate">Pão de Alho</span>
+                          <span className="font-['Oswald'] text-sm font-bold text-white">{result.paoAlhoUnits} un.</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
