@@ -121,7 +121,10 @@ const Calculadora = () => {
       const remaining = totalKg - totalEntradas;
       const perPrincipalKg = Math.round((remaining / principais.length) * 10) / 10;
       distribution = meatProteins.map((p) => {
-        const kg = ENTRADA_IDS.has(p.id) ? entradaKgEach : perPrincipalKg;
+        let kg = ENTRADA_IDS.has(p.id) ? entradaKgEach : perPrincipalKg;
+        // Queijo coalho: arredondar para cima em múltiplos de 0.4kg (pacote mínimo)
+        if (p.id === 'queijo') kg = Math.max(0.4, Math.ceil(kg / 0.4) * 0.4);
+        kg = Math.round(kg * 10) / 10;
         return { ...p, kg, unit: 'kg' as const, pct: totalKg > 0 ? Math.round((kg / totalKg) * 100) : 0 };
       });
     } else {
