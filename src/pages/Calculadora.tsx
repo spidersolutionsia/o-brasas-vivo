@@ -235,14 +235,18 @@ const Calculadora = () => {
                 >
                   {protein.icon}
                   <span className="text-xs font-medium">{protein.label}</span>
+                  {isSelected && totalPeople > 0 && result.percentMap[protein.id] !== undefined && (
+                    <span className={`absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full leading-none font-bold ${
+                      protein.isNotMeat
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-white/10 text-white/70'
+                    }`}>
+                      {protein.isNotMeat ? '-10%' : `${result.percentMap[protein.id]}%`}
+                    </span>
+                  )}
                   {protein.hasCarbonFactor && isSelected && (
                     <span className="absolute top-1.5 right-1.5 text-[9px] bg-[#ff6a00]/20 text-[#ff6a00] px-1.5 py-0.5 rounded-full leading-none">
                       +carvão
-                    </span>
-                  )}
-                  {protein.isNotMeat && isSelected && (
-                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full leading-none">
-                      -10% carne
                     </span>
                   )}
                 </button>
