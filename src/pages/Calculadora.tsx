@@ -160,7 +160,7 @@ const Calculadora = () => {
     <div className="min-h-screen bg-[#0a0a0a] text-white font-['Inter'] relative overflow-hidden">
       {/* Subtle background glow */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#ff6a00]/5 blur-[120px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#dc2626]/5 blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 md:py-12">
@@ -185,12 +185,12 @@ const Calculadora = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-[#ff6a00]/10 border border-[#ff6a00]/20 rounded-full px-4 py-1.5 mb-4">
-            <Flame className="w-4 h-4 text-[#ff6a00]" />
-            <span className="text-[#ff6a00] text-sm font-medium tracking-wide uppercase">Calculômetro</span>
+          <div className="inline-flex items-center gap-2 bg-[#dc2626]/10 border border-[#dc2626]/20 rounded-full px-4 py-1.5 mb-4">
+            <Flame className="w-4 h-4 text-[#dc2626]" />
+            <span className="text-[#dc2626] text-sm font-medium tracking-wide uppercase">Calculômetro</span>
           </div>
           <h1 className="font-['Oswald'] text-4xl md:text-5xl font-bold tracking-tight">
-            Calculadora de <span className="text-[#ff6a00]">Churrasco</span>
+            Calculadora de <span className="text-[#dc2626]">Churrasco</span>
           </h1>
           <p className="text-white/50 mt-3 text-sm md:text-base max-w-md mx-auto">
             Descubra a quantidade ideal de carne e carvão para o seu churrasco perfeito.
@@ -206,7 +206,7 @@ const Calculadora = () => {
           className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 mb-4"
         >
           <div className="flex items-center gap-2 mb-5">
-            <Users className="w-5 h-5 text-[#ff6a00]" />
+            <Users className="w-5 h-5 text-[#dc2626]" />
             <h2 className="font-['Oswald'] text-lg font-semibold tracking-wide uppercase">Convidados</h2>
           </div>
           <div className="space-y-4">
@@ -225,7 +225,7 @@ const Calculadora = () => {
           className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 mb-4"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Beef className="w-5 h-5 text-[#ff6a00]" />
+            <Beef className="w-5 h-5 text-[#dc2626]" />
             <h2 className="font-['Oswald'] text-lg font-semibold tracking-wide uppercase">Proteínas</h2>
           </div>
           <p className="text-white/40 text-xs mb-4">Selecione as carnes do seu churrasco</p>
@@ -239,7 +239,7 @@ const Calculadora = () => {
                   onClick={() => toggleProtein(protein.id)}
                   className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#ff6a00]/10 border-[#ff6a00]/40 text-[#ff6a00]'
+                      ? 'bg-[#dc2626]/10 border-[#dc2626]/40 text-[#dc2626]'
                       : 'bg-white/[0.02] border-white/[0.06] text-white/40 hover:border-white/15 hover:text-white/60'
                   }`}
                 >
@@ -255,7 +255,7 @@ const Calculadora = () => {
                     </span>
                   )}
                   {protein.hasCarbonFactor && isSelected && (
-                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-[#ff6a00]/20 text-[#ff6a00] px-1.5 py-0.5 rounded-full leading-none">
+                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-[#dc2626]/20 text-[#dc2626] px-1.5 py-0.5 rounded-full leading-none">
                       +carvão
                     </span>
                   )}
@@ -273,7 +273,7 @@ const Calculadora = () => {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="mt-3 text-xs text-[#ff6a00]/80 bg-[#ff6a00]/5 rounded-lg px-3 py-2 border border-[#ff6a00]/10">
+                <div className="mt-3 text-xs text-[#dc2626]/80 bg-[#dc2626]/5 rounded-lg px-3 py-2 border border-[#dc2626]/10">
                    🔥 Corte de fogo lento selecionado! +30% de carvão recomendado pelo tempo de queima prolongada.
                  </div>
               </motion.div>
@@ -290,12 +290,12 @@ const Calculadora = () => {
           className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 mb-4"
         >
           <div className="flex items-center gap-2 mb-5">
-            <Clock className="w-5 h-5 text-[#ff6a00]" />
+            <Clock className="w-5 h-5 text-[#dc2626]" />
             <h2 className="font-['Oswald'] text-lg font-semibold tracking-wide uppercase">Duração</h2>
           </div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-white/60 text-sm">Tempo estimado</span>
-            <span className="font-['Oswald'] text-2xl font-bold text-[#ff6a00]">{duration}h</span>
+            <span className="font-['Oswald'] text-2xl font-bold text-[#dc2626]">{duration}h</span>
           </div>
           <Slider
             value={[duration]}
@@ -303,7 +303,7 @@ const Calculadora = () => {
             min={2}
             max={8}
             step={1}
-            className="[&_[role=slider]]:bg-[#ff6a00] [&_[role=slider]]:border-[#ff6a00] [&_[data-orientation=horizontal]>[data-orientation=horizontal]]:bg-[#ff6a00] [&_.relative>.absolute]:bg-[#ff6a00]"
+            className="[&_[role=slider]]:bg-[#dc2626] [&_[role=slider]]:border-[#dc2626] [&_[data-orientation=horizontal]>[data-orientation=horizontal]]:bg-[#dc2626] [&_.relative>.absolute]:bg-[#dc2626]"
           />
           <div className="flex justify-between mt-2 text-xs text-white/30">
             <span>2h</span>
@@ -320,7 +320,7 @@ const Calculadora = () => {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="mt-3 text-xs text-[#ff6a00]/80 bg-[#ff6a00]/5 rounded-lg px-3 py-2 border border-[#ff6a00]/10">
+                <div className="mt-3 text-xs text-[#dc2626]/80 bg-[#dc2626]/5 rounded-lg px-3 py-2 border border-[#dc2626]/10">
                   ⏱️ Churrasco longo! +20% de carne adicionado automaticamente.
                 </div>
               </motion.div>
@@ -337,12 +337,12 @@ const Calculadora = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] }}
-              className="backdrop-blur-xl bg-white/[0.04] border border-[#ff6a00]/20 rounded-2xl p-6 mb-6 relative overflow-hidden"
+              className="backdrop-blur-xl bg-white/[0.04] border border-[#dc2626]/20 rounded-2xl p-6 mb-6 relative overflow-hidden"
             >
-              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#ff6a00]/10 blur-[60px]" />
+              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#dc2626]/10 blur-[60px]" />
 
               <div className="flex items-center gap-2 mb-5">
-                <Beef className="w-5 h-5 text-[#ff6a00]" />
+                <Beef className="w-5 h-5 text-[#dc2626]" />
                 <h2 className="font-['Oswald'] text-lg font-semibold tracking-wide uppercase">Resultado</h2>
               </div>
 
@@ -364,7 +364,7 @@ const Calculadora = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="font-['Oswald'] text-5xl font-bold text-[#ff6a00] leading-none mt-1"
+                      className="font-['Oswald'] text-5xl font-bold text-[#dc2626] leading-none mt-1"
                     >
                       {result.totalKg}<span className="text-2xl">kg</span>
                     </motion.div>
@@ -377,13 +377,13 @@ const Calculadora = () => {
                   </div>
 
                   {/* Dica Mascate */}
-                  <div className="mt-3 bg-[#ff6a00]/5 border border-[#ff6a00]/10 rounded-lg px-4 py-3">
+                  <div className="mt-3 bg-[#dc2626]/5 border border-[#dc2626]/10 rounded-lg px-4 py-3">
                     <p className="text-white/60 text-xs leading-relaxed">
                       Para o seu churrasco de <span className="text-white font-semibold">{duration}h</span>, você vai precisar de{' '}
-                      <span className="text-[#ff6a00] font-semibold">{result.totalKg}kg de carne</span> e o ideal é o{' '}
+                      <span className="text-[#dc2626] font-semibold">{result.totalKg}kg de carne</span> e o ideal é o{' '}
                       <span className="text-white font-semibold">{result.bagLabel.split('—')[0].trim()}</span> da Carvão Mascate.
                     </p>
-                    <p className="text-[#ff6a00]/70 text-xs mt-2 italic">
+                    <p className="text-[#dc2626]/70 text-xs mt-2 italic">
                       💡 Dica Mascate: Com o nosso {result.bagLabel.split('—')[0].trim().toLowerCase()}, você garante brasa forte do início ao fim sem precisar repor toda hora.
                     </p>
                   </div>
@@ -405,7 +405,7 @@ const Calculadora = () => {
                         key={item.id}
                         className="flex items-center gap-2 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]"
                       >
-                        <span className="text-[#ff6a00] flex-shrink-0">{item.icon}</span>
+                        <span className="text-[#dc2626] flex-shrink-0">{item.icon}</span>
                         <div className="min-w-0">
                           <span className="text-xs text-white/70 block truncate">{item.label}</span>
                           <span className="font-['Oswald'] text-sm font-bold text-white">{item.kg}kg</span>
@@ -414,7 +414,7 @@ const Calculadora = () => {
                     ))}
                     {result.paoAlhoUnits > 0 && (
                       <div className="flex items-center gap-2 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]">
-                        <span className="text-[#ff6a00] flex-shrink-0"><Sandwich className="w-6 h-6" /></span>
+                        <span className="text-[#dc2626] flex-shrink-0"><Sandwich className="w-6 h-6" /></span>
                         <div className="min-w-0">
                           <span className="text-xs text-white/70 block truncate">Pão de Alho</span>
                           <span className="font-['Oswald'] text-sm font-bold text-white">{result.paoAlhoUnits} un.</span>
@@ -433,7 +433,7 @@ const Calculadora = () => {
                 className="mt-6"
               >
                 <Link to="/#encontre">
-                   <Button className="w-full bg-[#ff6a00] hover:bg-[#ff6a00]/90 text-white h-12 font-['Oswald'] text-base font-semibold gap-2 border-0 uppercase tracking-wide">
+                   <Button className="w-full bg-[#dc2626] hover:bg-[#dc2626]/90 text-white h-12 font-['Oswald'] text-base font-semibold gap-2 border-0 uppercase tracking-wide">
                      <MapPin className="w-5 h-5" />
                      Encontrar Revendedor Mais Próximo
                    </Button>
@@ -512,7 +512,7 @@ const CounterRow = ({
       </motion.span>
       <button
         onClick={() => onChange(value + 1)}
-        className="w-9 h-9 rounded-full border border-[#ff6a00]/30 bg-[#ff6a00]/10 flex items-center justify-center hover:bg-[#ff6a00]/20 transition-colors text-[#ff6a00]"
+        className="w-9 h-9 rounded-full border border-[#dc2626]/30 bg-[#dc2626]/10 flex items-center justify-center hover:bg-[#dc2626]/20 transition-colors text-[#dc2626]"
       >
         <Plus className="w-4 h-4" />
       </button>
