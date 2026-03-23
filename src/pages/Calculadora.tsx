@@ -29,6 +29,9 @@ interface Protein {
   isNotMeat?: boolean; // items calculated differently (e.g. units)
 }
 
+// IDs that are "entradas" — receive reduced portion (45% of a standard share)
+const ENTRADA_IDS: Set<ProteinId> = new Set(['linguica', 'coracao']);
+
 const proteins: Protein[] = [
   { id: 'picanha', label: 'Picanha', icon: <Beef className="w-6 h-6" /> },
   { id: 'contrafile', label: 'Contra-filé', icon: <Beef className="w-6 h-6" /> },
@@ -83,16 +86,18 @@ const Calculadora = () => {
 
     // Charcoal recommendation: 1kg charcoal per 1kg meat, +30% if fogo lento
     const charcoalKg = totalKg * (hasCarbonFactor ? 1.3 : 1);
+    // Margem de segurança de 10% para decidir o saco
+    const charcoalWithMargin = charcoalKg * 1.1;
 
     let bagLabel: string;
     let bagImage: string;
     let bagKg: number;
 
-    if (charcoalKg <= 2.5) {
+    if (charcoalWithMargin <= 2.5) {
       bagLabel = 'Saco de 2.5kg — O Essencial';
       bagImage = productBag25;
       bagKg = 2.5;
-    } else if (charcoalKg <= 5) {
+    } else if (charcoalWithMargin <= 5) {
       bagLabel = 'Saco de 5kg — O Churrasqueiro';
       bagImage = productBag5;
       bagKg = 5;
@@ -102,19 +107,20 @@ const Calculadora = () => {
       bagKg = 9;
     }
 
-    // Distribute meat: linguiça gets 30% of a normal share (just to start the BBQ)
+    // Distribute meat: "entradas" (linguiça, coração) get 45% of a normal share
     const meatProteins = proteins.filter((p) => selectedProteins.has(p.id) && !p.isNotMeat);
-    const hasLinguica = meatProteins.some((p) => p.id === 'linguica');
-    const othersCount = meatProteins.filter((p) => p.id !== 'linguica').length;
+    const entradas = meatProteins.filter((p) => ENTRADA_IDS.has(p.id));
+    const principais = meatProteins.filter((p) => !ENTRADA_IDS.has(p.id));
 
     let distribution: Array<typeof meatProteins[0] & { kg: number; unit: 'kg'; pct: number }>;
-    if (hasLinguica && othersCount > 0) {
+    if (entradas.length > 0 && principais.length > 0) {
       const equalShare = totalKg / meatProteins.length;
-      const linguicaKg = Math.round(equalShare * 0.45 * 10) / 10;
-      const remaining = totalKg - linguicaKg;
-      const perOtherKg = Math.round((remaining / othersCount) * 10) / 10;
+      const entradaKgEach = Math.round(equalShare * 0.45 * 10) / 10;
+      const totalEntradas = entradaKgEach * entradas.length;
+      const remaining = totalKg - totalEntradas;
+      const perPrincipalKg = Math.round((remaining / principais.length) * 10) / 10;
       distribution = meatProteins.map((p) => {
-        const kg = p.id === 'linguica' ? linguicaKg : perOtherKg;
+        const kg = ENTRADA_IDS.has(p.id) ? entradaKgEach : perPrincipalKg;
         return { ...p, kg, unit: 'kg' as const, pct: totalKg > 0 ? Math.round((kg / totalKg) * 100) : 0 };
       });
     } else {
