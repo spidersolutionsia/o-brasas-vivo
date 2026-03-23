@@ -107,23 +107,29 @@ const Calculadora = () => {
     const hasLinguica = meatProteins.some((p) => p.id === 'linguica');
     const othersCount = meatProteins.filter((p) => p.id !== 'linguica').length;
 
-    let distribution: Array<typeof meatProteins[0] & { kg: number; unit: 'kg' }>;
+    let distribution: Array<typeof meatProteins[0] & { kg: number; unit: 'kg'; pct: number }>;
     if (hasLinguica && othersCount > 0) {
-      // linguiça = 30% of equal share, rest redistributed to other cuts
       const equalShare = totalKg / meatProteins.length;
       const linguicaKg = Math.round(equalShare * 0.45 * 10) / 10;
       const remaining = totalKg - linguicaKg;
       const perOtherKg = Math.round((remaining / othersCount) * 10) / 10;
-      distribution = meatProteins.map((p) => ({
-        ...p,
-        kg: p.id === 'linguica' ? linguicaKg : perOtherKg,
-        unit: 'kg' as const,
-      }));
+      distribution = meatProteins.map((p) => {
+        const kg = p.id === 'linguica' ? linguicaKg : perOtherKg;
+        return { ...p, kg, unit: 'kg' as const, pct: totalKg > 0 ? Math.round((kg / totalKg) * 100) : 0 };
+      });
     } else {
       const selectedCount = meatProteins.length;
       const perProteinKg = selectedCount > 0 ? Math.round((totalKg / selectedCount) * 10) / 10 : 0;
-      distribution = meatProteins.map((p) => ({ ...p, kg: perProteinKg, unit: 'kg' as const }));
+      distribution = meatProteins.map((p) => ({
+        ...p, kg: perProteinKg, unit: 'kg' as const,
+        pct: totalKg > 0 ? Math.round((perProteinKg / totalKg) * 100) : 0,
+      }));
     }
+
+    // Build a map of protein id -> percentage for display on cards
+    const percentMap: Record<string, number> = {};
+    distribution.forEach((d) => { percentMap[d.id] = d.pct; });
+    if (hasPaoAlho) percentMap['paoalho'] = -10; // special marker
 
     // Pão de alho: 2 unidades por pessoa
     const paoAlhoUnits = hasPaoAlho ? totalPeople * 2 : 0;
@@ -136,6 +142,7 @@ const Calculadora = () => {
       bagKg,
       distribution,
       paoAlhoUnits,
+      percentMap,
     };
   }, [men, women, children, duration, selectedProteins, hasCarbonFactor, hasPaoAlho, totalPeople]);
 
@@ -228,14 +235,18 @@ const Calculadora = () => {
                 >
                   {protein.icon}
                   <span className="text-xs font-medium">{protein.label}</span>
+                  {isSelected && totalPeople > 0 && result.percentMap[protein.id] !== undefined && (
+                    <span className={`absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full leading-none font-bold ${
+                      protein.isNotMeat
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-white/10 text-white/70'
+                    }`}>
+                      {protein.isNotMeat ? '-10%' : `${result.percentMap[protein.id]}%`}
+                    </span>
+                  )}
                   {protein.hasCarbonFactor && isSelected && (
                     <span className="absolute top-1.5 right-1.5 text-[9px] bg-[#ff6a00]/20 text-[#ff6a00] px-1.5 py-0.5 rounded-full leading-none">
                       +carvão
-                    </span>
-                  )}
-                  {protein.isNotMeat && isSelected && (
-                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full leading-none">
-                      -10% carne
                     </span>
                   )}
                 </button>
