@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, MapPin, ArrowLeft, Flame, Users, Clock, Beef, Drumstick, Ribbon, Sandwich } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 
