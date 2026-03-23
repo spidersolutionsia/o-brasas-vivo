@@ -30,7 +30,7 @@ interface Protein {
 }
 
 // IDs that are "entradas" — receive reduced portion (45% of a standard share)
-const ENTRADA_IDS: Set<ProteinId> = new Set(['linguica', 'coracao', 'asinha']);
+const ENTRADA_IDS: Set<ProteinId> = new Set(['linguica', 'coracao', 'asinha', 'queijo']);
 
 const proteins: Protein[] = [
   { id: 'picanha', label: 'Picanha', icon: <Beef className="w-6 h-6" /> },
