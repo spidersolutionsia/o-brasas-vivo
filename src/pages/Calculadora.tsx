@@ -52,7 +52,6 @@ const Calculadora = () => {
   const [children, setChildren] = useState(0);
   const [duration, setDuration] = useState(4);
   const [selectedProteins, setSelectedProteins] = useState<Set<ProteinId>>(new Set(['picanha']));
-  const [selectedProteins, setSelectedProteins] = useState<Set<ProteinId>>(new Set(['picanha']));
 
   const totalPeople = men + women + children;
 
