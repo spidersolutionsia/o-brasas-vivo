@@ -218,6 +218,11 @@ const Calculadora = () => {
                       +carvão
                     </span>
                   )}
+                  {protein.isNotMeat && isSelected && (
+                    <span className="absolute top-1.5 right-1.5 text-[9px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full leading-none">
+                      -10% carne
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -359,6 +364,15 @@ const Calculadora = () => {
                         </div>
                       </div>
                     ))}
+                    {result.paoAlhoUnits > 0 && (
+                      <div className="flex items-center gap-2 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]">
+                        <span className="text-[#ff6a00] flex-shrink-0"><Sandwich className="w-6 h-6" /></span>
+                        <div className="min-w-0">
+                          <span className="text-xs text-white/70 block truncate">Pão de Alho</span>
+                          <span className="font-['Oswald'] text-sm font-bold text-white">{result.paoAlhoUnits} un.</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
