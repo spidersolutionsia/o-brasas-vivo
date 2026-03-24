@@ -55,13 +55,13 @@ const storesByCity = [
     city: 'Cantagalo',
     state: 'RJ',
     type: 'Varejo',
-    stores: [],
+    stores: ['Superthal'],
   },
   {
     city: 'Cordeiro',
     state: 'RJ',
     type: 'Varejo',
-    stores: [],
+    stores: ['Superthal'],
   },
   {
     city: 'Bom Jardim',
