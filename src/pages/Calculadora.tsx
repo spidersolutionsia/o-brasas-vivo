@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import PageMeta from '@/components/PageMeta';
 import { Minus, Plus, MapPin, ArrowLeft, Flame, Users, Clock, Beef, Drumstick, Ribbon, Sandwich } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -158,6 +159,7 @@ const Calculadora = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-['Inter'] relative overflow-hidden">
+      <PageMeta title="Calculadora de Churrasco" description="Calcule a quantidade ideal de carne e carvão para o seu churrasco. Ferramenta gratuita da Carvão Mascate." path="/calculadora" />
       {/* Subtle background glow */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#dc2626]/5 blur-[120px]" />

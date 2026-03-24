@@ -15,6 +15,9 @@ import SparkParticles from "./components/SparkParticles";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import { CustomerSessionProvider } from "./contexts/CustomerSessionContext";
+import { usePageTracking } from "./lib/analytics";
+
+const PageTracker = () => { usePageTracking(); return null; };
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,7 @@ const App = () => (
       <SparkParticles />
       <WhatsAppButton />
       <BrowserRouter>
+        <PageTracker />
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
