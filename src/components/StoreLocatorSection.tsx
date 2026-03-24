@@ -8,7 +8,7 @@ const storesByCity = [
   { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Padaria Da Serra', 'Mercado Chc Dona Marianna', 'Jm Mercado', 'Mt Fruti', 'Ki Carnes', 'Santa Rosa', 'Cia Das Carnes', 'Mercado Mv Da Rosa', 'Casa Da Carne', 'Depósito De Bebida Pai E Filho', 'Mcc Filhos'] },
   { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: ['Superthal'] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: ['Superthal'] },
-  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: [] },
+  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', 'Superthal', 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
   { city: 'Petrópolis', state: 'RJ', type: 'Varejo', stores: [] },
   { city: 'Rio de Janeiro', state: 'RJ', type: 'Distribuição', stores: [] },
 ];
