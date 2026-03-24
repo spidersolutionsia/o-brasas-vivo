@@ -27,7 +27,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta
-        title="Carvão Mascate | Mais Brasa, Menos Fumaça"
+        title="Carvão Mascate"
         description="Carvão premium de eucalipto produzido em Duas Barras/RJ. Mais brasa, menos fumaça. Alta durabilidade, limpo e granulado. Atacado."
         path="/"
       />
