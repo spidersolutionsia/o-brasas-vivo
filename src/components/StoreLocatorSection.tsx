@@ -2,15 +2,15 @@ import { MapPin, Store, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 const storesByCity = [
-  { city: 'Duas Barras', state: 'RJ', type: 'Fábrica', stores: ['Depósito Beerbarrense', 'Açougue Nossa Senhora Dua Barras', 'Alea', 'Açougue e Mercado Castelo', 'Superthal'] },
-  { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Mercado Armazém Da Serra', 'Hotel Vila Verde', 'Shopping Amigos', 'Mercado Águia Da Serra', 'Boteco Curuzu', 'Bismarck', 'Villa Drinks', 'Brew', 'Sante Depósito', 'Lider Serrano', 'Fabrício Churrasqueiro', 'MJ Buffet', 'Santè Depósito Bebidas', 'Natan Depósito Do Zazá', 'Emporio Serrano Friburgo', 'Vanderlei Buffet', 'Emporio Beer', 'Sorveteria Cesa', 'Casa De Carnes Amorim', 'Botique Das Carnes', 'Mercado Do Lucas', 'Açougue Do Jean', 'Gustu', 'Mercado União', 'Lj Bebidas', 'AGROFRUTI', 'Colibri Bebidas', 'Madfire Bbq Hamburgueria', 'Arthur Ribeiro', 'Wendel Hortifruti', 'Gabriel Mercado Gb', 'Rd Botique Das Carnes', 'Frotté', 'Excalibur', 'Pec Beer', 'Das Carnes', 'Açougue Adj', 'General Das Carnes', 'Serra Azul', 'Clube Da Cevada'] },
-  { city: 'Sumidouro', state: 'RJ', type: 'Varejo', stores: ['Mercado Pimpolho', 'Mercado Frio Ramos', 'JF Carnes', 'Mercado São Caetano', 'Mercado Betinho', 'Quintal Do B'] },
-  { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Padaria Da Serra', 'Mercado Chc Dona Marianna', 'Jm Mercado', 'Mt Fruti', 'Ki Carnes', 'Santa Rosa', 'Cia Das Carnes', 'Mercado Mv Da Rosa', 'Casa Da Carne', 'Depósito De Bebida Pai E Filho', 'Mcc Filhos'] },
+  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', 'Superthal', 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
   { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', 'Superthal'] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', 'Superthal'] },
-  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', 'Superthal', 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
+  { city: 'Duas Barras', state: 'RJ', type: 'Fábrica', stores: ['Depósito Beerbarrense', 'Açougue Nossa Senhora Dua Barras', 'Alea', 'Açougue e Mercado Castelo', 'Superthal'] },
+  { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Mercado Armazém Da Serra', 'Hotel Vila Verde', 'Shopping Amigos', 'Mercado Águia Da Serra', 'Boteco Curuzu', 'Bismarck', 'Villa Drinks', 'Brew', 'Sante Depósito', 'Lider Serrano', 'Fabrício Churrasqueiro', 'MJ Buffet', 'Santè Depósito Bebidas', 'Natan Depósito Do Zazá', 'Emporio Serrano Friburgo', 'Vanderlei Buffet', 'Emporio Beer', 'Sorveteria Cesa', 'Casa De Carnes Amorim', 'Botique Das Carnes', 'Mercado Do Lucas', 'Açougue Do Jean', 'Gustu', 'Mercado União', 'Lj Bebidas', 'AGROFRUTI', 'Colibri Bebidas', 'Madfire Bbq Hamburgueria', 'Arthur Ribeiro', 'Wendel Hortifruti', 'Gabriel Mercado Gb', 'Rd Botique Das Carnes', 'Frotté', 'Excalibur', 'Pec Beer', 'Das Carnes', 'Açougue Adj', 'General Das Carnes', 'Serra Azul', 'Clube Da Cevada'] },
   { city: 'Petrópolis', state: 'RJ', type: 'Varejo', stores: [] },
   { city: 'Rio de Janeiro', state: 'RJ', type: 'Distribuição', stores: [] },
+  { city: 'Sumidouro', state: 'RJ', type: 'Varejo', stores: ['Mercado Pimpolho', 'Mercado Frio Ramos', 'JF Carnes', 'Mercado São Caetano', 'Mercado Betinho', 'Quintal Do B'] },
+  { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Padaria Da Serra', 'Mercado Chc Dona Marianna', 'Jm Mercado', 'Mt Fruti', 'Ki Carnes', 'Santa Rosa', 'Cia Das Carnes', 'Mercado Mv Da Rosa', 'Casa Da Carne', 'Depósito De Bebida Pai E Filho', 'Mcc Filhos'] },
 ];
 
 const StoreLocatorSection = () => {
