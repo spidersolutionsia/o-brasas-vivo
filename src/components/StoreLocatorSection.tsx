@@ -1,20 +1,91 @@
-import { MapPin } from 'lucide-react';
+import { MapPin, Store } from 'lucide-react';
 
-const locations = [
-  { city: 'Duas Barras', state: 'RJ', type: 'Fábrica' },
-  { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo' },
-  { city: 'Cantagalo', state: 'RJ', type: 'Varejo' },
-  { city: 'Cordeiro', state: 'RJ', type: 'Varejo' },
-  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo' },
-  { city: 'Teresópolis', state: 'RJ', type: 'Varejo' },
-  { city: 'Petrópolis', state: 'RJ', type: 'Varejo' },
-  { city: 'Rio de Janeiro', state: 'RJ', type: 'Distribuição' },
+const storesByCity = [
+  {
+    city: 'Duas Barras',
+    state: 'RJ',
+    type: 'Fábrica',
+    stores: [],
+  },
+  {
+    city: 'Nova Friburgo',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [
+      'Charles Jaccoud',
+      'Das Carnes',
+      'Açougue Adj',
+      'General Das Carnes',
+      'Serra Azul',
+      'Clube Da Cevada',
+    ],
+  },
+  {
+    city: 'Sumidouro',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [
+      'Mercado Pimpolho',
+      'Mercado Frio Ramos',
+      'JF Carnes',
+      'Mercado São Caetano',
+      'Mercado Betinho',
+      'Quintal Do B',
+    ],
+  },
+  {
+    city: 'Teresópolis',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [
+      'Padaria Da Serra',
+      'Mercado Chc Dona Marianna',
+      'Jm Mercado',
+      'Mt Fruti',
+      'Ki Carnes',
+      'Santa Rosa',
+      'Cia Das Carnes',
+      'Mercado Mv Da Rosa',
+      'Casa Da Carne',
+      'Depósito De Bebida Pai E Filho',
+      'Mcc Filhos',
+    ],
+  },
+  {
+    city: 'Cantagalo',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [],
+  },
+  {
+    city: 'Cordeiro',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [],
+  },
+  {
+    city: 'Bom Jardim',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [],
+  },
+  {
+    city: 'Petrópolis',
+    state: 'RJ',
+    type: 'Varejo',
+    stores: [],
+  },
+  {
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    type: 'Distribuição',
+    stores: [],
+  },
 ];
 
 const StoreLocatorSection = () => {
   return (
     <section id="encontre" className="py-20 md:py-32 relative overflow-hidden">
-      {/* Fire Divider at Top */}
       <div className="fire-divider absolute top-0 left-0 right-0" />
 
       <div className="container mx-auto px-4">
@@ -28,21 +99,37 @@ const StoreLocatorSection = () => {
           </p>
         </div>
 
-        {/* Locations Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {locations.map((location, index) => (
+        {/* Cities Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {storesByCity.map((location, index) => (
             <div
               key={index}
-              className="card-dark rounded-lg p-4 text-center hover:border-primary/50 transition-colors"
+              className="card-dark rounded-lg p-5 hover:border-primary/50 transition-colors"
             >
-              <MapPin className="w-6 h-6 text-primary mx-auto mb-2" />
-              <h3 className="font-heading text-lg font-bold uppercase">
-                {location.city}
-              </h3>
-              <p className="text-sm text-muted-foreground">{location.state}</p>
-              <span className="inline-block mt-2 px-2 py-1 bg-primary/10 text-primary text-xs rounded uppercase tracking-wider">
-                {location.type}
-              </span>
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
+                <h3 className="font-heading text-lg font-bold uppercase">
+                  {location.city}
+                </h3>
+                <span className="ml-auto inline-block px-2 py-0.5 bg-primary/10 text-primary text-xs rounded uppercase tracking-wider">
+                  {location.type}
+                </span>
+              </div>
+
+              {location.stores.length > 0 ? (
+                <ul className="space-y-1.5 pl-7">
+                  {location.stores.map((store, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Store className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />
+                      <span>{store}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground/50 pl-7 italic">
+                  Em breve pontos de venda
+                </p>
+              )}
             </div>
           ))}
         </div>
