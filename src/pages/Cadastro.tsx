@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageMeta from '@/components/PageMeta';
 import StepRegister from '@/components/order/StepRegister';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 import { toast } from 'sonner';
@@ -17,6 +18,7 @@ const Cadastro = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <PageMeta title="Cadastro" description="Crie sua conta de revendedor Carvão Mascate e faça pedidos online." path="/cadastro" />
       <Header />
       <main className="flex-1 flex items-start justify-center pt-28 pb-16 px-4">
         <div className="w-full max-w-xl">

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, ArrowLeft, Flame } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageMeta from '@/components/PageMeta';
+import { OrderCardSkeleton, StatsSkeleton } from '@/components/OrderSkeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 
@@ -80,6 +82,7 @@ const MeusPedidos = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <PageMeta title="Meus Pedidos" description="Acompanhe o status dos seus pedidos de carvão Mascate." path="/meus-pedidos" />
       <Header />
       <main className="flex-1 py-20 md:py-32">
         <div className="container mx-auto px-4">
@@ -118,8 +121,10 @@ const MeusPedidos = () => {
                 <p className="text-sm text-muted-foreground">Use o botão "Entrar" no topo do site.</p>
               </div>
             ) : loading ? (
-              <div className="text-center py-12">
-                <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+              <div className="space-y-4">
+                <StatsSkeleton />
+                <OrderCardSkeleton />
+                <OrderCardSkeleton />
               </div>
             ) : orders.length === 0 ? (
               <div className="text-center card-dark rounded-xl p-8 space-y-4">

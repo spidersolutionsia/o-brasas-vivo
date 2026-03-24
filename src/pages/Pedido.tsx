@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageMeta from '@/components/PageMeta';
 import StepProducts from '@/components/order/StepProducts';
 import StepIdentify from '@/components/order/StepIdentify';
 import StepRegister from '@/components/order/StepRegister';
@@ -73,6 +74,7 @@ const Pedido = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <PageMeta title="Fazer Pedido" description="Monte seu pedido de carvão Mascate premium de eucalipto. Selecione os produtos e finalize pelo WhatsApp." path="/pedido" />
       <Header />
       <main className="flex-1 py-20 md:py-32">
         <div className="container mx-auto px-4">

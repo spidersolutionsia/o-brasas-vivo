@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
+import PageMeta from '@/components/PageMeta';
 import HeroSection from '@/components/HeroSection';
 import FactorySection from '@/components/FactorySection';
 import GallerySection from '@/components/GallerySection';
@@ -25,6 +26,11 @@ const Index = () => {
   }, [location.hash]);
   return (
     <div className="min-h-screen bg-background">
+      <PageMeta
+        title="Carvão Mascate | Mais Brasa, Menos Fumaça"
+        description="Carvão premium de eucalipto produzido em Duas Barras/RJ. Mais brasa, menos fumaça. Alta durabilidade, limpo e granulado. Atacado."
+        path="/"
+      />
       <Header />
       <main>
         <HeroSection />

@@ -17,6 +17,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Search, Package, RefreshCw, User, MapPin, Phone, Mail, FileText, Users } from "lucide-react";
 import AdminCRM from "@/components/admin/AdminCRM";
+import PageMeta from "@/components/PageMeta";
+import { OrderTableSkeleton } from "@/components/OrderSkeleton";
 
 type CustomerDetails = {
   name: string;
@@ -153,6 +155,7 @@ const AdminPedidos = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageMeta title="Painel Admin" description="Gerencie pedidos e clientes Carvão Mascate." path="/admin/pedidos" />
       {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -229,14 +232,16 @@ const AdminPedidos = () => {
 
         {/* Table */}
         {loading ? (
-          <div className="text-center py-12 text-muted-foreground">Carregando...</div>
+          <div className="border border-border rounded-lg p-4">
+            <OrderTableSkeleton />
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             Nenhum pedido encontrado
           </div>
         ) : (
-          <div className="border border-border rounded-lg overflow-hidden">
-            <Table>
+          <div className="border border-border rounded-lg overflow-x-auto">
+            <Table className="min-w-[700px]">
               <TableHeader>
                 <TableRow className="bg-muted/30">
                   <TableHead>Pedido</TableHead>
