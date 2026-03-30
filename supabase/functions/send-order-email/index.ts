@@ -47,19 +47,27 @@ serve(async (req) => {
       },
     });
 
-    const itemsRows = (items as { brand: string; weight: string; quantity: number }[])
+    const typedItems = items as { brand: string; weight: string; quantity: number; price?: number }[];
+
+    const formatBRL = (v: number) => v.toFixed(2).replace('.', ',');
+
+    const totalValue = typedItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+
+    const itemsRows = typedItems
       .map(
         (i) =>
           `<tr>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px;">${i.brand}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px;">${i.weight}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px; text-align: center;">R$ ${i.price ? formatBRL(i.price) : '-'}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #f97316; font-size: 14px; font-weight: bold; text-align: center;">${i.quantity}x</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px; text-align: right;">R$ ${i.price ? formatBRL(i.price * i.quantity) : '-'}</td>
           </tr>`
       )
       .join("");
 
-    const itemsText = (items as { brand: string; weight: string; quantity: number }[])
-      .map((i) => `• ${i.quantity}x ${i.brand} ${i.weight}`)
+    const itemsText = typedItems
+      .map((i) => `• ${i.quantity}x ${i.brand} ${i.weight} - R$ ${i.price ? formatBRL(i.price * i.quantity) : '-'}`)
       .join("\n");
 
     const whatsappMsg = encodeURIComponent(
@@ -102,12 +110,20 @@ serve(async (req) => {
           <tr>
             <th>Marca</th>
             <th>Peso</th>
+            <th style="text-align: center;">Preço</th>
             <th style="text-align: center;">Qtd</th>
+            <th style="text-align: right;">Subtotal</th>
           </tr>
         </thead>
         <tbody>
           ${itemsRows}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="padding: 12px; color: #ffffff; font-size: 16px; font-weight: bold; text-align: right; border-top: 2px solid #f97316;">Total</td>
+            <td style="padding: 12px; color: #f97316; font-size: 18px; font-weight: bold; text-align: right; border-top: 2px solid #f97316;">R$ ${formatBRL(totalValue)}</td>
+          </tr>
+        </tfoot>
       </table>
       <div class="message">Para confirmar seu pedido, envie a mensagem pelo WhatsApp clicando no botão abaixo:</div>
       <a href="${whatsappLink}" class="btn-whatsapp" target="_blank">✅ Confirmar Pedido via WhatsApp</a>
