@@ -1,24 +1,33 @@
 
 
-## Exportar lista filtrada do CRM (Excel)
+## Plano: Adicionar preços aos produtos
 
-### O que será feito
-Adicionar um botão "Exportar" ao lado dos botões de ação existentes (Rotas, Novo Cliente, Refresh). Ao clicar, exporta em Excel (.xlsx) exatamente os clientes visíveis na tela — respeitando busca, filtro de rota, filtro por dia e aba ativa (Ativos/Inativos/Falta Dados).
+### Alterações
 
-### Mudanças
+**1. `src/components/order/StepProducts.tsx`**
+- Adicionar campo `price` na interface `Product`
+- Incluir preços em cada produto do array
+- Exibir o preço formatado (R$ X,XX) ao lado do peso em cada card
+- Atualizar o resumo para mostrar o valor total do pedido (soma de preço × quantidade)
 
-**1. Instalar dependência `xlsx`** (SheetJS) para gerar Excel no browser.
+**2. `src/components/ProductsSection.tsx`**
+- Adicionar campo `price` na interface `ProductItem`
+- Incluir preços em cada produto
+- Exibir o preço no card do produto, abaixo do peso, com destaque visual
 
-**2. Arquivo: `src/components/admin/AdminCRM.tsx`**
+### Tabela de preços
 
-- Importar `xlsx` (utils + writeFile)
-- Adicionar função `handleExport()` que:
-  - Pega `tabClients` (já filtrado pela busca, rota, dia e aba)
-  - Mapeia para colunas: Nome, Telefone, Cidade, Rota(s), Status, Disparo, Observações
-  - Converte array de rotas em string separada por vírgula
-  - Gera e baixa arquivo `.xlsx` com nome tipo `CRM_Ativos_2026-03-20.xlsx`
-- Adicionar botão com ícone de download na área de ações (linha ~292-302)
+| Produto | Preço |
+|---------|-------|
+| Diamante Negro 2kg | R$ 9,00 |
+| Diamante Negro 4kg | R$ 15,20 |
+| Mascate 2,5kg | R$ 12,00 |
+| Mascate 5kg | R$ 19,00 |
+| Mascate 9kg | R$ 43,00 |
 
-### Resultado
-O usuário filtra por "bomjardim" na busca, aba "Ativos", e ao clicar "Exportar" baixa um Excel só com esses 14 clientes visíveis.
+### Detalhes técnicos
+- Preços armazenados como `number` (ex: `9.00`, `15.20`)
+- Formatação com `toFixed(2)` e vírgula como separador decimal
+- No StepProducts, o resumo mostrará "Total: R$ XX,XX" além da contagem de sacos
+- No ProductsSection, o preço aparecerá com estilo `text-primary font-bold` para destaque visual
 
