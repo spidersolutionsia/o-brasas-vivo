@@ -5,6 +5,7 @@ export interface Product {
   brand: string;
   name: string;
   weight: string;
+  price: number;
 }
 
 export interface CartItem {
@@ -13,11 +14,11 @@ export interface CartItem {
 }
 
 const products: Product[] = [
-  { id: 'mascate-2.5kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '2,5kg' },
-  { id: 'mascate-5kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '5kg' },
-  { id: 'mascate-9kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '9kg' },
-  { id: 'diamante-2kg', brand: 'Diamante Negro', name: 'Saco de Carvão', weight: '2kg' },
-  { id: 'diamante-4kg', brand: 'Diamante Negro', name: 'Saco de Carvão', weight: '4kg' },
+  { id: 'mascate-2.5kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '2,5kg', price: 12.00 },
+  { id: 'mascate-5kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '5kg', price: 19.00 },
+  { id: 'mascate-9kg', brand: 'Carvão Mascate', name: 'Saco de Carvão', weight: '9kg', price: 43.00 },
+  { id: 'diamante-2kg', brand: 'Diamante Negro', name: 'Saco de Carvão', weight: '2kg', price: 9.00 },
+  { id: 'diamante-4kg', brand: 'Diamante Negro', name: 'Saco de Carvão', weight: '4kg', price: 15.20 },
 ];
 
 const brands = ['Carvão Mascate', 'Diamante Negro'] as const;
@@ -30,6 +31,7 @@ interface Props {
 
 const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
   const totalItems = Object.values(quantities).reduce((s, q) => s + q, 0);
+  const totalValue = products.reduce((sum, p) => sum + (quantities[p.id] || 0) * p.price, 0);
 
   return (
     <div className="space-y-8">
@@ -54,7 +56,11 @@ const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
                 >
                   <div>
                     <h3 className="font-heading text-lg font-bold uppercase">{product.name}</h3>
-                    <p className="text-primary font-bold text-lg">{product.weight}</p>
+                    <div className="flex items-center gap-3">
+                      <p className="text-primary font-bold text-lg">{product.weight}</p>
+                      <span className="text-muted-foreground">•</span>
+                      <p className="text-foreground font-bold text-lg">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
@@ -80,9 +86,15 @@ const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
       ))}
 
       {/* Summary */}
-      <div className="card-dark rounded-xl p-5 flex items-center justify-between">
-        <span className="text-muted-foreground">Total de itens:</span>
-        <span className="font-heading font-bold text-2xl text-primary">{totalItems} sacos</span>
+      <div className="card-dark rounded-xl p-5 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Total de itens:</span>
+          <span className="font-heading font-bold text-2xl text-primary">{totalItems} sacos</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Valor total:</span>
+          <span className="font-heading font-bold text-2xl text-primary">R$ {totalValue.toFixed(2).replace('.', ',')}</span>
+        </div>
       </div>
 
       <button

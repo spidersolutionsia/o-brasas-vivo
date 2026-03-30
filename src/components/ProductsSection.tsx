@@ -15,6 +15,7 @@ interface ProductItem {
   name: string;
   description: string;
   weight: string;
+  price: number;
   featured?: boolean;
   image: string;
 }
@@ -32,12 +33,14 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 2,5kg',
         description: 'Ideal para churrascos pequenos e do dia a dia.',
         weight: '2,5kg',
+        price: 12.00,
         image: productMascate25kg,
       },
       {
         name: 'Saco 5kg',
         description: 'Perfeito para reuniões familiares e churrascos completos.',
         weight: '5kg',
+        price: 19.00,
         featured: true,
         image: productBag,
       },
@@ -45,6 +48,7 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 9kg',
         description: 'Para grandes eventos e quem quer garantir estoque.',
         weight: '9kg',
+        price: 43.00,
         image: productMascate9kg,
       },
     ],
@@ -56,12 +60,14 @@ const brandGroups: BrandGroup[] = [
         name: 'Saco 2kg',
         description: 'Compacto e prático para churrascos rápidos.',
         weight: '2kg',
+        price: 9.00,
         image: productDiamante2kg,
       },
       {
         name: 'Saco 4kg',
         description: 'Tamanho ideal para reuniões e churrascos em família.',
         weight: '4kg',
+        price: 15.20,
         featured: true,
         image: productDiamante4kg,
       },
@@ -140,7 +146,10 @@ const ProductsSection = () => {
                         {product.weight}
                       </span>
                     </div>
-                    <p className="text-muted-foreground">{product.description}</p>
+                    <p className="text-primary font-heading text-2xl font-bold">
+                      R$ {product.price.toFixed(2).replace('.', ',')}
+                    </p>
+                    <p className="text-muted-foreground mt-1">{product.description}</p>
                     <div className="mt-4 space-y-2">
                       {benefits.map((benefit, i) => (
                         <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
