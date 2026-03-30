@@ -110,12 +110,20 @@ serve(async (req) => {
           <tr>
             <th>Marca</th>
             <th>Peso</th>
+            <th style="text-align: center;">Preço</th>
             <th style="text-align: center;">Qtd</th>
+            <th style="text-align: right;">Subtotal</th>
           </tr>
         </thead>
         <tbody>
           ${itemsRows}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="padding: 12px; color: #ffffff; font-size: 16px; font-weight: bold; text-align: right; border-top: 2px solid #f97316;">Total</td>
+            <td style="padding: 12px; color: #f97316; font-size: 18px; font-weight: bold; text-align: right; border-top: 2px solid #f97316;">R$ ${formatBRL(totalValue)}</td>
+          </tr>
+        </tfoot>
       </table>
       <div class="message">Para confirmar seu pedido, envie a mensagem pelo WhatsApp clicando no botão abaixo:</div>
       <a href="${whatsappLink}" class="btn-whatsapp" target="_blank">✅ Confirmar Pedido via WhatsApp</a>
