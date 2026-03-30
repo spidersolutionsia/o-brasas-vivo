@@ -37,6 +37,7 @@ const StepConfirmation = ({ quantities, customerId, customerName, onBack, onComp
       brand: i.brand,
       weight: i.weight,
       quantity: i.quantity,
+      price: i.price,
     }));
 
     const { error: insertErr } = await supabase.from('orders').insert({
@@ -141,10 +142,20 @@ const StepConfirmation = ({ quantities, customerId, customerName, onBack, onComp
             <div>
               <span className="text-xs text-muted-foreground">{item.brand}</span>
               <p className="font-heading font-bold">{item.name} {item.weight}</p>
+              <span className="text-xs text-primary font-semibold">R$ {item.price.toFixed(2).replace('.', ',')} un.</span>
             </div>
-            <span className="font-heading text-xl font-bold text-primary">{item.quantity}x</span>
+            <div className="text-right">
+              <span className="font-heading text-xl font-bold text-primary">{item.quantity}x</span>
+              <p className="text-xs text-muted-foreground">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+            </div>
           </div>
         ))}
+        <div className="border-t border-border pt-3 mt-3 flex items-center justify-between">
+          <span className="font-heading font-bold text-sm">Total</span>
+          <span className="font-heading text-xl font-bold text-primary">
+            R$ {cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2).replace('.', ',')}
+          </span>
+        </div>
       </div>
 
       <button

@@ -47,19 +47,27 @@ serve(async (req) => {
       },
     });
 
-    const itemsRows = (items as { brand: string; weight: string; quantity: number }[])
+    const typedItems = items as { brand: string; weight: string; quantity: number; price?: number }[];
+
+    const formatBRL = (v: number) => v.toFixed(2).replace('.', ',');
+
+    const totalValue = typedItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+
+    const itemsRows = typedItems
       .map(
         (i) =>
           `<tr>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px;">${i.brand}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px;">${i.weight}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px; text-align: center;">R$ ${i.price ? formatBRL(i.price) : '-'}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #f97316; font-size: 14px; font-weight: bold; text-align: center;">${i.quantity}x</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #3a3a3a; color: #d4d4d4; font-size: 14px; text-align: right;">R$ ${i.price ? formatBRL(i.price * i.quantity) : '-'}</td>
           </tr>`
       )
       .join("");
 
-    const itemsText = (items as { brand: string; weight: string; quantity: number }[])
-      .map((i) => `• ${i.quantity}x ${i.brand} ${i.weight}`)
+    const itemsText = typedItems
+      .map((i) => `• ${i.quantity}x ${i.brand} ${i.weight} - R$ ${i.price ? formatBRL(i.price * i.quantity) : '-'}`)
       .join("\n");
 
     const whatsappMsg = encodeURIComponent(
