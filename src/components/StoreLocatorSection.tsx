@@ -17,7 +17,7 @@ interface CityLocation {
 }
 
 const storesByCity: CityLocation[] = [
-  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', 'Superthal', 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
+  { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/uvt7FvHfGjo6LQGN8' }, 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
   { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/i3xvwWiNzGyB5HXt7' }] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/Q9H5gNAqBzeU82k6A' }] },
   { city: 'Duas Barras', state: 'RJ', type: 'Fábrica', stores: ['Depósito Beerbarrense', 'Açougue Nossa Senhora Dua Barras', 'Alea', 'Açougue e Mercado Castelo', 'Superthal'] },
