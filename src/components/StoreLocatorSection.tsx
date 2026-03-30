@@ -101,10 +101,11 @@ const StoreLocatorSection = () => {
                                     href={entry.maps}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium"
                                     title="Como Chegar"
                                   >
                                     <Navigation className="w-3.5 h-3.5" />
+                                    <span>Como chegar</span>
                                   </a>
                                 )}
                               </li>
