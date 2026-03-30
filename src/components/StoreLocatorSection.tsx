@@ -1,15 +1,33 @@
-import { MapPin, Store, ChevronDown } from 'lucide-react';
+import { MapPin, Store, ChevronDown, Instagram, Navigation } from 'lucide-react';
 import { useState } from 'react';
 
-const storesByCity = [
+interface StoreEntry {
+  name: string;
+  instagram?: string;
+  maps?: string;
+}
+
+type StoreItem = string | StoreEntry;
+
+interface CityLocation {
+  city: string;
+  state: string;
+  type: string;
+  stores: StoreItem[];
+}
+
+const storesByCity: CityLocation[] = [
   { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: ['Parada Do Frango', 'Superthal', 'Tem De Tudo', 'Peter Pan', 'Dara', 'Mercadinho Do Trevo', 'Cantinho Do Pão', 'Açougue Bom Jardim', 'Aline Bar', 'Beer House', 'Gabriel Saideira', 'Padaria Nonna Carmela'] },
-  { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', 'Superthal'] },
+  { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/i3xvwWiNzGyB5HXt7' }] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: ['Mercado Machadinho', 'Superthal'] },
   { city: 'Duas Barras', state: 'RJ', type: 'Fábrica', stores: ['Depósito Beerbarrense', 'Açougue Nossa Senhora Dua Barras', 'Alea', 'Açougue e Mercado Castelo', 'Superthal'] },
   { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Mercado Armazém Da Serra', 'Shopping Amigos', 'Mercado Águia Da Serra', 'Boteco Curuzu', 'Villa Drinks', 'Brew', 'Sante Depósito', 'Lider Serrano', 'Santè Depósito Bebidas', 'Natan Depósito Do Zazá', 'Emporio Serrano Friburgo', 'Emporio Beer', 'Sorveteria Cesa', 'Casa De Carnes Amorim', 'Botique Das Carnes', 'Mercado Do Lucas', 'Açougue Do Jean', 'Mercado União', 'Lj Bebidas', 'AGROFRUTI', 'Colibri Bebidas', 'Arthur Ribeiro', 'Wendel Hortifruti', 'Gabriel Mercado Gb', 'Frotté', 'Pec Beer', 'Das Carnes', 'Açougue Adj', 'General Das Carnes', 'Clube Da Cevada'] },
   { city: 'Sumidouro', state: 'RJ', type: 'Varejo', stores: ['Mercado Pimpolho', 'Mercado Frio Ramos', 'JF Carnes', 'Mercado São Caetano', 'Mercado Betinho', 'Quintal Do B'] },
   { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Padaria Da Serra', 'Mercado Chc Dona Marianna', 'Jm Mercado', 'Mt Fruti', 'Ki Carnes', 'Santa Rosa', 'Cia Das Carnes', 'Mercado Mv Da Rosa', 'Casa Da Carne', 'Depósito De Bebida Pai E Filho', 'Mcc Filhos'] },
 ];
+
+const getStoreName = (store: StoreItem): string =>
+  typeof store === 'string' ? store : store.name;
 
 const StoreLocatorSection = () => {
   const [openCity, setOpenCity] = useState<string | null>(null);
@@ -60,12 +78,38 @@ const StoreLocatorSection = () => {
                     <div className="px-4 pb-4 pt-1 pl-12">
                       {location.stores.length > 0 ? (
                         <ul className="space-y-1.5">
-                          {location.stores.map((store, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Store className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />
-                              <span>{store}</span>
-                            </li>
-                          ))}
+                          {location.stores.map((store, i) => {
+                            const name = getStoreName(store);
+                            const entry = typeof store === 'object' ? store : null;
+                            return (
+                              <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Store className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />
+                                <span>{name}</span>
+                                {entry?.instagram && (
+                                  <a
+                                    href={entry.instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                    title="Instagram"
+                                  >
+                                    <Instagram className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                                {entry?.maps && (
+                                  <a
+                                    href={entry.maps}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs"
+                                    title="Como Chegar"
+                                  >
+                                    <Navigation className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </li>
+                            );
+                          })}
                         </ul>
                       ) : (
                         <p className="text-sm text-muted-foreground/50 italic">
