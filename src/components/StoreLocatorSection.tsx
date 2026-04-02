@@ -18,8 +18,8 @@ interface CityLocation {
 
 const storesByCity: CityLocation[] = [
   { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: [
-    'Açougue F3V',
-    'Aline Bar',
+    { name: 'Açougue F3V' },
+    { name: 'Aline Bar' },
     { name: 'Beer House', instagram: 'https://www.instagram.com/beerhouse.bj/', maps: 'https://maps.app.goo.gl/E7m72qWjSWS7QzQW7' },
     { name: 'Cantinho Do Pão', instagram: 'https://www.instagram.com/cantinhodopaoofc/', maps: 'https://maps.app.goo.gl/QTKEueq5b73HpowR6' },
     { name: 'Mercadinho Do Trevo', instagram: 'https://www.instagram.com/mercadinho_trevo/', maps: 'https://maps.app.goo.gl/ewJQYFpDEBmk9p537' },
