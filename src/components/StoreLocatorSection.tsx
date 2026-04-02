@@ -47,9 +47,9 @@ const storesByCity: CityLocation[] = [
     { name: 'Mercado Monnerat' },
     { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/', maps: 'https://maps.app.goo.gl/Kv2SmEQNbdU4EeYp6' },
   ] },
-  { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Mercado Armazém Da Serra', 'Shopping Amigos', 'Mercado Águia Da Serra', 'Boteco Curuzu', 'Villa Drinks', 'Brew', 'Sante Depósito', 'Lider Serrano', 'Santè Depósito Bebidas', 'Natan Depósito Do Zazá', 'Emporio Serrano Friburgo', 'Emporio Beer', 'Sorveteria Cesa', 'Casa De Carnes Amorim', 'Botique Das Carnes', 'Mercado Do Lucas', 'Açougue Do Jean', 'Mercado União', 'Lj Bebidas', 'AGROFRUTI', 'Colibri Bebidas', 'Arthur Ribeiro', 'Wendel Hortifruti', 'Gabriel Mercado Gb', 'Frotté', 'Pec Beer', 'Das Carnes', 'Açougue Adj', 'General Das Carnes', 'Clube Da Cevada'] },
-  { city: 'Sumidouro', state: 'RJ', type: 'Varejo', stores: ['Mercado Pimpolho', 'Mercado Frio Ramos', 'JF Carnes', 'Mercado São Caetano', 'Mercado Betinho', 'Quintal Do B'] },
-  { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Padaria Da Serra', 'Mercado Chc Dona Marianna', 'Jm Mercado', 'Mt Fruti', 'Ki Carnes', 'Santa Rosa', 'Cia Das Carnes', 'Mercado Mv Da Rosa', 'Casa Da Carne', 'Depósito De Bebida Pai E Filho', 'Mcc Filhos'] },
+  { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Açougue Adj', 'Açougue Do Jean', 'AGROFRUTI', 'Arthur Ribeiro', 'Boteco Curuzu', 'Botique Das Carnes', 'Brew', 'Casa De Carnes Amorim', 'Clube Da Cevada', 'Colibri Bebidas', 'Das Carnes', 'Emporio Beer', 'Emporio Serrano Friburgo', 'Frotté', 'Gabriel Mercado Gb', 'General Das Carnes', 'Lider Serrano', 'Lj Bebidas', 'Mercado Armazém Da Serra', 'Mercado Do Lucas', 'Mercado União', 'Mercado Águia Da Serra', 'Natan Depósito Do Zazá', 'Pec Beer', 'Sante Depósito', 'Santè Depósito Bebidas', 'Shopping Amigos', 'Sorveteria Cesa', 'Villa Drinks', 'Wendel Hortifruti'] },
+  { city: 'Sumidouro', state: 'RJ', type: 'Varejo', stores: ['JF Carnes', 'Mercado Betinho', 'Mercado Frio Ramos', 'Mercado Pimpolho', 'Mercado São Caetano', 'Quintal Do B'] },
+  { city: 'Teresópolis', state: 'RJ', type: 'Varejo', stores: ['Casa Da Carne', 'Cia Das Carnes', 'Depósito De Bebida Pai E Filho', 'Jm Mercado', 'Ki Carnes', 'Mcc Filhos', 'Mercado Chc Dona Marianna', 'Mercado Mv Da Rosa', 'Mt Fruti', 'Padaria Da Serra', 'Santa Rosa'] },
 ];
 
 const getStoreName = (store: StoreItem): string =>
