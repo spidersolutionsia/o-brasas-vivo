@@ -35,28 +35,32 @@ const Index = () => {
       <Header />
       <main>
         <HeroSection />
-        <ScrollReveal>
-          <FactorySection />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <GallerySection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <ProductsSection />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <PrivateLabelSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <WholesaleSection />
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
-          <StoreLocatorSection />
-        </ScrollReveal>
+        <Suspense fallback={<div className="min-h-[200px]" />}>
+          <ScrollReveal>
+            <FactorySection />
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <GallerySection />
+          </ScrollReveal>
+          <ScrollReveal>
+            <ProductsSection />
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <PrivateLabelSection />
+          </ScrollReveal>
+          <ScrollReveal>
+            <WholesaleSection />
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <StoreLocatorSection />
+          </ScrollReveal>
+        </Suspense>
       </main>
-      <ScrollReveal>
-        <Footer />
-      </ScrollReveal>
+      <Suspense fallback={null}>
+        <ScrollReveal>
+          <Footer />
+        </ScrollReveal>
+      </Suspense>
     </div>
   );
 };
