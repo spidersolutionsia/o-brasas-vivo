@@ -42,7 +42,7 @@ const storesByCity: CityLocation[] = [
     { name: 'Açougue e Mercado Castelo', instagram: 'https://www.instagram.com/acougueemercadocastelo/', maps: 'https://maps.app.goo.gl/Cggq4FKjAShJ5YcF8' },
     { name: 'Açougue Nossa Senhora Dua Barras', instagram: 'https://www.instagram.com/acouguedb/', maps: 'https://maps.app.goo.gl/BcFNbM4ZE1c3U2x39' },
     { name: 'Depósito Beerbarrense', instagram: 'https://www.instagram.com/deposito_beerbarrense/?hl=pt-br', maps: 'https://maps.app.goo.gl/iTLsgo98uWR7UqETA' },
-    { name: 'Mercado Central' },
+    { name: 'Mercado Central', whatsapp: 'https://wa.me/5522981188684?text=Ol%C3%A1!%20Vim%20pelo%20site%20do%20Carv%C3%A3o%20Mascate%20e%20gostaria%20de%20saber%20quais%20tamanhos%20de%20saco%20tem%20dispon%C3%ADveis%3F' },
     { name: 'Mercado Central Monnerat' },
     { name: 'Mercado Monnerat' },
     { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/', maps: 'https://maps.app.goo.gl/Kv2SmEQNbdU4EeYp6' },
