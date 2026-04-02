@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import PageMeta from '@/components/PageMeta';
 import HeroSection from '@/components/HeroSection';
-import FactorySection from '@/components/FactorySection';
-import GallerySection from '@/components/GallerySection';
-import ProductsSection from '@/components/ProductsSection';
-import PrivateLabelSection from '@/components/PrivateLabelSection';
-import WholesaleSection from '@/components/WholesaleSection';
-import StoreLocatorSection from '@/components/StoreLocatorSection';
-import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
+
+const FactorySection = lazy(() => import('@/components/FactorySection'));
+const GallerySection = lazy(() => import('@/components/GallerySection'));
+const ProductsSection = lazy(() => import('@/components/ProductsSection'));
+const PrivateLabelSection = lazy(() => import('@/components/PrivateLabelSection'));
+const WholesaleSection = lazy(() => import('@/components/WholesaleSection'));
+const StoreLocatorSection = lazy(() => import('@/components/StoreLocatorSection'));
+const Footer = lazy(() => import('@/components/Footer'));
 
 const Index = () => {
   const location = useLocation();
