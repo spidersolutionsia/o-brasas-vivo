@@ -1,5 +1,5 @@
 import { MapPin, Phone, Calendar, Quote, Navigation } from 'lucide-react';
-import founderImage from '@/assets/founder.jpg';
+import founderImage from '@/assets/founder.webp';
 
 const WHATSAPP_NUMBER = '5522992525529';
 
