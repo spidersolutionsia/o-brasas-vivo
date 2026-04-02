@@ -18,18 +18,18 @@ interface CityLocation {
 
 const storesByCity: CityLocation[] = [
   { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: [
-    'Açougue F3V',
-    'Aline Bar',
+    { name: 'Açougue F3V' },
+    { name: 'Aline Bar' },
     { name: 'Beer House', instagram: 'https://www.instagram.com/beerhouse.bj/', maps: 'https://maps.app.goo.gl/E7m72qWjSWS7QzQW7' },
     { name: 'Cantinho Do Pão', instagram: 'https://www.instagram.com/cantinhodopaoofc/', maps: 'https://maps.app.goo.gl/QTKEueq5b73HpowR6' },
     { name: 'Mercadinho Do Trevo', instagram: 'https://www.instagram.com/mercadinho_trevo/', maps: 'https://maps.app.goo.gl/ewJQYFpDEBmk9p537' },
-    'Mercearia e Açougue Santa Cruz',
-    'Mercearia Império',
+    { name: 'Mercearia e Açougue Santa Cruz' },
+    { name: 'Mercearia Império' },
     { name: 'Padaria Nonna Carmela', instagram: 'https://www.instagram.com/padarianonnacarmela/?hl=pt', maps: 'https://maps.app.goo.gl/WdthGvTrYnjwQm7c6' },
     { name: 'Parada Do Frango', instagram: 'https://www.instagram.com/frangonabrasabj/', maps: 'https://maps.app.goo.gl/VPdRuDejw1tzK4gG6' },
     { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/uvt7FvHfGjo6LQGN8' },
-    'Tem De Tudo',
-    'Zé Rios Depósito',
+    { name: 'Tem De Tudo' },
+    { name: 'Zé Rios Depósito' },
   ] },
   { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: [{ name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/i3xvwWiNzGyB5HXt7' }] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: [{ name: 'Mercado Machadinho', instagram: 'https://www.instagram.com/supermercado.machadinho/', maps: 'https://maps.app.goo.gl/jHSGrs4ZGAMw5fcg6' }, { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/Q9H5gNAqBzeU82k6A' }] },
@@ -103,7 +103,7 @@ const StoreLocatorSection = () => {
                               <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Store className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />
                                 <span>{name}</span>
-                                {entry?.instagram && (
+                                {entry?.instagram ? (
                                   <a
                                     href={entry.instagram}
                                     target="_blank"
@@ -113,8 +113,12 @@ const StoreLocatorSection = () => {
                                   >
                                     <Instagram className="w-3.5 h-3.5" />
                                   </a>
-                                )}
-                                {entry?.maps && (
+                                ) : entry && !entry.instagram ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground/40 cursor-default" title="Instagram em breve">
+                                    <Instagram className="w-3.5 h-3.5" />
+                                  </span>
+                                ) : null}
+                                {entry?.maps ? (
                                   <a
                                     href={entry.maps}
                                     target="_blank"
@@ -125,7 +129,12 @@ const StoreLocatorSection = () => {
                                     <Navigation className="w-3.5 h-3.5" />
                                     <span>Como chegar</span>
                                   </a>
-                                )}
+                                ) : entry && !entry.maps ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground/40 cursor-default text-xs font-medium" title="Localização em breve">
+                                    <Navigation className="w-3.5 h-3.5" />
+                                    <span>Como chegar</span>
+                                  </span>
+                                ) : null}
                               </li>
                             );
                           })}
