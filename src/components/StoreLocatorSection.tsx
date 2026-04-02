@@ -5,6 +5,7 @@ interface StoreEntry {
   name: string;
   instagram?: string;
   maps?: string;
+  whatsapp?: string;
 }
 
 type StoreItem = string | StoreEntry;
