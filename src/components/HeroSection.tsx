@@ -5,6 +5,8 @@ import heroVideo from '@/assets/hero-video.mp4';
 
 const HeroSection = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
