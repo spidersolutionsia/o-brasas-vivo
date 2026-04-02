@@ -172,11 +172,22 @@ const StoreLocatorSection = () => {
         </div>
 
         <div className="mt-12 max-w-4xl mx-auto">
-          <div className="card-dark rounded-xl aspect-video flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="w-16 h-16 text-primary mx-auto mb-4 animate-bounce" />
-              <p className="text-muted-foreground text-lg">Região Serrana do Rio de Janeiro</p>
-              <p className="text-sm text-muted-foreground/60 mt-2">Atendemos toda a região com entrega rápida</p>
+          <div className="card-dark rounded-xl overflow-hidden relative">
+            <div className="aspect-video relative">
+              <iframe
+                src="https://maps.google.com/maps?q=Regi%C3%A3o+Serrana+Rio+de+Janeiro&t=k&z=10&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                className="absolute inset-0 border-0"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Região Serrana do Rio de Janeiro"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-6 pointer-events-none">
+                <p className="text-foreground text-lg font-heading font-bold uppercase">Região Serrana do Rio de Janeiro</p>
+                <p className="text-sm text-muted-foreground mt-1">Atendemos toda a região com entrega rápida</p>
+              </div>
             </div>
           </div>
         </div>
