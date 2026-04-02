@@ -1,10 +1,11 @@
-import { MapPin, Store, ChevronDown, Instagram, Navigation } from 'lucide-react';
+import { MapPin, Store, ChevronDown, Instagram, Navigation, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 
 interface StoreEntry {
   name: string;
   instagram?: string;
   maps?: string;
+  whatsapp?: string;
 }
 
 type StoreItem = string | StoreEntry;
@@ -18,7 +19,7 @@ interface CityLocation {
 
 const storesByCity: CityLocation[] = [
   { city: 'Bom Jardim', state: 'RJ', type: 'Varejo', stores: [
-    { name: 'Açougue F3V' },
+    { name: 'Açougue F3V', whatsapp: 'https://wa.me/5522981022191?text=Ol%C3%A1!%20Vim%20pelo%20site%20do%20Carv%C3%A3o%20Mascate%20e%20gostaria%20de%20saber%20quais%20tamanhos%20de%20saco%20tem%20dispon%C3%ADveis%3F' },
     { name: 'Aline Bar' },
     { name: 'Beer House', instagram: 'https://www.instagram.com/beerhouse.bj/', maps: 'https://maps.app.goo.gl/E7m72qWjSWS7QzQW7' },
     { name: 'Cantinho Do Pão', instagram: 'https://www.instagram.com/cantinhodopaoofc/', maps: 'https://maps.app.goo.gl/QTKEueq5b73HpowR6' },
@@ -135,6 +136,17 @@ const StoreLocatorSection = () => {
                                     <span>Como chegar</span>
                                   </span>
                                 ) : null}
+                                {entry?.whatsapp && (
+                                  <a
+                                    href={entry.whatsapp}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
+                                    title="WhatsApp"
+                                  >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
                               </li>
                             );
                           })}
