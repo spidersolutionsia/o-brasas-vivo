@@ -59,7 +59,7 @@ const FactorySection = () => {
                 Agendar Visita
               </button>
               <a
-                href="https://www.google.com/maps/dir//Carv%C3%A3o+Mascate,+WCFH%2BM6C+-+Vargem+Grande,+Duas+Barras+-+RJ,+28650-000"
+                href="https://maps.app.goo.gl/S7BNdJb18mz6mmV6A"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/50 text-primary font-heading uppercase tracking-wider hover:bg-primary/10 transition-colors"
@@ -74,7 +74,7 @@ const FactorySection = () => {
           <div className="relative">
             <div className="aspect-video rounded-xl overflow-hidden card-dark fire-glow">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d14767.551161926964!2d-42.5394176!3d-22.282239999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x6aafb888a29409b5%3A0x9cca2c6e40e99f8a!2sCarv%C3%A3o%20Mascate%2C%20WCFH%2BM6C%20-%20Vargem%20Grande%2C%20Duas%20Barras%20-%20RJ%2C%2028650-000!3m2!1d-22.075812499999998!2d-42.5719375!5e0!3m2!1spt-BR!2sbr!4v1769613411555!5m2!1spt-BR!2sbr"
+                src="https://maps.google.com/maps?q=Carv%C3%A3o+Mascate+Duas+Barras+RJ&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
