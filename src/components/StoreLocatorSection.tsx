@@ -32,7 +32,11 @@ const storesByCity: CityLocation[] = [
     { name: 'Tem De Tudo' },
     { name: 'Zé Rios Depósito' },
   ] },
-  { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: [{ name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/i3xvwWiNzGyB5HXt7' }] },
+  { city: 'Cantagalo', state: 'RJ', type: 'Varejo', stores: [
+    { name: 'Distribuidora Canjiquinha' },
+    { name: 'Galo Atacarejo' },
+    { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/i3xvwWiNzGyB5HXt7' },
+  ] },
   { city: 'Cordeiro', state: 'RJ', type: 'Varejo', stores: [{ name: 'Mercado Machadinho', instagram: 'https://www.instagram.com/supermercado.machadinho/', maps: 'https://maps.app.goo.gl/jHSGrs4ZGAMw5fcg6' }, { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/Q9H5gNAqBzeU82k6A' }] },
   { city: 'Duas Barras', state: 'RJ', type: 'Fábrica / Varejo', stores: [
     { name: 'Depósito Beerbarrense', instagram: 'https://www.instagram.com/deposito_beerbarrense/?hl=pt-br', maps: 'https://maps.app.goo.gl/iTLsgo98uWR7UqETA' },
