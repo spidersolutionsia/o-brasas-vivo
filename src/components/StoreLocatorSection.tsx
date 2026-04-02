@@ -136,6 +136,17 @@ const StoreLocatorSection = () => {
                                     <span>Como chegar</span>
                                   </span>
                                 ) : null}
+                                {entry?.whatsapp && (
+                                  <a
+                                    href={entry.whatsapp}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
+                                    title="WhatsApp"
+                                  >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
                               </li>
                             );
                           })}
