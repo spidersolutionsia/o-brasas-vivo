@@ -44,7 +44,7 @@ const storesByCity: CityLocation[] = [
     { name: 'Depósito Beerbarrense', instagram: 'https://www.instagram.com/deposito_beerbarrense/?hl=pt-br', maps: 'https://maps.app.goo.gl/iTLsgo98uWR7UqETA' },
     { name: 'Mercado Central', whatsapp: 'https://wa.me/5522981188684?text=Ol%C3%A1!%20Vim%20pelo%20site%20do%20Carv%C3%A3o%20Mascate%20e%20gostaria%20de%20saber%20quais%20tamanhos%20de%20saco%20tem%20dispon%C3%ADveis%3F' },
     { name: 'Mercado Central Monnerat', whatsapp: 'https://wa.me/5522992699487?text=Ol%C3%A1!%20Vim%20pelo%20site%20do%20Carv%C3%A3o%20Mascate%20e%20gostaria%20de%20saber%20quais%20tamanhos%20de%20saco%20tem%20dispon%C3%ADveis%3F' },
-    { name: 'Mercado Monnerat' },
+    
     { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/', maps: 'https://maps.app.goo.gl/Kv2SmEQNbdU4EeYp6' },
   ] },
   { city: 'Nova Friburgo', state: 'RJ', type: 'Varejo', stores: ['Açougue Adj', 'Açougue Do Jean', 'AGROFRUTI', 'Arthur Ribeiro', 'Boteco Curuzu', 'Botique Das Carnes', 'Brew', 'Casa De Carnes Amorim', 'Clube Da Cevada', 'Colibri Bebidas', 'Das Carnes', 'Emporio Beer', 'Emporio Serrano Friburgo', 'Frotté', 'Gabriel Mercado Gb', 'General Das Carnes', 'Lider Serrano', 'Lj Bebidas', 'Mercado Armazém Da Serra', 'Mercado Do Lucas', 'Mercado União', 'Mercado Águia Da Serra', 'Natan Depósito Do Zazá', 'Pec Beer', 'Sante Depósito', 'Santè Depósito Bebidas', 'Shopping Amigos', 'Sorveteria Cesa', 'Villa Drinks', 'Wendel Hortifruti'] },
