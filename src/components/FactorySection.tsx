@@ -59,7 +59,7 @@ const FactorySection = () => {
                 Agendar Visita
               </button>
               <a
-                href="https://www.google.com/maps/dir//Carv%C3%A3o+Mascate,+WCFH%2BM6C+-+Vargem+Grande,+Duas+Barras+-+RJ,+28650-000"
+                href="https://maps.app.goo.gl/S7BNdJb18mz6mmV6A"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/50 text-primary font-heading uppercase tracking-wider hover:bg-primary/10 transition-colors"
