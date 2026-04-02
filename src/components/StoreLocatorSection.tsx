@@ -1,4 +1,4 @@
-import { MapPin, Store, ChevronDown, Instagram, Navigation, MessageCircle } from 'lucide-react';
+import { MapPin, Store, ChevronDown, Instagram, Navigation } from 'lucide-react';
 import { useState } from 'react';
 
 interface StoreEntry {
