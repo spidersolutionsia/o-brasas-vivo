@@ -74,7 +74,7 @@ const FactorySection = () => {
           <div className="relative">
             <div className="aspect-video rounded-xl overflow-hidden card-dark fire-glow">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3691.9!2d-42.5219!3d-22.0558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9797b1a2b3c4d5e6%3A0xabcdef1234567890!2sCarv%C3%A3o+Mascate!5e0!3m2!1spt-BR!2sbr"
+                src="https://maps.google.com/maps?q=Carv%C3%A3o+Mascate+Duas+Barras+RJ&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
