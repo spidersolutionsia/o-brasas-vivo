@@ -175,7 +175,7 @@ const StoreLocatorSection = () => {
           <div className="card-dark rounded-xl overflow-hidden relative">
             <div className="aspect-video relative">
               <iframe
-                src="https://www.google.com/maps/d/embed?mid=1&ll=-22.14,-42.55&z=10&t=k&q=Duas+Barras,RJ|Nova+Friburgo,RJ|Bom+Jardim,RJ|Cantagalo,RJ|Cordeiro,RJ|Sumidouro,RJ|Teresópolis,RJ&output=embed"
+                src="https://maps.google.com/maps?ll=-22.14,-42.55&z=10&t=k&ie=UTF8&output=embed"
                 width="100%"
                 height="100%"
                 className="absolute inset-0 border-0"
