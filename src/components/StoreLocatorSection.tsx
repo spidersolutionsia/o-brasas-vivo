@@ -25,7 +25,7 @@ const storesByCity: CityLocation[] = [
     { name: 'Cantinho Do Pão', instagram: 'https://www.instagram.com/cantinhodopaoofc/', maps: 'https://maps.app.goo.gl/QTKEueq5b73HpowR6' },
     { name: 'Mercadinho Do Trevo', instagram: 'https://www.instagram.com/mercadinho_trevo/', maps: 'https://maps.app.goo.gl/ewJQYFpDEBmk9p537' },
     { name: 'Mercearia e Açougue Santa Cruz' },
-    { name: 'Mercearia Império' },
+    { name: 'Mercearia Império', whatsapp: 'https://wa.me/5522988737520?text=Ol%C3%A1!%20Vim%20pelo%20site%20do%20Carv%C3%A3o%20Mascate%20e%20gostaria%20de%20saber%20quais%20tamanhos%20de%20saco%20tem%20dispon%C3%ADveis%3F' },
     { name: 'Padaria Nonna Carmela', instagram: 'https://www.instagram.com/padarianonnacarmela/?hl=pt', maps: 'https://maps.app.goo.gl/WdthGvTrYnjwQm7c6' },
     { name: 'Parada Do Frango', instagram: 'https://www.instagram.com/frangonabrasabj/', maps: 'https://maps.app.goo.gl/VPdRuDejw1tzK4gG6' },
     { name: 'Superthal', instagram: 'https://www.instagram.com/redesuperthal/?hl=pt-br', maps: 'https://maps.app.goo.gl/uvt7FvHfGjo6LQGN8' },
