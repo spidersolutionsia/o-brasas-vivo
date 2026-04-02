@@ -103,7 +103,7 @@ const StoreLocatorSection = () => {
                               <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Store className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />
                                 <span>{name}</span>
-                                {entry?.instagram && (
+                                {entry?.instagram ? (
                                   <a
                                     href={entry.instagram}
                                     target="_blank"
@@ -113,8 +113,12 @@ const StoreLocatorSection = () => {
                                   >
                                     <Instagram className="w-3.5 h-3.5" />
                                   </a>
-                                )}
-                                {entry?.maps && (
+                                ) : entry && !entry.instagram ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground/40 cursor-default" title="Instagram em breve">
+                                    <Instagram className="w-3.5 h-3.5" />
+                                  </span>
+                                ) : null}
+                                {entry?.maps ? (
                                   <a
                                     href={entry.maps}
                                     target="_blank"
@@ -125,7 +129,12 @@ const StoreLocatorSection = () => {
                                     <Navigation className="w-3.5 h-3.5" />
                                     <span>Como chegar</span>
                                   </a>
-                                )}
+                                ) : entry && !entry.maps ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground/40 cursor-default text-xs font-medium" title="Localização em breve">
+                                    <Navigation className="w-3.5 h-3.5" />
+                                    <span>Como chegar</span>
+                                  </span>
+                                ) : null}
                               </li>
                             );
                           })}
