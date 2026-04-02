@@ -23,6 +23,13 @@ const HeroSection = () => {
 
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Video Skeleton Placeholder */}
+      {!videoLoaded && (
+        <div className="absolute inset-0 bg-background animate-pulse">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/40 via-muted/20 to-background" />
+        </div>
+      )}
+
       {/* Background Video with Parallax */}
       <video
         autoPlay
@@ -30,11 +37,12 @@ const HeroSection = () => {
         muted
         playsInline
         preload="metadata"
-        className="absolute inset-0 w-full h-full object-cover scale-110"
+        className={`absolute inset-0 w-full h-full object-cover scale-110 transition-opacity duration-700 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ transform: `scale(1.1) translateY(${scrollY * 0.3}px)` }}
         onLoadedMetadata={(e) => {
           e.currentTarget.currentTime = 3;
         }}
+        onCanPlayThrough={() => setVideoLoaded(true)}
         onEnded={(e) => {
           e.currentTarget.currentTime = 3;
           e.currentTarget.play();
