@@ -1,5 +1,6 @@
 import { MapPin, Store, ChevronDown, Instagram, Navigation } from 'lucide-react';
 import { useState } from 'react';
+import { trackContact } from '@/lib/metaPixel';
 
 interface StoreEntry {
   name: string;
@@ -148,6 +149,7 @@ const StoreLocatorSection = () => {
                                     href={entry.whatsapp}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={() => trackContact(`WhatsApp - Loja ${entry.name}`)}
                                     className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
                                     title="WhatsApp"
                                   >
