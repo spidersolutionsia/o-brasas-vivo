@@ -1,10 +1,12 @@
 import { MapPin, Phone, Calendar, Quote, Navigation } from 'lucide-react';
 import founderImage from '@/assets/founder.webp';
+import { trackContact } from '@/lib/metaPixel';
 
 const WHATSAPP_NUMBER = '5522992525529';
 
 const FactorySection = () => {
   const handleScheduleVisit = () => {
+    trackContact('WhatsApp - Agendar Visita');
     const message = encodeURIComponent(
       'Olá! Vim pelo site e gostaria de agendar um tour pra conhecer a fábrica!'
     );
