@@ -9,6 +9,7 @@ import StepRegister from '@/components/order/StepRegister';
 import StepConfirmation from '@/components/order/StepConfirmation';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 import { supabase } from '@/integrations/supabase/client';
+import { trackViewContent } from '@/lib/metaPixel';
 
 type Step = 'products' | 'identify' | 'register' | 'confirmation';
 
@@ -26,6 +27,10 @@ const Pedido = () => {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customerId, setCustomerId] = useState('');
   const [customerName, setCustomerName] = useState('');
+
+  useEffect(() => {
+    trackViewContent('Página de Pedido');
+  }, []);
 
   const updateQuantity = (id: string, delta: number) => {
     setQuantities((prev) => ({

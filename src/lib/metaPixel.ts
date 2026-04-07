@@ -37,3 +37,16 @@ export const trackInitiateCheckout = (numItems: number, totalValue: number) => {
     currency: 'BRL',
   });
 };
+
+export const trackViewContent = (contentName: string) => {
+  fbq('track', 'ViewContent', {
+    content_name: contentName,
+    content_type: 'product',
+  });
+};
+
+export const trackLead = (customerName?: string) => {
+  fbq('track', 'Lead', {
+    content_name: customerName || 'Novo cadastro',
+  });
+};
