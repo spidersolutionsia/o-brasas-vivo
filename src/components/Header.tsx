@@ -42,7 +42,7 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link to="/" className="flex-shrink-0">
+            <Link to="/" className="flex-shrink-0" onClick={() => { if (location.pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               <img src={logoHorizontal} alt="Carvão Mascate" className="h-10 md:h-12 w-auto" />
             </Link>
 
