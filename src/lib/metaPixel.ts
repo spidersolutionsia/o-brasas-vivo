@@ -63,3 +63,9 @@ export const trackContact = (method: string = 'WhatsApp') => {
     content_name: method,
   });
 };
+
+export const trackFindLocation = (city: string) => {
+  fbq('track', 'FindLocation', {
+    content_name: city,
+  });
+};
