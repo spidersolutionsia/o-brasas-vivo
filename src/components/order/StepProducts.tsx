@@ -1,4 +1,5 @@
 import { Minus, Plus, ArrowRight } from 'lucide-react';
+import { trackAddToCart, trackInitiateCheckout } from '@/lib/metaPixel';
 
 export interface Product {
   id: string;
@@ -66,6 +67,7 @@ const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
                     <button
                       onClick={() => onUpdateQuantity(product.id, -1)}
                       className="w-9 h-9 rounded-full border border-border hover:border-primary hover:text-primary transition-colors flex items-center justify-center"
+
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -73,7 +75,10 @@ const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
                       {quantities[product.id] || 0}
                     </span>
                     <button
-                      onClick={() => onUpdateQuantity(product.id, 1)}
+                      onClick={() => {
+                        onUpdateQuantity(product.id, 1);
+                        trackAddToCart(`${product.brand} ${product.weight}`, product.price, 1);
+                      }}
                       className="w-9 h-9 rounded-full border border-border hover:border-primary hover:text-primary transition-colors flex items-center justify-center"
                     >
                       <Plus className="w-4 h-4" />
@@ -98,7 +103,7 @@ const StepProducts = ({ quantities, onUpdateQuantity, onNext }: Props) => {
       </div>
 
       <button
-        onClick={onNext}
+        onClick={() => { trackInitiateCheckout(totalItems, totalValue); onNext(); }}
         disabled={totalItems === 0}
         className="btn-fire rounded-lg w-full text-lg flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
       >
