@@ -50,3 +50,10 @@ export const trackLead = (customerName?: string) => {
     content_name: customerName || 'Novo cadastro',
   });
 };
+
+export const trackCompleteRegistration = (customerName?: string) => {
+  fbq('track', 'CompleteRegistration', {
+    content_name: customerName || 'Login',
+    status: true,
+  });
+};

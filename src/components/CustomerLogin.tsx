@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, X, LogOut, Eye, EyeOff } from 'lucide-react';
+import { trackCompleteRegistration } from '@/lib/metaPixel';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
@@ -67,6 +68,7 @@ const CustomerLogin = () => {
     }
 
     login(customer.email, customer.name);
+    trackCompleteRegistration(customer.name);
     setOpen(false);
     setLoginInput('');
     setPassword('');
