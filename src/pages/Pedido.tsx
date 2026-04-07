@@ -28,6 +28,10 @@ const Pedido = () => {
   const [customerId, setCustomerId] = useState('');
   const [customerName, setCustomerName] = useState('');
 
+  useEffect(() => {
+    trackViewContent('Página de Pedido');
+  }, []);
+
   const updateQuantity = (id: string, delta: number) => {
     setQuantities((prev) => ({
       ...prev,
