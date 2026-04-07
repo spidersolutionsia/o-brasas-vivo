@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, MessageCircle, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { products } from './StepProducts';
+import { trackPurchase } from '@/lib/metaPixel';
 
 const WHATSAPP_NUMBER = '5522992525529';
 const WEBHOOK_URL = 'https://n8n.spidersolutions.com.br/webhook/carvaomascatesite';
@@ -105,6 +106,8 @@ const StepConfirmation = ({ quantities, customerId, customerName, onBack, onComp
     );
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+
+    trackPurchase(orderNumber, itemsPayload);
 
     setLoading(false);
     setDone(true);
