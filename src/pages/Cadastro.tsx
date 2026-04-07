@@ -5,6 +5,7 @@ import PageMeta from '@/components/PageMeta';
 import StepRegister from '@/components/order/StepRegister';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 import { toast } from 'sonner';
+import { trackLead } from '@/lib/metaPixel';
 
 const Cadastro = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Cadastro = () => {
 
   const handleRegistered = (id: string, name: string, email: string) => {
     login(email, name);
+    trackLead(name);
     toast.success('Conta criada com sucesso!');
     navigate('/meus-pedidos');
   };

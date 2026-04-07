@@ -9,6 +9,7 @@ import StepRegister from '@/components/order/StepRegister';
 import StepConfirmation from '@/components/order/StepConfirmation';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 import { supabase } from '@/integrations/supabase/client';
+import { trackViewContent } from '@/lib/metaPixel';
 
 type Step = 'products' | 'identify' | 'register' | 'confirmation';
 
