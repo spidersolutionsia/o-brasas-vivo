@@ -1,8 +1,14 @@
+import { trackContact } from '@/lib/metaPixel';
+
 const WHATSAPP_NUMBER = '5522992525529';
 const WHATSAPP_MESSAGE = 'Olá! Vim pelo site e gostaria de produzir meu carvão com a Mascate!';
 
 const WhatsAppButton = () => {
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+
+  const handleClick = () => {
+    trackContact('WhatsApp - Botão Flutuante');
+  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-1">
@@ -25,6 +31,7 @@ const WhatsAppButton = () => {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleClick}
           aria-label="Fale conosco pelo WhatsApp"
           className="flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300"
         >

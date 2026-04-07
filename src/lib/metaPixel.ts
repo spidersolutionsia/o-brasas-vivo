@@ -57,3 +57,9 @@ export const trackCompleteRegistration = (customerName?: string) => {
     status: true,
   });
 };
+
+export const trackContact = (method: string = 'WhatsApp') => {
+  fbq('track', 'Contact', {
+    content_name: method,
+  });
+};
