@@ -1,6 +1,6 @@
 import { MapPin, Store, ChevronDown, Instagram, Navigation } from 'lucide-react';
 import { useState } from 'react';
-import { trackContact } from '@/lib/metaPixel';
+import { trackContact, trackFindLocation } from '@/lib/metaPixel';
 
 interface StoreEntry {
   name: string;
@@ -60,7 +60,10 @@ const StoreLocatorSection = () => {
   const [openCity, setOpenCity] = useState<string | null>(null);
 
   const toggle = (city: string) => {
-    setOpenCity(prev => (prev === city ? null : city));
+    setOpenCity(prev => {
+      if (prev !== city) trackFindLocation(city);
+      return prev === city ? null : city;
+    });
   };
 
   return (
